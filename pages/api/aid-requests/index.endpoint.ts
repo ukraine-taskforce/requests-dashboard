@@ -15,5 +15,6 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<AidRequest>
 ) {
+  // TODO: implement the real data fetching here
   res.status(200).json(aidRequestsFixture);
 }
