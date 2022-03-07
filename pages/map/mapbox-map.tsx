@@ -62,7 +62,9 @@ export const MapboxMap = () => {
       mapStyle="mapbox://styles/mapbox/dark-v10"
       mapboxAccessToken={MAPBOX_KEY}
     >
+      {/* @ts-ignore */}
       <Source id="ukr_water_needs" type="geojson" data={geojson}>
+        {/* @ts-ignore */}
         <Layer {...layerStyle} />
       </Source>
     </Map>
