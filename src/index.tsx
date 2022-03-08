@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { QueryClientProvider } from "react-query";
+import { ThemeProvider } from "theme-ui";
+import { theme } from "./styles/theme";
 
 import "./index.css";
 import "./others/contexts/i18n";
@@ -32,25 +34,25 @@ import { NotFound } from "./pages/notFound";
 //   document.getElementById("root")
 // );
 
-
 ReactDOM.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<AuthWrapper />}>
-            <Route path="/" element={<Login />} />
-            <Route path="/requests" element={<Requests />} />
-            <Route path="/incidents" element={<Incidents />} />
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<AuthWrapper />}>
+              <Route path="/" element={<Login />} />
+              <Route path="/requests" element={<Requests />} />
+              <Route path="/incidents" element={<Incidents />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
     </QueryClientProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
-
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
