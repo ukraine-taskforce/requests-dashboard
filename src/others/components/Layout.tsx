@@ -7,7 +7,7 @@ export interface LayoutProps {}
 export const Layout: React.FunctionComponent<LayoutProps> = ({ children }) => {
   return (
     <div className={styles.wrapper}>
-      <div> Sidebar</div>
+      <div className={styles.sidebar}> Sidebar</div>
       <div>
         <nav>Header bar</nav>
         <div>{children}</div>
