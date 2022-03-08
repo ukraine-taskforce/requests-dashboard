@@ -12,10 +12,11 @@ const colors = {
 export const muiTheme = createTheme({
   palette: {
     primary: {
-      light: "red",
       main: colors.black,
+      contrastText: colors.white,
+      // TODO: set these up once we know which one they are
+      light: "red",
       dark: "blue",
-      contrastText: "#fff",
     },
     // secondary: {
     //   light: "#ff7961",
@@ -23,5 +24,10 @@ export const muiTheme = createTheme({
     //   dark: "#ba000d",
     //   contrastText: "#000",
     // },
+  },
+  typography: {
+    allVariants: {
+      color: colors.white,
+    },
   },
 });

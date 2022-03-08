@@ -1,5 +1,7 @@
+import * as React from "react";
 import { ReactNode } from "react";
-import Stack from "@mui/material/Stack";
+
+import Box from "@mui/material/Box";
 
 export interface LayoutProps {
   header?: ReactNode;
@@ -7,9 +9,9 @@ export interface LayoutProps {
 
 export const Layout: React.FunctionComponent<LayoutProps> = ({ header, children }) => {
   return (
-    <Stack>
+    <Box sx={{ height: "100vh" }}>
       {header}
-      <div>{children}</div>
-    </Stack>
+      <Box sx={{ height: "calc(100vh - 64px)" }}>{children}</Box>
+    </Box>
   );
 };
