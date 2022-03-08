@@ -1,0 +1,10 @@
+.map-wrap {
+    position: relative;
+    width: 100%;
+  }
+  
+  .map {
+    position: absolute;
+    width: 1200px;
+    height: 800px;
+  }

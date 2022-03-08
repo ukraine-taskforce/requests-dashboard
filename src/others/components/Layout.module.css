@@ -1,6 +1,9 @@
 .wrapper {
   display: flex;
   height: var(--header-height);
-  justify-content: space-between;
-  align-items: stretch;
+}
+
+.sidebar {
+  width: fit-content;
+  margin-right: 2ch;
 }
