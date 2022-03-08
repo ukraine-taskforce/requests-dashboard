@@ -1,0 +1,6 @@
+.wrapper {
+  display: flex;
+  height: var(--header-height);
+  justify-content: space-between;
+  align-items: stretch;
+}
