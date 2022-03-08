@@ -1,5 +1,6 @@
 @import "./vars.css";
 
+/* TODO: move these definitions to theme.ts (if necessary), then remove the file */
 body {
   margin: 0;
   font-family: "Inter", sans-serif;

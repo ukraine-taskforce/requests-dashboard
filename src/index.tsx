@@ -2,10 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { QueryClientProvider } from "react-query";
-import { ThemeProvider } from "theme-ui";
-import { theme } from "./styles/theme";
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
+import { muiTheme } from "./styles/theme";
 
-import "./index.css";
+// import "./index.css";
 import "./others/contexts/i18n";
 import reportWebVitals from "./reportWebVitals";
 
@@ -37,7 +38,8 @@ import { NotFound } from "./pages/notFound";
 ReactDOM.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>
+      <MuiThemeProvider theme={muiTheme}>
+        <CssBaseline />
         <BrowserRouter>
           <Routes>
             <Route element={<AuthWrapper />}>
@@ -48,7 +50,7 @@ ReactDOM.render(
             </Route>
           </Routes>
         </BrowserRouter>
-      </ThemeProvider>
+      </MuiThemeProvider>
     </QueryClientProvider>
   </React.StrictMode>,
   document.getElementById("root")

@@ -1,17 +1,15 @@
-import React from "react";
+import { ReactNode } from "react";
+import Stack from "@mui/material/Stack";
 
-import styles from "./Layout.module.css";
+export interface LayoutProps {
+  header?: ReactNode;
+}
 
-export interface LayoutProps {}
-
-export const Layout: React.FunctionComponent<LayoutProps> = ({ children }) => {
+export const Layout: React.FunctionComponent<LayoutProps> = ({ header, children }) => {
   return (
-    <div className={styles.wrapper}>
-      <div> Sidebar</div>
-      <div>
-        <nav>Header bar</nav>
-        <div>{children}</div>
-      </div>
-    </div>
+    <Stack>
+      {header}
+      <div>{children}</div>
+    </Stack>
   );
 };

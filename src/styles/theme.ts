@@ -1,14 +1,27 @@
-import type { Theme } from "theme-ui";
+import { createTheme } from "@mui/material/styles";
 
-export const theme: Theme = {
-  fonts: {
-    body: "system-ui, sans-serif",
-    heading: '"Avenir Next", sans-serif',
-    monospace: "Menlo, monospace",
-  },
-  colors: {
-    text: "#000",
-    background: "#fff",
-    primary: "#33e",
-  },
+const colors = {
+  black: "#000",
+  white: "#fff",
+  focus: "#159bff",
+  gray: "#bdc0c2",
+  error: "#f79a9a",
+  darkError: "#4d0707",
 };
+
+export const muiTheme = createTheme({
+  palette: {
+    primary: {
+      light: "red",
+      main: colors.black,
+      dark: "blue",
+      contrastText: "#fff",
+    },
+    // secondary: {
+    //   light: "#ff7961",
+    //   main: "#f44336",
+    //   dark: "#ba000d",
+    //   contrastText: "#000",
+    // },
+  },
+});
