@@ -38,5 +38,8 @@
   "close": "Close",
   "ugt": "Ukraine Global Taskforce",
   "page_not_exist": "This page does not exist",
-  "go_to_homepage": "Go to the homepage"
+  "go_to_homepage": "Go to the homepage",
+
+  "by_cities": "By cities",
+  "by_items": "By items"
 }

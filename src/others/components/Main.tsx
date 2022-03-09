@@ -4,8 +4,14 @@ import Box from "@mui/material/Box";
 
 export interface MainProps {
   children?: ReactNode;
+  aside?: ReactNode;
 }
 
-export const Main = ({ children }: MainProps) => {
-  return <Box sx={{ height: "100%", backgroundColor: "primary.main", padding: 4 }}>{children}</Box>;
+export const Main = ({ children, aside }: MainProps) => {
+  return (
+    <Box component="main" sx={{ height: "100%", backgroundColor: "primary.main", paddingX: 4, paddingY: 2, display: "flex" }}>
+      <Box component="aside">{aside}</Box>
+      <Box sx={{ paddingX: 2, width: "100%" }}>{children}</Box>
+    </Box>
+  );
 };

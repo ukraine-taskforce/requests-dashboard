@@ -1,4 +1,4 @@
-import { ReactNode, useState, useContext, createContext, Dispatch, SetStateAction } from "react";
+import { ReactNode, useState, useContext, createContext } from "react";
 
 interface DashboardState {
   isOpen: boolean;
@@ -20,10 +20,10 @@ interface DashboardContextProviderProps {
 }
 
 export const DashboardContextProvider = ({ children }: DashboardContextProviderProps) => {
-  return <DashboardContext.Provider value={initDashboardState()}>{children}</DashboardContext.Provider>;
+  return <DashboardContext.Provider value={useDashboardState()}>{children}</DashboardContext.Provider>;
 };
 
-const initDashboardState = () => {
+const useDashboardState = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggle = () => setIsOpen(!isOpen);

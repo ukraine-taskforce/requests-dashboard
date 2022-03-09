@@ -17,7 +17,7 @@ export interface HeaderProps {
 export const Header = ({ children }: HeaderProps) => {
   const { toggle } = useDashboardContext();
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ paddingRight: 1, paddingLeft: 1 }}>
       <Toolbar>
         <IconButton size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }} onClick={toggle}>
           <MenuIcon />
