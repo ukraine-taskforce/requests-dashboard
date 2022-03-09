@@ -2,6 +2,8 @@ import { useTranslation } from "react-i18next";
 
 import { useLocationsQuery } from "../../others/contexts/api";
 import { Layout } from "../../others/components/Layout";
+import { Map } from "../../others/components/Map";
+
 import { Header } from "../../others/components/Header";
 import { Main } from "../../others/components/Main";
 import { Dashboard } from "../../others/components/Dashboard";
@@ -25,8 +27,9 @@ export function Requests() {
           </Dashboard>
         }
       >
-        {/* Todo: replace with the real map */}
-        <MapWindow> Map will go here</MapWindow>
+        <MapWindow>
+          <Map />
+        </MapWindow>
       </Main>
     </Layout>
   );

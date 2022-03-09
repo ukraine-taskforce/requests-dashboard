@@ -41,5 +41,7 @@
   "go_to_homepage": "Go to the homepage",
 
   "by_cities": "By cities",
-  "by_items": "By items"
+  "by_items": "By items",
+  "email": "email",
+  "password": "password"
 }
