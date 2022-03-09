@@ -1,17 +1,17 @@
-import React from "react";
+import * as React from "react";
+import { ReactNode } from "react";
 
-import styles from "./Layout.module.css";
+import Box from "@mui/material/Box";
 
-export interface LayoutProps {}
+export interface LayoutProps {
+  header?: ReactNode;
+}
 
-export const Layout: React.FunctionComponent<LayoutProps> = ({ children }) => {
+export const Layout: React.FunctionComponent<LayoutProps> = ({ header, children }) => {
   return (
-    <div className={styles.wrapper}>
-      <div> Sidebar</div>
-      <div>
-        <nav>Header bar</nav>
-        <div>{children}</div>
-      </div>
-    </div>
+    <Box sx={{ height: "100vh" }}>
+      {header}
+      <Box sx={{ height: "calc(100vh - 64px)" }}>{children}</Box>
+    </Box>
   );
 };
