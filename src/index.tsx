@@ -6,52 +6,39 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
 import { muiTheme } from "./styles/theme";
 
-// import "./index.css";
+import "./index.css";
 import "./others/contexts/i18n";
 import reportWebVitals from "./reportWebVitals";
 
 import { AuthWrapper } from "./others/components/AuthWrapper";
 import { queryClient } from "./others/contexts/api";
+import { Home } from "./pages/home";
 import { Login } from "./pages/login";
 import { Requests } from "./pages/requests";
 import { Incidents } from "./pages/incidents";
 import { NotFound } from "./pages/notFound";
-
-// ReactDOM.render(
-//   <React.StrictMode>
-//     <QueryClientProvider client={queryClient}>
-//       <BrowserRouter>
-//         <Routes>
-//           <Route element={<AuthWrapper />}>
-//             <Route path="/" element={<Login />} />
-//             <Route path="/locator" element={<Requests />} />
-//             <Route path="/people" element={<Incidents />} />
-//             <Route path="*" element={<NotFound />} />
-//           </Route>
-//         </Routes>
-//       </BrowserRouter>
-//     </QueryClientProvider>
-//   </React.StrictMode>,
-//   document.getElementById("root")
-// );
+import { AuthProvider } from "./others/contexts/auth";
 
 ReactDOM.render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <MuiThemeProvider theme={muiTheme}>
-        <CssBaseline />
-        <BrowserRouter>
-          <Routes>
-            <Route element={<AuthWrapper />}>
-              <Route path="/" element={<Login />} />
-              <Route path="/requests" element={<Requests />} />
-              <Route path="/incidents" element={<Incidents />} />
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </MuiThemeProvider>
-    </QueryClientProvider>
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <MuiThemeProvider theme={muiTheme}>
+          <CssBaseline />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route element={<AuthWrapper />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/requests" element={<Requests />} />
+                <Route path="/incidents" element={<Incidents />} />
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </MuiThemeProvider>
+      </QueryClientProvider>
+    </AuthProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

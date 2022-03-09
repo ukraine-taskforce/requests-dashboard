@@ -38,5 +38,7 @@
   "close": "Закрити",
   "ugt": "Ukraine Global Taskforce",
   "page_not_exist": "Ця сторінка не існує",
-  "go_to_homepage": "Перейдіть на домашню сторінку"
+  "go_to_homepage": "Перейдіть на домашню сторінку",
+  "email": "електронна пошта",
+  "password": "пароль"
 }
