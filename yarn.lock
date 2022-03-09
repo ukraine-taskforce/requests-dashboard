@@ -19301,7 +19301,6 @@ __metadata:
     typescript: ^4.6.2
     web-vitals: ^2.1.4
     webpack: ^5.70.0
-    yarn: ^1.22.17
   languageName: unknown
   linkType: soft
 
@@ -20693,16 +20692,6 @@ __metadata:
     y18n: ^5.0.5
     yargs-parser: ^20.2.2
   checksum: b14afbb51e3251a204d81937c86a7e9d4bdbf9a2bcee38226c900d00f522969ab675703bee2a6f99f8e20103f608382936034e64d921b74df82b63c07c5e8f59
-  languageName: node
-  linkType: hard
-
-"yarn@npm:^1.22.17":
-  version: 1.22.17
-  resolution: "yarn@npm:1.22.17"
-  bin:
-    yarn: ./bin/yarn.js
-    yarnpkg: ./bin/yarn.js
-  checksum: 9d5211477d439a4d7b5632d7c290a3be36d2edc13599b64964bff520d3a3a480db85010f3262293981abb4e618ac92aaafa4c4c54bae50a7713c7b8ec431adac
   languageName: node
   linkType: hard
 
