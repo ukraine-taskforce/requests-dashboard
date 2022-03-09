@@ -32,8 +32,8 @@ ReactDOM.render(
                 <Route path="/" element={<Home />} />
                 <Route path="/requests" element={<Requests />} />
                 <Route path="/incidents" element={<Incidents />} />
-                <Route path="*" element={<NotFound />} />
               </Route>
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
         </MuiThemeProvider>
