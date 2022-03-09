@@ -11,23 +11,12 @@ const colors = {
 
 export const muiTheme = createTheme({
   palette: {
-    primary: {
-      main: colors.black,
-      contrastText: colors.white,
-      // TODO: set these up once we know which one they are
-      light: "red",
-      dark: "blue",
+    mode: 'dark',
+    background: {
+      default: colors.black,
     },
-    // secondary: {
-    //   light: "#ff7961",
-    //   main: "#f44336",
-    //   dark: "#ba000d",
-    //   contrastText: "#000",
-    // },
   },
   typography: {
-    allVariants: {
-      color: colors.white,
-    },
+    fontFamily: '"Inter", sans-serif'
   },
 });
