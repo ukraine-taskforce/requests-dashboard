@@ -8,7 +8,6 @@ import { Header } from "../../others/components/Header";
 import { Main } from "../../others/components/Main";
 import { Dashboard } from "../../others/components/Dashboard";
 import { MultiTab } from "../../others/components/MultiTab";
-import { MapWindow } from "../../others/components/MapWindow";
 
 export function Requests() {
   const { t } = useTranslation();
