@@ -1,19 +1,24 @@
 import { useState } from "react";
-import Map from "react-map-gl";
+import MapComponent from "react-map-gl";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
-import styles from "./MapComponent.module.css";
+import styles from "./Map.module.css";
 
-export default function MapComponent() {
-  const [lng] = useState(30.5240501);
-  const [lat] = useState(48.4501071);
-  const [zoom] = useState(5);
+export function Map() {
+  const ukraineCenterCoords = {
+    lat: 48.4501071,
+    lng: 30.5240501,
+  };
+
+  const [lng] = useState(ukraineCenterCoords.lng);
+  const [lat] = useState(ukraineCenterCoords.lat);
+  const [zoom] = useState(4);
 
   return (
     <div className={styles.mapWrap}>
       <div className={styles.map}>
-        <Map
+        <MapComponent
           mapLib={maplibregl}
           initialViewState={{
             longitude: lng,
