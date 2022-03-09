@@ -2,8 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { QueryClientProvider } from "react-query";
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
+import { muiTheme } from "./styles/theme";
 
-import "./index.css";
+// import "./index.css";
 import "./others/contexts/i18n";
 import reportWebVitals from "./reportWebVitals";
 
@@ -32,25 +35,26 @@ import { NotFound } from "./pages/notFound";
 //   document.getElementById("root")
 // );
 
-
 ReactDOM.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<AuthWrapper />}>
-            <Route path="/" element={<Login />} />
-            <Route path="/requests" element={<Requests />} />
-            <Route path="/incidents" element={<Incidents />} />
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <MuiThemeProvider theme={muiTheme}>
+        <CssBaseline />
+        <BrowserRouter>
+          <Routes>
+            <Route element={<AuthWrapper />}>
+              <Route path="/" element={<Login />} />
+              <Route path="/requests" element={<Requests />} />
+              <Route path="/incidents" element={<Incidents />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </MuiThemeProvider>
     </QueryClientProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
-
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
