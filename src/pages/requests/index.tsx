@@ -27,9 +27,7 @@ export function Requests() {
           </Dashboard>
         }
       >
-        <MapWindow>
-          <Map />
-        </MapWindow>
+        <Map />
       </Main>
     </Layout>
   );

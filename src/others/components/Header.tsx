@@ -1,10 +1,8 @@
 import * as React from "react";
 import { ReactNode } from "react";
 import AppBar from "@mui/material/AppBar";
-
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 
@@ -17,7 +15,7 @@ export interface HeaderProps {
 export const Header = ({ children }: HeaderProps) => {
   const { toggle } = useDashboardContext();
   return (
-    <AppBar position="static" sx={{ paddingRight: 1, paddingLeft: 1 }}>
+    <AppBar position="static" sx={{ paddingRight: 1, paddingLeft: 1, backgroundImage: null }}>
       <Toolbar>
         <IconButton size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }} onClick={toggle}>
           <MenuIcon />
@@ -26,7 +24,6 @@ export const Header = ({ children }: HeaderProps) => {
           Dashboard
         </Typography>
         {children}
-        <Button color="inherit">Login</Button>
       </Toolbar>
     </AppBar>
   );

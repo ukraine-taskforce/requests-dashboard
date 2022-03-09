@@ -14,7 +14,7 @@ export const Dashboard = ({ children }: DashboardProps) => {
   const { isOpen } = useDashboardContext();
 
   return (
-    <Box sx={{ height: "100%", backgroundColor: "primary.main", width: isOpen ? openDashboardWidth : 0 }}>
+    <Box sx={{ height: "100%", width: isOpen ? openDashboardWidth : 0 }}>
       {isOpen ? <Box sx={{ display: "flex" }}>{children}</Box> : null}
     </Box>
   );

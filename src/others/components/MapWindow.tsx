@@ -15,9 +15,9 @@ export const MapWindow = ({ children }: MapWindowProps) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "white", // this may not be necessary later on
         borderRadius: 5,
       }}
+      className="map-window"
     >
       {children}
     </Box>
