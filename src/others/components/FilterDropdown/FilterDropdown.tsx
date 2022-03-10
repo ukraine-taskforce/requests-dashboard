@@ -11,6 +11,7 @@ export type FilterDropdownItem = {
 type FilterDropdownProps = {
   filterName: string;
   filterItems: FilterDropdownItem[];
+  /** If filter is a part of FilterDropdownGroup, this prop will be used to determine whether dropdown should be open, it will override internal state */
   filterActive?: boolean;
   filterItemToggleHandler: (filterItemId: string, overrideValue?: boolean) => void;
   filterGroupOpenHandler?: (filterGroupName: string) => void;

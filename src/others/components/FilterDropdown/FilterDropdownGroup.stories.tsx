@@ -32,7 +32,7 @@ export const FilterDropdownGroupBasic: ComponentStory<typeof FilterDropdownGroup
   const filterOpenHandler = (filterName: string) =>
     setFilters((filters) =>
       filters.map((filterItem) => {
-        if (filterItem.filterName === filterName) {
+        if (filterItem.filterName === filterName && !filterItem.active) {
           filterItem.active = true;
         } else {
           filterItem.active = false;
