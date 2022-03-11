@@ -6,14 +6,14 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 
-import { useDashboardContext } from "./dashboard-context";
+import { useSidebarContext } from "./sidebar-context";
 
 export interface HeaderProps {
   children?: ReactNode;
 }
 
 export const Header = ({ children }: HeaderProps) => {
-  const { toggle } = useDashboardContext();
+  const { toggle } = useSidebarContext();
   return (
     <AppBar position="static" sx={{ paddingRight: 1, paddingLeft: 1, backgroundImage: null }}>
       <Toolbar>

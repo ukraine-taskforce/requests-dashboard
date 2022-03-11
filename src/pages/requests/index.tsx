@@ -6,7 +6,7 @@ import { Map } from "../../others/components/Map";
 
 import { Header } from "../../others/components/Header";
 import { Main } from "../../others/components/Main";
-import { Dashboard } from "../../others/components/Dashboard";
+import { Sidebar } from "../../others/components/Sidebar";
 import { MultiTab } from "../../others/components/MultiTab";
 
 export function Requests() {
@@ -21,9 +21,9 @@ export function Requests() {
     <Layout header={<Header />}>
       <Main
         aside={
-          <Dashboard>
+          <Sidebar>
             <MultiTab labels={[t("by_cities"), t("by_items")]} />
-          </Dashboard>
+          </Sidebar>
         }
       >
         <Map />
