@@ -1,4 +1,3 @@
-import { useState } from "react";
 import MapComponent, { Layer, Source } from "react-map-gl";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
