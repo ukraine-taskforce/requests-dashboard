@@ -2,8 +2,6 @@ import * as React from "react";
 import { ReactNode } from "react";
 import Box from "@mui/material/Box";
 
-import { colors } from "../../styles/theme";
-
 export interface MainProps {
   children?: ReactNode;
   aside?: ReactNode;
