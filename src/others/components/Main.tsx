@@ -18,7 +18,7 @@ export const Main = ({ children, aside }: MainProps) => {
         display: "flex",
       }}
     >
-      <Box component="aside" sx={{ marginRight: 2 }}>
+      <Box component="aside" sx={{ marginRight: 4 }}>
         {aside}
       </Box>
       <Box sx={{ width: "100%" }}>{children}</Box>

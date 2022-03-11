@@ -1,15 +1,15 @@
 import * as React from "react";
 import { styled } from "@mui/material/styles";
-import Box from "@mui/material/Box";
+import Box, { BoxProps } from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 
-interface MultiTabProps {
+interface MultiTabProps extends BoxProps {
   labels: string[];
 }
 
 // TODO: This one still needs styling
-export const MultiTab = ({ labels }: MultiTabProps) => {
+export const MultiTab = ({ labels, ...wrapperStyles }: MultiTabProps) => {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -17,7 +17,7 @@ export const MultiTab = ({ labels }: MultiTabProps) => {
   };
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ width: "100%", ...wrapperStyles }}>
       <StyledTabs value={value} onChange={handleChange} aria-label="styled tabs example">
         {labels.map((label) => (
           <StyledTab label={label} key={label} />
