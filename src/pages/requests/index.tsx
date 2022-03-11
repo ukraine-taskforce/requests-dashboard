@@ -37,6 +37,7 @@ export function Requests() {
   );
 }
 
+// TODO: create proper mocked api response:
 const createItemsByCitiesExampleData = () => {
   const randomNumber = () => Math.floor(Math.random() * 100);
   const exampleCities = ["Kiev", "Lviv", "Luck", "Berdychiv", "Odessa", "Ivano-Frankivsk"];

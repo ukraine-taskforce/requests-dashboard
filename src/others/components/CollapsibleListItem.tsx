@@ -30,6 +30,7 @@ export const CollapsibleListItem = ({ name, total, hidden, wrapperProps, ...rest
         </TableCell>
 
         <TableCell className="cell-name" align="left" component="th" scope="row">
+          {/* TODO: that should be bold */}
           <Typography variant="subtitle1" gutterBottom component="div" sx={{ margin: 0 }}>
             {name}
           </Typography>
@@ -43,6 +44,7 @@ export const CollapsibleListItem = ({ name, total, hidden, wrapperProps, ...rest
       </TableRow>
       <TableRow>
         <TableCell style={{ padding: 0 }} colSpan={6}>
+          {/* TODO: open should be in lighter gray */}
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Table size="small" aria-label="tbd">
