@@ -1,4 +1,6 @@
-export const aidRequestsFixture = [
+import type { Feature, Geometry, GeoJsonProperties } from "geojson";
+
+export const aidRequestsFixture: Feature<Geometry, GeoJsonProperties>[] = [
     {
         type: "Feature",
         properties: {
