@@ -1,7 +1,7 @@
 import { createTheme } from "@mui/material/styles";
 
-const colors = {
-  black: "#000",
+export const colors = {
+  black: "#121212",
   white: "#fff",
   focus: "#159bff",
   gray: "#bdc0c2",
@@ -11,12 +11,12 @@ const colors = {
 
 export const muiTheme = createTheme({
   palette: {
-    mode: 'dark',
+    mode: "dark",
     background: {
       default: colors.black,
     },
   },
   typography: {
-    fontFamily: '"Inter", sans-serif'
+    fontFamily: '"Inter", sans-serif',
   },
 });
