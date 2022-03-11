@@ -3,29 +3,30 @@ import React from "react";
 import moment from "moment";
 
 const dateFormat = 'DD.MM'
+
 export function TimelineSlider() {
     let todayDate = moment()
     let weekBeforeDate = moment().subtract(7, 'days')
-
-    const [selectedDate, setValue] = React.useState<number | string | Array<number | string>>(
-        '09.03',
-      );
-
+    const [selectedDateValue, setValue] = React.useState(moment);
     const rangeLabel = `${weekBeforeDate.format(dateFormat)} - ${todayDate.format(dateFormat)}`
 
     const handleSliderChange = (event: Event, newValue: number | number[]) => {
         if (typeof newValue === 'number') {
-            setValue(moment().subtract(7-newValue, 'days').format(dateFormat))
+            setValue(moment().subtract(7 - newValue, 'days'))
         }
-      };
+    };
 
     return (
-        <Box sx={{ width: 300, margin: 2 }}>
-            <Typography  sx={{ fontSize: 16, align: 'center'}}>
-                {selectedDate}
+        <Box sx={{
+            width: 350, m:2, padding: 1, borderRadius: "20px",
+            backgroundColor: "#000",
+            color: "#fff"
+        }}>
+            <Typography sx={{ fontSize: 16, marginLeft: 12 }}>
+                {selectedDateValue.format(dateFormat)}
             </Typography>
-            <Grid container spacing={4} alignItems="center">
-                <Grid item xs>
+            <Grid container spacing={3} alignItems="center">
+                <Grid item xs sx={{ marginLeft: 2 }}>
                     <Slider
                         aria-label="Timeline"
                         defaultValue={7}
@@ -38,7 +39,7 @@ export function TimelineSlider() {
                     />
                 </Grid>
                 <Grid item>
-                    <Typography sx={{ fontSize: 14 }}>
+                    <Typography sx={{ fontSize: 14, marginRight: 2 }}>
                         {rangeLabel}
                     </Typography>
                 </Grid>
