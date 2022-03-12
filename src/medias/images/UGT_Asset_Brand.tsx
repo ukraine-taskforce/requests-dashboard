@@ -8,7 +8,7 @@ export const ImgBrand: React.FunctionComponent<ImgBrandProps> = ({ alt, ...props
   return (
     <svg width="62" height="62" viewBox="0 0 62 62" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       {Boolean(alt) && <title>{alt}</title>}
-      <g clip-path="url(#clip0_375_3767)">
+      <g clipPath="url(#clip0_375_3767)">
         <circle cx="31" cy="31" r="31" fill="white" />
         <path
           d="M54.3169 51.4712C59.2807 45.8079 62.0121 38.5307 62.0003 31C62.0003 14.5902 49.3045 1.14025 33.2197 0V30.1599L54.3169 51.4712Z"
