@@ -24,9 +24,7 @@ export const Map = ({sourceWithLayer}: MapProps) => {
         mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
         style={{ borderRadius: "24px" }}
       >
-        <Box>
-          {{sourceWithLayer}}
-        </Box>
+          {sourceWithLayer}
       </MapComponent>
     </Box>
   );
