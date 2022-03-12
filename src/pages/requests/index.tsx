@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 
-import { useLocationsQuery } from "../../others/contexts/api";
+import { useLocationsQuery, useAidRequestQuery } from "../../others/contexts/api";
 import { Layout } from "../../others/components/Layout";
 import { Map } from "../../others/components/map/Map";
 
@@ -16,10 +16,13 @@ import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 export function Requests() {
   const { t } = useTranslation();
   const { data: cities } = useLocationsQuery();
+  const { data: aidRequests } = useAidRequestQuery();
 
   if (!cities) {
     return <Layout header={<Header />}>{/* <Loader /> */}</Layout>;
   }
+
+  console.log("These are the mock aid requests:", aidRequests);
 
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",

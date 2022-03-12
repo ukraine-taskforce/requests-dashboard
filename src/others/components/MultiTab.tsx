@@ -20,7 +20,7 @@ export const MultiTab = ({ labels }: MultiTabProps) => {
     <Box sx={{ width: "100%" }}>
       <StyledTabs value={value} onChange={handleChange} aria-label="styled tabs example">
         {labels.map((label) => (
-          <StyledTab label={label} />
+          <StyledTab label={label} key={label} />
         ))}
       </StyledTabs>
     </Box>
