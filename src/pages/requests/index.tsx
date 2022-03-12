@@ -1,19 +1,21 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import omit from "lodash/omit";
-import { useLocationsQuery, useAidRequestQuery, useSuppliesQuery, AidRequest, Location, Supply, ID } from "../../others/contexts/api";
+import { Layer, Source } from "react-map-gl";
+import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
+
+import { useLocationsQuery, useAidRequestQuery, useSuppliesQuery } from "../../others/contexts/api";
 import { Layout } from "../../others/components/Layout";
 import { Map } from "../../others/components/map/Map";
-
 import { Header } from "../../others/components/Header";
 import { Main } from "../../others/components/Main";
 import { Sidebar } from "../../others/components/Sidebar";
 import { MultiTab } from "../../others/components/MultiTab";
 import { CollapsibleTable } from "../../others/components/CollapsibleList";
-import { Layer, Source } from "react-map-gl";
 import { layerStyle } from "../../others/components/map/CircleLayerStyle";
 import { aidRequestsFixture } from "../../others/fixtures/request.fixture";
-import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
+import { decodeAidRequest, DecodedAidRequest } from "../../others/helpers/decode-aid-requests";
+import { groupByLocation } from "../../others/helpers/group-aid-requests";
+import { assignTotal } from "../../others/helpers/assign-total";
 
 export function Requests() {
   const { t } = useTranslation();
@@ -23,7 +25,13 @@ export function Requests() {
 
   const decodedAidRequests = useMemo(() => {
     if (cities && supplies && aidRequests) {
-      return decodeAidRequests(aidRequests, cities, supplies);
+      const groupedByLocation = groupByLocation(aidRequests);
+      const groupedByLocationWithTotal = groupedByLocation.map(assignTotal);
+
+      console.log("groupedByLocationWithTotal", groupedByLocationWithTotal);
+      return {
+        groupedByLocation: groupedByLocationWithTotal.map((req) => decodeAidRequest(req, cities, supplies)),
+      };
     } else return [];
   }, [aidRequests, supplies, aidRequests]);
 
@@ -78,25 +86,4 @@ const createItemsByCitiesExampleData = () => {
       hidden: mockCategories,
     };
   });
-};
-
-const decodeAidRequests = (aidRequests: AidRequest[], locations: Location[], categories: Supply[]) => {
-  return aidRequests.map((aidRequest: AidRequest) => {
-    return {
-      date: aidRequest.date,
-      amount: aidRequest.requested_amount,
-      category: decodeCategory(categories, aidRequest.category_id),
-      location: decodeLocation(locations, aidRequest.city_id),
-    };
-  });
-};
-
-const decodeLocation = (locations: Location[], cityId: ID) => {
-  const location = locations.find((location) => location.id === cityId);
-  return omit(location, "id");
-};
-
-const decodeCategory = (categories: Supply[], category_id: ID) => {
-  const category = categories.find((category) => category.id === category_id);
-  return category?.name;
 };
