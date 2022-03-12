@@ -100,8 +100,8 @@ export function useSuppliesQuery() {
 
 export interface AidRequest {
   date: string;
-  city_id: number;
-  category_id: string;
+  city_id: ID;
+  category_id: ID;
   requested_amount: number;
 }
 

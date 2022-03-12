@@ -1,6 +1,7 @@
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-
-import { useLocationsQuery, useAidRequestQuery } from "../../others/contexts/api";
+import omit from "lodash/omit";
+import { useLocationsQuery, useAidRequestQuery, useSuppliesQuery, AidRequest, Location, Supply, ID } from "../../others/contexts/api";
 import { Layout } from "../../others/components/Layout";
 import { Map } from "../../others/components/map/Map";
 
@@ -17,13 +18,20 @@ import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 export function Requests() {
   const { t } = useTranslation();
   const { data: cities } = useLocationsQuery();
+  const { data: supplies } = useSuppliesQuery();
   const { data: aidRequests } = useAidRequestQuery();
+
+  const decodedAidRequests = useMemo(() => {
+    if (cities && supplies && aidRequests) {
+      return decodeAidRequests(aidRequests, cities, supplies);
+    } else return [];
+  }, [aidRequests, supplies, aidRequests]);
 
   if (!cities) {
     return <Layout header={<Header />}>{/* <Loader /> */}</Layout>;
   }
 
-  console.log("These are the mock aid requests:", aidRequests);
+  console.log("These are the decoded:", decodedAidRequests);
 
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
@@ -70,4 +78,25 @@ const createItemsByCitiesExampleData = () => {
       hidden: mockCategories,
     };
   });
+};
+
+const decodeAidRequests = (aidRequests: AidRequest[], locations: Location[], categories: Supply[]) => {
+  return aidRequests.map((aidRequest: AidRequest) => {
+    return {
+      date: aidRequest.date,
+      amount: aidRequest.requested_amount,
+      category: decodeCategory(categories, aidRequest.category_id),
+      location: decodeLocation(locations, aidRequest.city_id),
+    };
+  });
+};
+
+const decodeLocation = (locations: Location[], cityId: ID) => {
+  const location = locations.find((location) => location.id === cityId);
+  return omit(location, "id");
+};
+
+const decodeCategory = (categories: Supply[], category_id: ID) => {
+  const category = categories.find((category) => category.id === category_id);
+  return category?.name;
 };
