@@ -2,22 +2,18 @@ import MapComponent, { Layer, Source } from "react-map-gl";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
-import { aidRequestsFixture } from "../../fixtures/request.fixture";
-import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
-import { layerStyle } from "./CircleLayerStyle";
 import { Box } from "@mui/material";
+import { ReactNode } from "react";
 
-export function Map() {
+interface MapProps {
+  sourceWithLayer?: ReactNode;
+}
+export const Map = ({sourceWithLayer}: MapProps) => {
 
   const initialView = {
     lat: 48.4501071,
     lng: 30.5240501,
     zoom: 4,
-  };
-
-  const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
-    type: "FeatureCollection",
-    features: aidRequestsFixture,
   };
 
   return (
@@ -28,9 +24,9 @@ export function Map() {
         mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
         style={{ borderRadius: "24px" }}
       >
-        <Source id="ukr_water_needs" type="geojson" data={geojson}>
-          <Layer {...layerStyle} />
-        </Source>
+        <Box>
+          {{sourceWithLayer}}
+        </Box>
       </MapComponent>
     </Box>
   );
