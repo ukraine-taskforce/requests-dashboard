@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material/styles";
+import { createTheme, responsiveFontSizes } from "@mui/material/styles";
 
 export const colors = {
   black: "#121212",
@@ -7,16 +7,24 @@ export const colors = {
   gray: "#bdc0c2",
   error: "#f79a9a",
   darkError: "#4d0707",
+  blue: "#0067FE",
 };
 
-export const muiTheme = createTheme({
+export let muiTheme = createTheme({
   palette: {
     mode: "dark",
     background: {
       default: colors.black,
     },
+    primary: {
+      main: colors.blue,
+    },
   },
   typography: {
     fontFamily: '"Inter", sans-serif',
+    fontSize: 12,
   },
+  spacing: 4,
 });
+
+muiTheme = responsiveFontSizes(muiTheme);
