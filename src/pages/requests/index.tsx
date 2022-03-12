@@ -23,7 +23,7 @@ export function Requests() {
     return <Layout header={<Header />}>{/* <Loader /> */}</Layout>;
   }
 
-  console.log("These are the mock aid requests:", aidRequests);
+  console.log("These are the aid requests:", aidRequests);
 
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
