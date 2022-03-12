@@ -16,7 +16,6 @@ export function Requests() {
   if (!cities) {
     return <Layout header={<Header />}>{/* <Loader /> */}</Layout>;
   }
-
   return (
     <Layout header={<Header />}>
       <Main
