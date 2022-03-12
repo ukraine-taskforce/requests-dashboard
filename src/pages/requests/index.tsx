@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 
-import { useLocationsQuery } from "../../others/contexts/api";
+import { useLocationsQuery, useAidRequestQuery } from "../../others/contexts/api";
 import { Layout } from "../../others/components/Layout";
 import { Map } from "../../others/components/Map";
 
@@ -12,6 +12,7 @@ import { MultiTab } from "../../others/components/MultiTab";
 export function Requests() {
   const { t } = useTranslation();
   const { data: cities } = useLocationsQuery();
+  const { data: aidRequests } = useAidRequestQuery();
 
   if (!cities) {
     return <Layout header={<Header />}>{/* <Loader /> */}</Layout>;

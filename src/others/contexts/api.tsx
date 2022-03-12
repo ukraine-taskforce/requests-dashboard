@@ -16,6 +16,8 @@ export type ID = string | number;
 export interface Location {
   id: ID;
   name: string;
+  lat: number;
+  lon: number;
 }
 
 export function useLocationsQuery() {
@@ -35,10 +37,10 @@ export function useLocationsQuery() {
     } catch (error) {
       if (process.env.NODE_ENV !== "production") {
         return [
-          { id: 1, name: "Kyiv", lat: 50.45, lon: 30.524},
+          { id: 1, name: "Kyiv", lat: 50.45, lon: 30.524 },
           { id: 2, name: "Kyinka", lat: 51.494, lon: 31.294 },
           { id: 3, name: "Kyrnasivka", lat: 46.484, lon: 30.732 },
-          { id: 4, name: "Kyrylivka" , lat: 50.351, lon: 30.95 },
+          { id: 4, name: "Kyrylivka", lat: 50.351, lon: 30.95 },
         ];
       }
 
@@ -69,10 +71,25 @@ export function useSuppliesQuery() {
     } catch (error) {
       if (process.env.NODE_ENV !== "production") {
         return [
-          { id: 1, name: "Food" },
-          { id: 2, name: "Water" },
-          { id: 3, name: "Baby Food" },
-          { id: 4, name: "Medical Kits / Supplies" },
+          { id: "food", name: "Food" },
+          { id: "water", name: "Water" },
+          { id: "baby_food", name: "Baby Food" },
+          { id: "baby_products", name: "Baby Products" },
+          { id: "medical_kits_supplies", name: "Medical Kits / Supplies" },
+          { id: "personal_hygiene_kits", name: "Personal hygiene kits" },
+          { id: "masks", name: "Masks" },
+          { id: "sanitary_pads", name: "Sanitary pads" },
+          { id: "tampons", name: "Tampons" },
+          { id: "torches", name: "Torches" },
+          { id: "batteries", name: "Batteries" },
+          { id: "candles", name: "Candles" },
+          { id: "firestarter", name: "Firestarter" },
+          { id: "bedding", name: "Bedding" },
+          { id: "sleeping_bags", name: "Sleeping Bags" },
+          { id: "thermal_clothing", name: "Thermal clothing" },
+          { id: "shoes", name: "Shoes" },
+          { id: "clothes", name: "Clothes" },
+          { id: "gloves", name: "Gloves" },
         ];
       }
 
@@ -80,3 +97,54 @@ export function useSuppliesQuery() {
     }
   });
 }
+
+export interface AidRequest {
+  date: string;
+  city_id: string;
+  category_id: string;
+  requested_amount: number;
+}
+
+export function useAidRequestQuery() {
+  const { i18n } = useTranslation();
+
+  return useQuery<AidRequest[]>(`aidRequestQuery${i18n.language}`, async () => {
+    try {
+      const result = await getMockAidRequests();
+      // TODO: pass the actual endpoint url
+      // const result = await fetch(`${API_DOMAIN}/supplies?locale=${i18n.language}`)
+      //   .then((res) => {
+      //     if (!res.ok) throw new Error(res.statusText);
+
+      //     return res;
+      //   })
+      //   .then((res) => res.json());
+
+      return result.aidRequests; // TODO: update this as well, probably
+    } catch (error) {
+      if (process.env.NODE_ENV !== "production") {
+        return mockAidRequests;
+      }
+
+      throw error;
+    }
+  });
+}
+
+const mockAidRequests = [
+  { date: "2022-03-10", city_id: "Kyiv", category_id: "personal_hygiene_kits", requested_amount: 14 },
+  { date: "2022-03-10", city_id: "Kharkiv", category_id: "water", requested_amount: 20 },
+  { date: "2022-03-10", city_id: "Kyiv", category_id: "food", requested_amount: 14 },
+  { date: "2022-03-10", city_id: "Kyiv", category_id: "water", requested_amount: 14 },
+  { date: "2022-03-10", city_id: "Kharkiv", category_id: "medical_kits_supplies", requested_amount: 10 },
+  { date: "2022-03-10", city_id: "Kharkiv", category_id: "food", requested_amount: 20 },
+  { date: "2022-03-09", city_id: "Kyiv", category_id: "medical_kits_supplies", requested_amount: 14 },
+  { date: "2022-03-09", city_id: "Kharkiv", category_id: "water", requested_amount: 20 },
+  { date: "2022-03-09", city_id: "Kyiv", category_id: "food", requested_amount: 14 },
+  { date: "2022-03-09", city_id: "Kyiv", category_id: "water", requested_amount: 14 },
+  { date: "2022-03-09", city_id: "Kharkiv", category_id: "torches", requested_amount: 99 },
+  { date: "2022-03-09", city_id: "Kharkiv", category_id: "food", requested_amount: 20 },
+];
+
+// TODO: remove once the actual endpoint is implemented
+const getMockAidRequests = async () => ({ aidRequests: mockAidRequests });
