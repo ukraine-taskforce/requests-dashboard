@@ -110,17 +110,15 @@ export function useAidRequestQuery() {
 
   return useQuery<AidRequest[]>(`aidRequestQuery${i18n.language}`, async () => {
     try {
-      const result = await getMockAidRequests();
-      // TODO: pass the actual endpoint url
-      // const result = await fetch(`${API_DOMAIN}/supplies?locale=${i18n.language}`)
-      //   .then((res) => {
-      //     if (!res.ok) throw new Error(res.statusText);
+      const result = await fetch(`${API_DOMAIN}/aggregated`)
+        .then((res) => {
+          if (!res.ok) throw new Error(res.statusText);
 
-      //     return res;
-      //   })
-      //   .then((res) => res.json());
+          return res;
+        })
+        .then((res) => res.json());
 
-      return result.aidRequests; // TODO: update this as well, probably
+      return result.data;
     } catch (error) {
       if (process.env.NODE_ENV !== "production") {
         return mockAidRequests;
@@ -146,5 +144,3 @@ const mockAidRequests = [
   { date: "2022-03-09", city_id: 4, category_id: "food", requested_amount: 20 },
 ];
 
-// TODO: remove once the actual endpoint is implemented
-const getMockAidRequests = async () => ({ aidRequests: mockAidRequests });
