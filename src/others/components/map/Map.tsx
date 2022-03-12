@@ -10,7 +10,7 @@ interface MapProps {
 }
 export const Map = ({sourceWithLayer}: MapProps) => {
 
-  const initialView = {
+  const initialUkraineCenterView = {
     lat: 48.4501071,
     lng: 30.5240501,
     zoom: 4,
@@ -20,7 +20,7 @@ export const Map = ({sourceWithLayer}: MapProps) => {
     <Box sx={{ height: "100%", width: "100%" }}>
       <MapComponent
         mapLib={maplibregl}
-        initialViewState={initialView}
+        initialViewState={initialUkraineCenterView}
         mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
         style={{ borderRadius: "24px" }}
       >
