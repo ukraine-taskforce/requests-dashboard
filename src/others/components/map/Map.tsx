@@ -11,9 +11,9 @@ interface MapProps {
 export const Map = ({sourceWithLayer}: MapProps) => {
 
   const initialUkraineCenterView = {
-    lat: 48.4501071,
-    lng: 30.5240501,
-    zoom: 4,
+    latitude: 48.4501071,
+    longitude: 30.5240501,
+    zoom: 5,
   };
 
   return (
