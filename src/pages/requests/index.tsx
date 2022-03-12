@@ -18,6 +18,8 @@ export function Requests() {
     return <Layout header={<Header />}>{/* <Loader /> */}</Layout>;
   }
 
+  console.log("These are the mock aid requests:", aidRequests);
+
   return (
     <Layout header={<Header />}>
       <Main
