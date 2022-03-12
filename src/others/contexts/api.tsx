@@ -100,7 +100,7 @@ export function useSuppliesQuery() {
 
 export interface AidRequest {
   date: string;
-  city_id: string;
+  city_id: number;
   category_id: string;
   requested_amount: number;
 }
@@ -132,18 +132,18 @@ export function useAidRequestQuery() {
 }
 
 const mockAidRequests = [
-  { date: "2022-03-10", city_id: "Kyiv", category_id: "personal_hygiene_kits", requested_amount: 14 },
-  { date: "2022-03-10", city_id: "Kharkiv", category_id: "water", requested_amount: 20 },
-  { date: "2022-03-10", city_id: "Kyiv", category_id: "food", requested_amount: 14 },
-  { date: "2022-03-10", city_id: "Kyiv", category_id: "water", requested_amount: 14 },
-  { date: "2022-03-10", city_id: "Kharkiv", category_id: "medical_kits_supplies", requested_amount: 10 },
-  { date: "2022-03-10", city_id: "Kharkiv", category_id: "food", requested_amount: 20 },
-  { date: "2022-03-09", city_id: "Kyiv", category_id: "medical_kits_supplies", requested_amount: 14 },
-  { date: "2022-03-09", city_id: "Kharkiv", category_id: "water", requested_amount: 20 },
-  { date: "2022-03-09", city_id: "Kyiv", category_id: "food", requested_amount: 14 },
-  { date: "2022-03-09", city_id: "Kyiv", category_id: "water", requested_amount: 14 },
-  { date: "2022-03-09", city_id: "Kharkiv", category_id: "torches", requested_amount: 99 },
-  { date: "2022-03-09", city_id: "Kharkiv", category_id: "food", requested_amount: 20 },
+  { date: "2022-03-10", city_id: 1, category_id: "personal_hygiene_kits", requested_amount: 14 },
+  { date: "2022-03-10", city_id: 1, category_id: "water", requested_amount: 20 },
+  { date: "2022-03-10", city_id: 1, category_id: "food", requested_amount: 14 },
+  { date: "2022-03-10", city_id: 1, category_id: "water", requested_amount: 14 },
+  { date: "2022-03-10", city_id: 1, category_id: "medical_kits_supplies", requested_amount: 10 },
+  { date: "2022-03-10", city_id: 1, category_id: "food", requested_amount: 20 },
+  { date: "2022-03-09", city_id: 1, category_id: "medical_kits_supplies", requested_amount: 14 },
+  { date: "2022-03-09", city_id: 1, category_id: "water", requested_amount: 20 },
+  { date: "2022-03-09", city_id: 3, category_id: "food", requested_amount: 14 },
+  { date: "2022-03-09", city_id: 3, category_id: "water", requested_amount: 14 },
+  { date: "2022-03-09", city_id: 4, category_id: "torches", requested_amount: 99 },
+  { date: "2022-03-09", city_id: 4, category_id: "food", requested_amount: 20 },
 ];
 
 // TODO: remove once the actual endpoint is implemented
