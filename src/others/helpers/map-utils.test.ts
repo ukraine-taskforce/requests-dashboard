@@ -1,5 +1,5 @@
 import { DecodedAidRequestGroupedByLocation } from "./decode-aid-request";
-import { assignTotalForDate, groupLocationGroupByDate, mapAggregatedAidRequests, possibleDates } from "./map-utils";
+import { assignTotalForDate, groupLocationGroupByDate, mapAidRequestsToFeatures, possibleDates } from "./map-utils";
 import type { Feature, Geometry, GeoJsonProperties } from "geojson";
 
 test("possibleDates", () => {
@@ -93,138 +93,137 @@ test("assignTotalForDate", () => {
         .toEqual(147)
 });
 
-test("mapAggregatedAidRequests", () => {
+test("mapAidRequestsToFeatures", () => {
     const decodedAidRequestGroupedByLocation: DecodedAidRequestGroupedByLocation[] = [
         {
             location: { name: "Zaliznychne", lon: 36.169, lat: 47.645 },
             total: 17,
             decodedAidRequest: [
-              { date: "2022-03-11", amount: 10, name: "Sanitary pads" },
-              { date: "2022-03-11", amount: 3, name: "Batteries"},
-              { date: "2022-03-10", amount: 4, name: "Personal hygiene kits" }
+                { date: "2022-03-11", amount: 10, name: "Sanitary pads" },
+                { date: "2022-03-11", amount: 3, name: "Batteries" },
+                { date: "2022-03-10", amount: 4, name: "Personal hygiene kits" }
             ],
-          },
-          {
+        },
+        {
             location: { name: "Kyiv", lon: 30.524, lat: 50.45 },
             total: 11,
             decodedAidRequest: [
-              { date: "2022-03-11", amount: 1, name: "Batteries" },
-              { date: "2022-03-10", amount: 2, name: "Baby Products" },
-              { date: "2022-03-10", amount: 3, name: "Sanitary pads" },
-              { date: "2022-03-10", amount: 5, name: "Personal hygiene kits" }
+                { date: "2022-03-11", amount: 1, name: "Batteries" },
+                { date: "2022-03-10", amount: 2, name: "Baby Products" },
+                { date: "2022-03-10", amount: 3, name: "Sanitary pads" },
+                { date: "2022-03-10", amount: 5, name: "Personal hygiene kits" }
             ],
-          }
+        }
     ];
-    const possibleDates = ["2022-03-11", "2022-03-10"]
 
-    expect(mapAggregatedAidRequests(decodedAidRequestGroupedByLocation, possibleDates))
+    expect(mapAidRequestsToFeatures(decodedAidRequestGroupedByLocation))
         .toEqual(new Set<Feature<Geometry, GeoJsonProperties>>([
             // Location Zaliznychne
             // Features for single requests
             {
                 type: "Feature",
                 properties: {
-                   amount: 10,
-                   category: "Sanitary pads",
-                   date: "2022-03-11"
+                    amount: 10,
+                    category: "Sanitary pads",
+                    date: "2022-03-11"
                 },
-               geometry: { type: "Point", coordinates: [36.169, 47.645] },
+                geometry: { type: "Point", coordinates: [36.169, 47.645] },
             },
             {
                 type: "Feature",
                 properties: {
-                   amount: 3,
-                   category: "Batteries",
-                   date: "2022-03-11"
+                    amount: 3,
+                    category: "Batteries",
+                    date: "2022-03-11"
                 },
-               geometry: { type: "Point", coordinates: [36.169, 47.645] },
+                geometry: { type: "Point", coordinates: [36.169, 47.645] },
             },
             {
                 type: "Feature",
                 properties: {
-                   amount: 4,
-                   category: "Personal hygiene kits",
-                   date: "2022-03-10"
+                    amount: 4,
+                    category: "Personal hygiene kits",
+                    date: "2022-03-10"
                 },
-               geometry: { type: "Point", coordinates: [36.169, 47.645] },
+                geometry: { type: "Point", coordinates: [36.169, 47.645] },
             },
             // Features for aggregated requests for day and location
             {
                 type: "Feature",
                 properties: {
-                   amount: 13,
-                   category: "ALL",
-                   date: "2022-03-11"
+                    amount: 13,
+                    category: "ALL",
+                    date: "2022-03-11"
                 },
-               geometry: { type: "Point", coordinates: [36.169, 47.645] },
+                geometry: { type: "Point", coordinates: [36.169, 47.645] },
             },
             {
                 type: "Feature",
                 properties: {
-                   amount: 4,
-                   category: "ALL",
-                   date: "2022-03-10"
+                    amount: 4,
+                    category: "ALL",
+                    date: "2022-03-10"
                 },
-               geometry: { type: "Point", coordinates: [36.169, 47.645] },
+                geometry: { type: "Point", coordinates: [36.169, 47.645] },
             },
             // Location Kyiv
             // Features for single requests
             {
                 type: "Feature",
                 properties: {
-                   amount: 1,
-                   category: "Batteries",
-                   date: "2022-03-11"
+                    amount: 1,
+                    category: "Batteries",
+                    date: "2022-03-11"
                 },
-               geometry: { type: "Point", coordinates: [30.524, 50.45] },
+                geometry: { type: "Point", coordinates: [30.524, 50.45] },
             },
             {
                 type: "Feature",
                 properties: {
-                   amount: 2,
-                   category: "Baby Products",
-                   date: "2022-03-10"
+                    amount: 2,
+                    category: "Baby Products",
+                    date: "2022-03-10"
                 },
-               geometry: { type: "Point", coordinates: [30.524, 50.45] },
+                geometry: { type: "Point", coordinates: [30.524, 50.45] },
             },
             {
                 type: "Feature",
                 properties: {
-                   amount: 3,
-                   category: "Sanitary pads",
-                   date: "2022-03-10"
+                    amount: 3,
+                    category: "Sanitary pads",
+                    date: "2022-03-10"
                 },
-               geometry: { type: "Point", coordinates: [30.524, 50.45] },
+                geometry: { type: "Point", coordinates: [30.524, 50.45] },
             },
             {
                 type: "Feature",
                 properties: {
-                   amount: 5,
-                   category: "Personal hygiene kits",
-                   date: "2022-03-10"
+                    amount: 5,
+                    category: "Personal hygiene kits",
+                    date: "2022-03-10"
                 },
-               geometry: { type: "Point", coordinates: [30.524, 50.45] },
+                geometry: { type: "Point", coordinates: [30.524, 50.45] },
             },
             // Features for aggregated requests for day and location
             {
                 type: "Feature",
                 properties: {
-                   amount: 1,
-                   category: "ALL",
-                   date: "2022-03-11"
+                    amount: 1,
+                    category: "ALL",
+                    date: "2022-03-11"
                 },
-               geometry: { type: "Point", coordinates: [30.524, 50.45] },
+                geometry: { type: "Point", coordinates: [30.524, 50.45] },
             },
             {
                 type: "Feature",
                 properties: {
-                   amount: 10,
-                   category: "ALL",
-                   date: "2022-03-10"
+                    amount: 10,
+                    category: "ALL",
+                    date: "2022-03-10"
                 },
-               geometry: { type: "Point", coordinates: [30.524, 50.45] },
+                geometry: { type: "Point", coordinates: [30.524, 50.45] },
             }
-         ]));
+        ]));
 });
 
 

@@ -20,7 +20,7 @@ type GroupedByLocationAndDateWithTotal = {
     aidRequestsByDateWithTotal: GroupedByDateWithTotal[];
 }
 
-export const mapAggregatedAidRequests = (decodedAidRequestGroupedByLocation: DecodedAidRequestGroupedByLocation[], possibleDates: string[]) => {
+export const mapAidRequestsToFeatures = (decodedAidRequestGroupedByLocation: DecodedAidRequestGroupedByLocation[]) => {
     let features = new Set<Feature<Geometry, GeoJsonProperties>>()
     decodedAidRequestGroupedByLocation.forEach(locationGroup => {
         const decodedAidRequestsGroupedByLocationAndDate: GroupedByLocationAndDateWithTotal[] = [{
@@ -30,9 +30,9 @@ export const mapAggregatedAidRequests = (decodedAidRequestGroupedByLocation: Dec
 
         decodedAidRequestsGroupedByLocationAndDate.forEach(dateGroup => {
             dateGroup.aidRequestsByDateWithTotal.forEach(locationAndDateRequests => {
-                locationAndDateRequests.aidRequests.forEach(req => 
-                    addFeatureForCategory(req, locationGroup.location, locationAndDateRequests.date, features));
-                addTotalFeaturePerLocationAndDate(locationGroup, locationAndDateRequests, features)
+                locationAndDateRequests.aidRequests.forEach(req =>
+                    addFeatureForAidRequest(req, locationGroup.location, locationAndDateRequests.date, features));
+                addAggregatedFeaturePerLocationAndDate(locationGroup, locationAndDateRequests, features);
             })
         });
     })
@@ -44,8 +44,8 @@ export const possibleDates = (requests: AidRequest[]) => {
         .filter((value, index, self) => self.indexOf(value) === index)
 }
 
-function addTotalFeaturePerLocationAndDate(
-    locationGroup: DecodedAidRequestGroupedByLocation, 
+function addAggregatedFeaturePerLocationAndDate(
+    locationGroup: DecodedAidRequestGroupedByLocation,
     dateGroup: GroupedByDateWithTotal,
     features: Set<Feature<Geometry, GeoJsonProperties>>) {
     features.add({
@@ -59,17 +59,17 @@ function addTotalFeaturePerLocationAndDate(
     })
 }
 
-function addFeatureForCategory(
-    category: Omit<DecodedAidRequest, "date">, 
-    location: DecodedLocation, 
-    date: string, 
+function addFeatureForAidRequest(
+    aidRequest: Omit<DecodedAidRequest, "date">,
+    location: DecodedLocation,
+    date: string,
     features: Set<Feature<Geometry, GeoJsonProperties>>) {
     features.add({
         type: "Feature",
         properties: {
-            amount: category.amount,
+            amount: aidRequest.amount,
             date: date,
-            category: category.name,
+            category: aidRequest.name,
         },
         geometry: { type: "Point", coordinates: [location.lon, location.lat] }
     })
