@@ -70,7 +70,7 @@ test("processAidRequests returns decodedAndGroupedByLocation", () => {
     {
       location: { name: "Kyiv", lat: 50.45, lon: 30.524 },
       total: 18,
-      categories: [
+      decodedAidRequests: [
         { date: "2022-03-11", amount: 4, name: "Bedding" },
         { date: "2022-03-11", amount: 4, name: "Candles" },
         { date: "2022-03-10", amount: 2, name: "Sanitary pads" },
@@ -82,17 +82,17 @@ test("processAidRequests returns decodedAndGroupedByLocation", () => {
     {
       location: { name: "Chernihiv", lat: 51.494, lon: 31.294 },
       total: 1,
-      categories: [{ date: "2022-03-10", amount: 1, name: "Personal hygiene kits" }],
+      decodedAidRequests: [{ date: "2022-03-10", amount: 1, name: "Personal hygiene kits" }],
     },
     {
       location: { name: "Vinnytsia", lat: 49.232, lon: 28.467 },
       total: 4,
-      categories: [{ date: "2022-03-11", amount: 4, name: "Batteries" }],
+      decodedAidRequests: [{ date: "2022-03-11", amount: 4, name: "Batteries" }],
     },
     {
       location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
       total: 159,
-      categories: [
+      decodedAidRequests: [
         { date: "2022-03-11", amount: 10, name: "Sanitary pads" },
         { date: "2022-03-12", amount: 4, name: "Personal hygiene kits" },
         { date: "2022-03-11", amount: 15, name: "Masks" },
