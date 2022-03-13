@@ -36,7 +36,7 @@ export function Requests() {
         };
       })
       .sort(totalDescending);
-  }, [aidRequests, supplies, aidRequests, decodedAndGroupedByLocation]);
+  }, [aidRequests, decodedAndGroupedByLocation]);
 
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
