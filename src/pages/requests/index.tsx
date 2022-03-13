@@ -12,7 +12,7 @@ import { Sidebar } from "../../others/components/Sidebar";
 import { MultiTab } from "../../others/components/MultiTab";
 import { CollapsibleTable } from "../../others/components/CollapsibleList";
 import { layerStyle } from "../../others/components/map/CircleLayerStyle";
-import { aidRequestsFixture } from "../../others/fixtures/request.fixture";
+import { mapAidRequestsToFeatures } from "../../others/helpers/map-utils";
 import { processAidRequests } from "../../others/helpers/process-aid-request";
 import { useSidebarContext } from "../../others/components/sidebar-context";
 
@@ -58,7 +58,7 @@ export function Requests() {
 
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
-    features: aidRequestsFixture,
+    features: Array.from(mapAidRequestsToFeatures(decodedAndGroupedByLocation)),
   };
 
   const { selectedTabId, setSelectedTabId } = useSidebarContext();

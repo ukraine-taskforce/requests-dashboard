@@ -6,7 +6,7 @@ import { Location, Supply, ID } from "../contexts/api";
 export type DecodedAidRequestGroupedByLocation = {
   location: DecodedLocation;
   total: number;
-  decodedAidRequest: DecodedAidRequest[];
+  decodedAidRequests: DecodedAidRequest[];
 };
 
 export type DecodedLocation = Pick<Location, "name" | "lat" | "lon">;
@@ -17,7 +17,7 @@ export type Dictionary = {
   supplies: Supply[];
 };
 
-export const decodeAidRequestGroupedByLocationWithTotal = (dictionary: Dictionary, aidRequest: GroupedByLocationWithTotal) => {
+export const decodeAidRequestGroupedByLocationWithTotal = (dictionary: Dictionary, aidRequest: GroupedByLocationWithTotal): DecodedAidRequestGroupedByLocation => {
   const decodedLocation = decodeLocation(dictionary.locations, aidRequest.city_id);
 
   const decodedAidRequests = aidRequest.aidRequests
@@ -31,7 +31,7 @@ export const decodeAidRequestGroupedByLocationWithTotal = (dictionary: Dictionar
   return {
     location: decodedLocation,
     total: aidRequest.total,
-    decodedAidRequests,
+    decodedAidRequests: decodedAidRequests,
   };
 };
 
