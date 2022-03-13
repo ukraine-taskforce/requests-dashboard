@@ -1,7 +1,7 @@
-import { assignTotal } from "./assign-total";
+import { assignTotalToGroupedByLocation } from "./assign-total";
 
-test("assignTotal", () => {
-  const grouped = {
+test("assignTotalToGroupedByLocation", () => {
+  const groupedByLocation = {
     city_id: "1226",
     aidRequests: [
       {
@@ -60,7 +60,7 @@ test("assignTotal", () => {
     ],
   };
 
-  const groupedWithTotal = assignTotal(grouped);
+  const groupedWithTotal = assignTotalToGroupedByLocation(groupedByLocation);
 
   expect(groupedWithTotal.total).toEqual(159);
 });

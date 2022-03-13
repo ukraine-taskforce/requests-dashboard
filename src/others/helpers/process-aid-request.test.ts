@@ -63,7 +63,18 @@ const exampleAggregatedRequests = [
   { date: "2022-03-11", city_id: 1226, category_id: "baby_food", requested_amount: 15 },
 ];
 
-test("processAidRequests returns decodedAndGroupedByLocation", () => {
+test("processAidRequests has an array of aid requests decodedAndGroupedByLocation", () => {
+  const processedAidRequests = processAidRequests(cities, supplies, exampleAggregatedRequests);
+  expect(processedAidRequests.decodedAndGroupedByLocation).toBeInstanceOf(Array);
+});
+
+test("processAidRequests has an array of aid requests decodedAndGroupedByCategory", () => {
+  const processedAidRequests = processAidRequests(cities, supplies, exampleAggregatedRequests);
+  expect(processedAidRequests.decodedAndGroupedByLocation).toBeInstanceOf(Array);
+});
+
+// TODO: refactor these tests to be more concise
+test("processAidRequests.decodedAndGroupedByLocation has an expected value", () => {
   const processedAidRequests = processAidRequests(cities, supplies, exampleAggregatedRequests);
 
   expect(processedAidRequests.decodedAndGroupedByLocation).toEqual([
@@ -106,6 +117,196 @@ test("processAidRequests returns decodedAndGroupedByLocation", () => {
         { date: "2022-03-12", amount: 4, name: "Medical Kits / Supplies" },
         { date: "2022-03-12", amount: 4, name: "Baby Products" },
         { date: "2022-03-11", amount: 15, name: "Baby Food" },
+      ],
+    },
+  ]);
+});
+
+test("processAidRequests.decodedAndGroupedByCategory has an expected value", () => {
+  const processedAidRequests = processAidRequests(cities, supplies, exampleAggregatedRequests);
+
+  expect(processedAidRequests.decodedAndGroupedByCategory).toEqual([
+    {
+      name: "Sanitary pads",
+      total: 12,
+      decodedAidRequests: [
+        {
+          date: "2022-03-11",
+          amount: 10,
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+        },
+        {
+          date: "2022-03-10",
+          amount: 2,
+          location: { name: "Kyiv", lat: 50.45, lon: 30.524 },
+        },
+      ],
+    },
+    {
+      name: "Personal hygiene kits",
+      total: 26,
+      decodedAidRequests: [
+        {
+          date: "2022-03-12",
+          amount: 4,
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+        },
+        {
+          date: "2022-03-10",
+          amount: 1,
+          location: { name: "Chernihiv", lat: 51.494, lon: 31.294 },
+        },
+        {
+          date: "2022-03-11",
+          amount: 21,
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+        },
+      ],
+    },
+    {
+      name: "Bedding",
+      total: 4,
+      decodedAidRequests: [
+        {
+          date: "2022-03-11",
+          amount: 4,
+          location: { name: "Kyiv", lat: 50.45, lon: 30.524 },
+        },
+      ],
+    },
+    {
+      name: "Masks",
+      total: 15,
+      decodedAidRequests: [
+        {
+          date: "2022-03-11",
+          amount: 15,
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+        },
+      ],
+    },
+    {
+      name: "Candles",
+      total: 4,
+      decodedAidRequests: [
+        {
+          date: "2022-03-11",
+          amount: 4,
+          location: { name: "Kyiv", lat: 50.45, lon: 30.524 },
+        },
+      ],
+    },
+    {
+      name: "Baby Products",
+      total: 25,
+      decodedAidRequests: [
+        {
+          date: "2022-03-11",
+          amount: 19,
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+        },
+        {
+          date: "2022-03-10",
+          amount: 2,
+          location: { name: "Kyiv", lat: 50.45, lon: 30.524 },
+        },
+        {
+          date: "2022-03-12",
+          amount: 4,
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+        },
+      ],
+    },
+    {
+      name: "Medical Kits / Supplies",
+      total: 20,
+      decodedAidRequests: [
+        {
+          date: "2022-03-11",
+          amount: 16,
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+        },
+        {
+          date: "2022-03-12",
+          amount: 4,
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+        },
+      ],
+    },
+    {
+      name: "Torches",
+      total: 10,
+      decodedAidRequests: [
+        {
+          date: "2022-03-11",
+          amount: 10,
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+        },
+      ],
+    },
+    {
+      name: "Water",
+      total: 11,
+      decodedAidRequests: [
+        {
+          date: "2022-03-11",
+          amount: 11,
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+        },
+      ],
+    },
+    {
+      name: "Food",
+      total: 12,
+      decodedAidRequests: [
+        {
+          date: "2022-03-10",
+          amount: 2,
+          location: { name: "Kyiv", lat: 50.45, lon: 30.524 },
+        },
+        {
+          date: "2022-03-11",
+          amount: 10,
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+        },
+      ],
+    },
+    {
+      name: "Batteries",
+      total: 8,
+      decodedAidRequests: [
+        {
+          date: "2022-03-11",
+          amount: 4,
+          location: { name: "Kyiv", lat: 50.45, lon: 30.524 },
+        },
+        {
+          date: "2022-03-11",
+          amount: 4,
+          location: { name: "Vinnytsia", lat: 49.232, lon: 28.467 },
+        },
+      ],
+    },
+    {
+      name: "Tampons",
+      total: 20,
+      decodedAidRequests: [
+        {
+          date: "2022-03-11",
+          amount: 20,
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+        },
+      ],
+    },
+    {
+      name: "Baby Food",
+      total: 15,
+      decodedAidRequests: [
+        {
+          date: "2022-03-11",
+          amount: 15,
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+        },
       ],
     },
   ]);

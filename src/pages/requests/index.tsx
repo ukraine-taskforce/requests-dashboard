@@ -14,6 +14,7 @@ import { CollapsibleTable } from "../../others/components/CollapsibleList";
 import { layerStyle } from "../../others/components/map/CircleLayerStyle";
 import { aidRequestsFixture } from "../../others/fixtures/request.fixture";
 import { processAidRequests } from "../../others/helpers/process-aid-request";
+import { useSidebarContext } from "../../others/components/sidebar-context";
 
 export function Requests() {
   const { t } = useTranslation();
@@ -21,13 +22,13 @@ export function Requests() {
   const { data: supplies } = useSuppliesQuery();
   const { data: aidRequests } = useAidRequestQuery();
 
-  const { decodedAndGroupedByLocation } = useMemo(() => {
+  const { decodedAndGroupedByLocation, decodedAndGroupedByCategory } = useMemo(() => {
     return processAidRequests(cities, supplies, aidRequests);
   }, [cities, supplies, aidRequests]);
 
-  const sortedTableRowDataByLocation = useMemo(() => {
+  const memoisedLocationsTable = useMemo(() => {
     const totalDescending = (a: any, b: any) => b.total - a.total;
-    return decodedAndGroupedByLocation
+    const tableData = decodedAndGroupedByLocation
       .map((aidReqest) => {
         return {
           name: aidReqest.location.name,
@@ -36,12 +37,31 @@ export function Requests() {
         };
       })
       .sort(totalDescending);
-  }, [aidRequests, supplies, aidRequests, decodedAndGroupedByLocation]);
+    return <CollapsibleTable rows={tableData} />;
+  }, [decodedAndGroupedByLocation]);
+
+  const memoisedCategoriesTable = useMemo(() => {
+    const totalDescending = (a: any, b: any) => b.total - a.total;
+    const tableData = decodedAndGroupedByCategory
+      .map((aidReqest) => {
+        return {
+          name: aidReqest.name,
+          total: aidReqest.total,
+          hidden: aidReqest.decodedAidRequests
+            .map((category) => ({ name: category.location.name, total: category.amount }))
+            .sort(totalDescending),
+        };
+      })
+      .sort(totalDescending);
+    return <CollapsibleTable rows={tableData} />;
+  }, [decodedAndGroupedByCategory]);
 
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
     features: aidRequestsFixture,
   };
+
+  const { selectedTabId, setSelectedTabId } = useSidebarContext();
 
   if (!cities) {
     return <Layout header={<Header />}>{/* <Loader /> */}</Layout>;
@@ -52,8 +72,8 @@ export function Requests() {
       <Main
         aside={
           <Sidebar className="requests-sidebar">
-            <MultiTab labels={[t("by_cities"), t("by_items")]} marginBottom={4} />
-            <CollapsibleTable rows={sortedTableRowDataByLocation} />
+            <MultiTab selectedId={selectedTabId} onChange={setSelectedTabId} labels={[t("by_cities"), t("by_items")]} marginBottom={4} />
+            {selectedTabId === 0 ? memoisedLocationsTable : memoisedCategoriesTable}
           </Sidebar>
         }
       >
