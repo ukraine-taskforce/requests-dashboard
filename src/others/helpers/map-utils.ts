@@ -76,7 +76,7 @@ function addFeatureForAidRequest(
 }
 
 export const groupLocationGroupByDate = (locationGroup: DecodedAidRequestGroupedByLocation): GroupedByDate[] => {
-    return Object.entries(groupBy(locationGroup.decodedAidRequest, "date")).map(([d, aidRequests]) => ({
+    return Object.entries(groupBy(locationGroup.decodedAidRequests, "date")).map(([d, aidRequests]) => ({
         date: d,
         aidRequests: Object.values(aidRequests).map((aidRequest) => omit(aidRequest, "date")),
     }));

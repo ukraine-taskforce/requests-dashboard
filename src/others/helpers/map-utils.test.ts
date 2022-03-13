@@ -29,7 +29,7 @@ test("groupLocationGroupByDate", () => {
     const locationGroup: DecodedAidRequestGroupedByLocation = {
         location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
         total: 159,
-        decodedAidRequest: [
+        decodedAidRequests: [
             { date: "2022-03-11", amount: 10, name: "Sanitary pads" },
             { date: "2022-03-12", amount: 4, name: "Personal hygiene kits" },
             { date: "2022-03-11", amount: 15, name: "Masks" },
@@ -98,7 +98,7 @@ test("mapAidRequestsToFeatures", () => {
         {
             location: { name: "Zaliznychne", lon: 36.169, lat: 47.645 },
             total: 17,
-            decodedAidRequest: [
+            decodedAidRequests: [
                 { date: "2022-03-11", amount: 10, name: "Sanitary pads" },
                 { date: "2022-03-11", amount: 3, name: "Batteries" },
                 { date: "2022-03-10", amount: 4, name: "Personal hygiene kits" }
@@ -107,7 +107,7 @@ test("mapAidRequestsToFeatures", () => {
         {
             location: { name: "Kyiv", lon: 30.524, lat: 50.45 },
             total: 11,
-            decodedAidRequest: [
+            decodedAidRequests: [
                 { date: "2022-03-11", amount: 1, name: "Batteries" },
                 { date: "2022-03-10", amount: 2, name: "Baby Products" },
                 { date: "2022-03-10", amount: 3, name: "Sanitary pads" },
