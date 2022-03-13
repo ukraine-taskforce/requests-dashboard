@@ -9,8 +9,8 @@ export type DecodedAidRequestGroupedByLocation = {
   decodedAidRequest: DecodedAidRequest[];
 };
 
-type DecodedLocation = Pick<Location, "name" | "lat" | "lon">;
-type DecodedAidRequest = { date: string; name: string; amount: number };
+export type DecodedLocation = Pick<Location, "name" | "lat" | "lon">;
+export type DecodedAidRequest = { date: string; name: string; amount: number };
 
 export type Dictionary = {
   locations: Location[];
