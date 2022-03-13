@@ -21,8 +21,6 @@ export function Requests() {
   const { data: supplies } = useSuppliesQuery();
   const { data: aidRequests } = useAidRequestQuery();
 
-  console.log("cities", cities);
-
   const { decodedAndGroupedByLocation } = useMemo(() => {
     return processAidRequests(cities, supplies, aidRequests);
   }, [cities, supplies, aidRequests]);
@@ -38,7 +36,7 @@ export function Requests() {
         };
       })
       .sort(totalDescending);
-  }, [aidRequests, supplies, aidRequests]);
+  }, [aidRequests, supplies, aidRequests, decodedAndGroupedByLocation]);
 
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
