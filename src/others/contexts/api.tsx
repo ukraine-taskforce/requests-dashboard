@@ -100,8 +100,8 @@ export function useSuppliesQuery() {
 
 export interface AidRequest {
   date: string;
-  city_id: number;
-  category_id: string;
+  city_id: ID;
+  category_id: ID;
   requested_amount: number;
 }
 
@@ -143,4 +143,3 @@ const mockAidRequests = [
   { date: "2022-03-09", city_id: 4, category_id: "torches", requested_amount: 99 },
   { date: "2022-03-09", city_id: 4, category_id: "food", requested_amount: 20 },
 ];
-
