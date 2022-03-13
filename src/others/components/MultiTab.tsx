@@ -4,8 +4,6 @@ import Box, { BoxProps } from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 
-import { useSidebarContext } from "./sidebar-context";
-
 interface MultiTabProps extends Omit<BoxProps, "onChange"> {
   labels: string[];
   selectedId: number;
