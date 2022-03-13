@@ -3,7 +3,7 @@ import { assignTotal } from "./assign-total";
 test("assignTotal", () => {
   const grouped = {
     city_id: "1226",
-    aidRequests: [
+    categories: [
       {
         date: "2022-03-11",
         category_id: "sanitary_pads",

@@ -13,7 +13,7 @@ import { MultiTab } from "../../others/components/MultiTab";
 import { CollapsibleTable } from "../../others/components/CollapsibleList";
 import { layerStyle } from "../../others/components/map/CircleLayerStyle";
 import { aidRequestsFixture } from "../../others/fixtures/request.fixture";
-import { decodeAidRequest, DecodedAidRequest } from "../../others/helpers/decode-aid-requests";
+import { decodeAidRequest } from "../../others/helpers/decode-aid-request";
 import { groupByLocation } from "../../others/helpers/group-aid-requests";
 import { assignTotal } from "../../others/helpers/assign-total";
 
@@ -23,23 +23,32 @@ export function Requests() {
   const { data: supplies } = useSuppliesQuery();
   const { data: aidRequests } = useAidRequestQuery();
 
-  const decodedAidRequests = useMemo(() => {
+  console.log("supplies", supplies);
+  console.log("cities", cities);
+
+  const { decodedAndGroupedByLocation } = useMemo(() => {
     if (cities && supplies && aidRequests) {
       const groupedByLocation = groupByLocation(aidRequests);
       const groupedByLocationWithTotal = groupedByLocation.map(assignTotal);
 
       console.log("groupedByLocationWithTotal", groupedByLocationWithTotal);
+
       return {
-        groupedByLocation: groupedByLocationWithTotal.map((req) => decodeAidRequest(req, cities, supplies)),
+        decodedAndGroupedByLocation: groupedByLocationWithTotal.map((aidRequest) =>
+          decodeAidRequest({ locations: cities, supplies }, aidRequest)
+        ),
       };
-    } else return [];
+    }
+    return {
+      decodedAndGroupedByLocation: [],
+    };
   }, [aidRequests, supplies, aidRequests]);
 
   if (!cities) {
     return <Layout header={<Header />}>{/* <Loader /> */}</Layout>;
   }
 
-  console.log("These are the decoded:", decodedAidRequests);
+  console.log("These are the decoded:", decodedAndGroupedByLocation);
 
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
