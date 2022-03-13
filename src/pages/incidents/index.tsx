@@ -8,10 +8,13 @@ import { Header } from "../../others/components/Header";
 import { Main } from "../../others/components/Main";
 import { Sidebar } from "../../others/components/Sidebar";
 import { MultiTab } from "../../others/components/MultiTab";
+import { useSidebarContext } from "../../others/components/sidebar-context";
 
 export function Incidents() {
   const { t } = useTranslation();
   const { data: cities } = useLocationsQuery();
+
+  const { selectedTabId, setSelectedTabId } = useSidebarContext();
 
   if (!cities) {
     return <Layout header={<Header />}>{/* <Loader /> */}</Layout>;
@@ -22,7 +25,7 @@ export function Incidents() {
       <Main
         aside={
           <Sidebar>
-            <MultiTab labels={[t("by_cities"), t("by_items")]} />
+            <MultiTab selectedId={selectedTabId} onChange={setSelectedTabId} labels={[t("by_cities"), t("by_items")]} />
           </Sidebar>
         }
       >

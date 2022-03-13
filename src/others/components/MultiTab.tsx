@@ -4,21 +4,23 @@ import Box, { BoxProps } from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 
-interface MultiTabProps extends BoxProps {
+import { useSidebarContext } from "./sidebar-context";
+
+interface MultiTabProps extends Omit<BoxProps, "onChange"> {
   labels: string[];
+  selectedId: number;
+  onChange: (tabId: number) => void;
 }
 
 // TODO: This one still needs styling
-export const MultiTab = ({ labels, ...wrapperStyles }: MultiTabProps) => {
-  const [value, setValue] = React.useState(0);
-
+export const MultiTab = ({ labels, selectedId, onChange, ...wrapperStyles }: MultiTabProps) => {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+    onChange(newValue);
   };
 
   return (
     <Box sx={{ width: "100%", ...wrapperStyles }}>
-      <StyledTabs value={value} onChange={handleChange} aria-label="styled tabs example">
+      <StyledTabs value={selectedId} onChange={handleChange} aria-label="styled tabs example">
         {labels.map((label) => (
           <StyledTab label={label} key={label} />
         ))}

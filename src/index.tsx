@@ -10,6 +10,7 @@ import "./index.css";
 import "./others/contexts/i18n";
 import reportWebVitals from "./reportWebVitals";
 
+import { SidebarContextProvider } from "./others/components/sidebar-context";
 import { AuthWrapper } from "./others/components/AuthWrapper";
 import { queryClient } from "./others/contexts/api";
 import { Home } from "./pages/home";
@@ -24,18 +25,20 @@ ReactDOM.render(
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
         <MuiThemeProvider theme={muiTheme}>
-          <CssBaseline />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route element={<AuthWrapper />}>
-                <Route path="/" element={<Home />} />
-                <Route path="/requests" element={<Requests />} />
-                <Route path="/incidents" element={<Incidents />} />
-              </Route>
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+          <SidebarContextProvider>
+            <CssBaseline />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route element={<AuthWrapper />}>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/requests" element={<Requests />} />
+                  <Route path="/incidents" element={<Incidents />} />
+                </Route>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </SidebarContextProvider>
         </MuiThemeProvider>
       </QueryClientProvider>
     </AuthProvider>
