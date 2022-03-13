@@ -24,7 +24,7 @@ const exampleAggregatedRequests = [
   { date: "2022-03-11", city_id: 1226, category_id: "baby_food", requested_amount: 15 },
 ];
 
-test("groups aggregatedRequests by 4 city_id's", () => {
+test("groupByLocation reduces exampleAggregatedRequests length to 4, because it contains requests with 4 different city_id's", () => {
   expect(groupByLocation(exampleAggregatedRequests).length).toEqual(4);
 });
 

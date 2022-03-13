@@ -12,7 +12,7 @@ export type DecodedAidRequestGroupedByLocation = {
 type DecodedLocation = Pick<Location, "name" | "lat" | "lon">;
 type DecodedCategory = { date: string; name: string; amount: number };
 
-type Dictionary = {
+export type Dictionary = {
   locations: Location[];
   supplies: Supply[];
 };
