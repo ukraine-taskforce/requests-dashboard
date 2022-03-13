@@ -8,9 +8,21 @@ export type GroupedByLocation = {
   aidRequests: Omit<AidRequest, "city_id">[];
 };
 
+export type GroupedByCategory = {
+  category_id: ID;
+  aidRequests: Omit<AidRequest, "category_id">[];
+};
+
 export const groupByLocation = (aidRequests: AidRequest[]): GroupedByLocation[] => {
-  return Object.entries(groupBy(aidRequests, "city_id")).map(([location, categories]) => ({
+  return Object.entries(groupBy(aidRequests, "city_id")).map(([location, aidRequests]) => ({
     city_id: location,
-    aidRequests: Object.values(categories).map((category) => omit(category, "city_id")),
+    aidRequests: Object.values(aidRequests).map((aidRequest) => omit(aidRequest, "city_id")),
+  }));
+};
+
+export const groupByCategory = (aidRequests: AidRequest[]): GroupedByCategory[] => {
+  return Object.entries(groupBy(aidRequests, "category_id")).map(([category_id, aidRequests]) => ({
+    category_id,
+    aidRequests: Object.values(aidRequests).map((aidRequest) => omit(aidRequest, "category_id")),
   }));
 };

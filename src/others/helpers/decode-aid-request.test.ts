@@ -1,4 +1,4 @@
-import { decodeAidRequest } from "./decode-aid-request";
+import { decodeAidRequestGroupedByLocationWithTotal } from "./decode-aid-request";
 
 const dictionary = {
   supplies: [
@@ -37,8 +37,8 @@ const dictionary = {
   ],
 };
 
-test("decodeAidRequest", () => {
-  const groupedWithTotal = {
+test("decodeAidRequestGroupedByLocationWithTotal", () => {
+  const aidRequestGroupedByLocationWithTotal = {
     city_id: "1226",
     total: 159,
     aidRequests: [
@@ -98,7 +98,7 @@ test("decodeAidRequest", () => {
     ],
   };
 
-  const decodedGroupedByLocation = decodeAidRequest(dictionary, groupedWithTotal);
+  const decodedGroupedByLocation = decodeAidRequestGroupedByLocationWithTotal(dictionary, aidRequestGroupedByLocationWithTotal);
 
   expect(decodedGroupedByLocation).toEqual({
     location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },

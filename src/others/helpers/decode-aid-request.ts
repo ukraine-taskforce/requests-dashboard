@@ -1,6 +1,6 @@
 import omit from "lodash/omit";
 
-import { GroupedByLocationWithTotal } from "./assign-total";
+import { GroupedByLocationWithTotal, GroupedByCategoryWithTotal } from "./assign-total";
 import { Location, Supply, ID } from "../contexts/api";
 
 export type DecodedAidRequestGroupedByLocation = {
@@ -17,7 +17,7 @@ export type Dictionary = {
   supplies: Supply[];
 };
 
-export const decodeAidRequest = (dictionary: Dictionary, aidRequest: GroupedByLocationWithTotal) => {
+export const decodeAidRequestGroupedByLocationWithTotal = (dictionary: Dictionary, aidRequest: GroupedByLocationWithTotal) => {
   const decodedLocation = decodeLocation(dictionary.locations, aidRequest.city_id);
 
   const decodedAidRequests = aidRequest.aidRequests
@@ -30,6 +30,24 @@ export const decodeAidRequest = (dictionary: Dictionary, aidRequest: GroupedByLo
 
   return {
     location: decodedLocation,
+    total: aidRequest.total,
+    decodedAidRequests,
+  };
+};
+
+export const decodeAidRequestGroupedByCategoryWithTotal = (dictionary: Dictionary, aidRequest: GroupedByCategoryWithTotal) => {
+  const decodedCategory = decodeCategory(dictionary.supplies, aidRequest.category_id);
+
+  const decodedAidRequests = aidRequest.aidRequests
+    .map((aidRequest) => ({
+      date: aidRequest.date,
+      amount: aidRequest.requested_amount,
+      location: decodeLocation(dictionary.locations, aidRequest.city_id),
+    }))
+    .map((supply) => omit(supply, "category_id"));
+
+  return {
+    name: decodedCategory,
     total: aidRequest.total,
     decodedAidRequests,
   };

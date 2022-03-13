@@ -21,9 +21,11 @@ export function Requests() {
   const { data: supplies } = useSuppliesQuery();
   const { data: aidRequests } = useAidRequestQuery();
 
-  const { decodedAndGroupedByLocation } = useMemo(() => {
+  const { decodedAndGroupedByLocation, decodedAndGroupedByCategory } = useMemo(() => {
     return processAidRequests(cities, supplies, aidRequests);
   }, [cities, supplies, aidRequests]);
+
+  console.log("decodedAndGroupedByCategory", decodedAndGroupedByCategory);
 
   const sortedTableRowDataByLocation = useMemo(() => {
     const totalDescending = (a: any, b: any) => b.total - a.total;
