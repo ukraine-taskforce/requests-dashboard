@@ -33,7 +33,7 @@ test("1st group", () => {
 
   expect(firstGroup).toEqual({
     city_id: "1",
-    categories: [
+    aidRequests: [
       { date: "2022-03-11", category_id: "bedding", requested_amount: 4 },
       { date: "2022-03-11", category_id: "candles", requested_amount: 4 },
       {
@@ -61,7 +61,7 @@ test("2nd group", () => {
 
   expect(secondGroup).toEqual({
     city_id: "2",
-    categories: [
+    aidRequests: [
       {
         date: "2022-03-10",
         category_id: "personal_hygiene_kits",
@@ -76,7 +76,7 @@ test("3rd group", () => {
 
   expect(thirdGroup).toEqual({
     city_id: "30",
-    categories: [
+    aidRequests: [
       {
         date: "2022-03-11",
         category_id: "batteries",
@@ -91,7 +91,7 @@ test("4th group", () => {
 
   expect(fourthGroup).toEqual({
     city_id: "1226",
-    categories: [
+    aidRequests: [
       {
         date: "2022-03-11",
         category_id: "sanitary_pads",
