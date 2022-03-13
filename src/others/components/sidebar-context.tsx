@@ -3,6 +3,8 @@ import { ReactNode, useState, useContext, createContext } from "react";
 interface SidebarState {
   isOpen: boolean;
   toggle: () => void;
+  selectedTabId: number;
+  setSelectedTabId: (tabId: number) => void;
 }
 
 export const SidebarContext = createContext<SidebarState | null>(null);
@@ -25,10 +27,13 @@ export const SidebarContextProvider = ({ children }: SidebarContextProviderProps
 
 const useSidebarState = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedTabId, setSelectedTabId] = useState(0);
 
   const toggle = () => setIsOpen(!isOpen);
   return {
     isOpen,
     toggle,
+    selectedTabId,
+    setSelectedTabId,
   };
 };
