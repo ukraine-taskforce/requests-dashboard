@@ -6,11 +6,11 @@ import { Location, Supply, ID } from "../contexts/api";
 export type DecodedAidRequestGroupedByLocation = {
   location: DecodedLocation;
   total: number;
-  categories: DecodedCategory[];
+  decodedAidRequest: DecodedAidRequest[];
 };
 
 type DecodedLocation = Pick<Location, "name" | "lat" | "lon">;
-type DecodedCategory = { date: string; name: string; amount: number };
+type DecodedAidRequest = { date: string; name: string; amount: number };
 
 export type Dictionary = {
   locations: Location[];
@@ -20,7 +20,7 @@ export type Dictionary = {
 export const decodeAidRequest = (dictionary: Dictionary, aidRequest: GroupedByLocationWithTotal) => {
   const decodedLocation = decodeLocation(dictionary.locations, aidRequest.city_id);
 
-  const decodedCategories = aidRequest.categories
+  const decodedAidRequests = aidRequest.aidRequests
     .map((category) => ({
       date: category.date,
       amount: category.requested_amount,
@@ -31,7 +31,7 @@ export const decodeAidRequest = (dictionary: Dictionary, aidRequest: GroupedByLo
   return {
     location: decodedLocation,
     total: aidRequest.total,
-    categories: decodedCategories,
+    decodedAidRequests,
   };
 };
 

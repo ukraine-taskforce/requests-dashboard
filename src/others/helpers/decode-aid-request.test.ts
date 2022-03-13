@@ -41,7 +41,7 @@ test("decodeAidRequest", () => {
   const groupedWithTotal = {
     city_id: "1226",
     total: 159,
-    categories: [
+    aidRequests: [
       {
         date: "2022-03-11",
         category_id: "sanitary_pads",
@@ -103,7 +103,7 @@ test("decodeAidRequest", () => {
   expect(decodedGroupedByLocation).toEqual({
     location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
     total: 159,
-    categories: [
+    aidRequests: [
       { date: "2022-03-11", amount: 10, name: "Sanitary pads" },
       { date: "2022-03-12", amount: 4, name: "Personal hygiene kits" },
       { date: "2022-03-11", amount: 15, name: "Masks" },

@@ -12,9 +12,11 @@ export const processAidRequests = (cities?: Location[], supplies?: Supply[], aid
       decodedAndGroupedByLocation: groupedByLocationWithTotal.map((aidRequest) =>
         decodeAidRequest({ locations: cities, supplies }, aidRequest)
       ),
+      decodedAndGroupedByCategory: [],
     };
   }
   return {
     decodedAndGroupedByLocation: [],
+    decodedAndGroupedByCategory: [],
   };
 };

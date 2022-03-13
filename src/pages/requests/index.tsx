@@ -32,7 +32,7 @@ export function Requests() {
         return {
           name: aidReqest.location.name,
           total: aidReqest.total,
-          hidden: aidReqest.categories.map((category) => ({ name: category.name, total: category.amount })).sort(totalDescending),
+          hidden: aidReqest.decodedAidRequests.map((category) => ({ name: category.name, total: category.amount })).sort(totalDescending),
         };
       })
       .sort(totalDescending);
