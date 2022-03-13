@@ -10,15 +10,15 @@ export interface CollapsibleTableProps extends TableContainerProps {
   rows: ListItem[];
 }
 
-export const CollapsibleTable = ({ rows, ...tabbleProps }: CollapsibleTableProps) => {
+export const CollapsibleTable = ({ rows, ...tableProps }: CollapsibleTableProps) => {
   return (
     // TODO: add rounded corners
-    <TableContainer component={Paper} {...tabbleProps}>
+    <TableContainer component={Paper} {...tableProps}>
       <Table aria-label="collapsible table">
         <TableBody sx={{ "& > *": { paddingY: 2 } }} className="collapsible-table-body">
-          {rows.map((row) => (
+          {rows.map((row, index) => (
             // TODO: last item should not have border
-            <CollapsibleListItem key={row.name} {...row} wrapperProps={{ paddingY: 2 }} />
+            <CollapsibleListItem key={row.name + index} {...row} wrapperProps={{ paddingY: 2 }} />
           ))}
         </TableBody>
       </Table>

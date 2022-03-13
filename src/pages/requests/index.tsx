@@ -23,9 +23,6 @@ export function Requests() {
   const { data: supplies } = useSuppliesQuery();
   const { data: aidRequests } = useAidRequestQuery();
 
-  console.log("supplies", supplies);
-  console.log("cities", cities);
-
   const { decodedAndGroupedByLocation } = useMemo(() => {
     if (cities && supplies && aidRequests) {
       const groupedByLocation = groupByLocation(aidRequests);
@@ -44,16 +41,29 @@ export function Requests() {
     };
   }, [aidRequests, supplies, aidRequests]);
 
-  if (!cities) {
-    return <Layout header={<Header />}>{/* <Loader /> */}</Layout>;
-  }
-
   console.log("These are the decoded:", decodedAndGroupedByLocation);
+
+  const sortedTableRowDataByLocation = useMemo(() => {
+    const totalDescending = (a: any, b: any) => b.total - a.total;
+    return decodedAndGroupedByLocation
+      .map((aidReqest) => {
+        return {
+          name: aidReqest.location.name,
+          total: aidReqest.total,
+          hidden: aidReqest.categories.map((category) => ({ name: category.name, total: category.amount })).sort(totalDescending),
+        };
+      })
+      .sort(totalDescending);
+  }, [aidRequests, supplies, aidRequests]);
 
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
     features: aidRequestsFixture,
   };
+
+  if (!cities) {
+    return <Layout header={<Header />}>{/* <Loader /> */}</Layout>;
+  }
 
   return (
     <Layout header={<Header />}>
@@ -61,7 +71,7 @@ export function Requests() {
         aside={
           <Sidebar className="requests-sidebar">
             <MultiTab labels={[t("by_cities"), t("by_items")]} marginBottom={4} />
-            <CollapsibleTable rows={createItemsByCitiesExampleData().sort((cityA, cityB) => cityB.total - cityA.total)} />
+            <CollapsibleTable rows={sortedTableRowDataByLocation} />
           </Sidebar>
         }
       >
@@ -76,23 +86,3 @@ export function Requests() {
     </Layout>
   );
 }
-
-// TODO: create proper mocked api response:
-const createItemsByCitiesExampleData = () => {
-  const randomNumber = () => Math.floor(Math.random() * 100);
-  const exampleCities = ["Kiev", "Lviv", "Luck", "Berdychiv", "Odessa", "Ivano-Frankivsk"];
-  const exampleCategories = ["Food", "Water", "Warm clothes", "Sleeping bags"];
-
-  const mockCategories = exampleCategories.map((category: string) => ({ name: category, total: randomNumber() }));
-
-  return exampleCities.map((city) => {
-    // const getTotalForCity = () => mockCategories.reduce((partialSum, category) => partialSum + category.total, 0);
-    const getExampleTotalForCity = () => mockCategories.reduce((partialSum, category) => partialSum + randomNumber(), 0);
-
-    return {
-      name: city,
-      total: getExampleTotalForCity(),
-      hidden: mockCategories,
-    };
-  });
-};

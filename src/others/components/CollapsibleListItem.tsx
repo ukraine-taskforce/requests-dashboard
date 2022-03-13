@@ -49,8 +49,8 @@ export const CollapsibleListItem = ({ name, total, hidden, wrapperProps, ...rest
             <Box sx={{ margin: 1 }}>
               <Table size="small" aria-label="tbd">
                 <TableBody>
-                  {hidden.map(({ name, total }) => (
-                    <TableRow key={name} sx={{ "& > *": { borderBottom: "unset", paddingX: 1 } }}>
+                  {hidden.map(({ name, total }, index) => (
+                    <TableRow key={name + index} sx={{ "& > *": { borderBottom: "unset", paddingX: 1 } }}>
                       <TableCell component="th" scope="row">
                         <Typography variant="subtitle2" gutterBottom component="div" sx={{ margin: 0 }}>
                           {name}
