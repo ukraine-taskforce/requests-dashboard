@@ -29,10 +29,10 @@ export const Header = ({ children }: HeaderProps) => {
         <IconButton size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }} onClick={toggle}>
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <Typography variant="h6" component="div" mr={8}>
           Dashboard
         </Typography>
-        <Box sx={{ flexGrow: 8, display: "flex", alignItems: "center" }}>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
           <FilterDropdownGroup
             filters={Object.values(otherFilters)}
             filterGroupOpenHandler={activateFilter}
