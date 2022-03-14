@@ -16,6 +16,8 @@ import { mapAidRequestsToFeatures } from "../../others/helpers/map-utils";
 import { processAidRequests } from "../../others/helpers/process-aid-request";
 import { useSidebarContext } from "../../others/components/sidebar-context";
 import { FilterItem, useFilter } from "../../others/contexts/filter";
+import { DecodedLocation, DecodedAidRequest } from "../../others/helpers/decode-aid-request";
+import { mapLocationsToTableData, mapCategoriesToTableData } from "./map-to-table-data";
 
 export function Requests() {
   const { t } = useTranslation();
@@ -73,46 +75,12 @@ export function Requests() {
     // }
   }, [supplies, decodedAndGroupedByLocation, aidRequests, addFilter]);
 
-  const memoisedLocationsTable = useMemo(() => {
-    const totalDescending = (a: any, b: any) => b.total - a.total;
-    const tableData = decodedAndGroupedByLocation
-      .map((aidReqest) => {
-        return {
-          name: aidReqest.location.name,
-          total: aidReqest.total,
-          hidden: aidReqest.decodedAidRequests.map((category) => ({ name: category.name, total: category.amount })).sort(totalDescending),
-        };
-      })
-      .sort(totalDescending);
-    return <CollapsibleTable rows={tableData} />;
-  }, [decodedAndGroupedByLocation]);
-
-  const memoisedCategoriesTable = useMemo(() => {
-    const totalDescending = (a: any, b: any) => b.total - a.total;
-    const tableData = decodedAndGroupedByCategory
-      .map((aidReqest) => {
-        return {
-          name: aidReqest.name,
-          total: aidReqest.total,
-          hidden: aidReqest.decodedAidRequests
-            .map((category) => ({ name: category.location.name, total: category.amount }))
-            .sort(totalDescending),
-        };
-      })
-      .sort(totalDescending);
-    return <CollapsibleTable rows={tableData} />;
-  }, [decodedAndGroupedByCategory]);
-
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
     features: mapAidRequestsToFeatures(decodedAndGroupedByLocation),
   };
 
   const { selectedTabId, setSelectedTabId } = useSidebarContext();
-
-  if (!cities) {
-    return <Layout header={<Header />}>{/* <Loader /> */}</Layout>;
-  }
 
   const activeCategoryFilters = filterContext.getActiveFilterItems("Categories");
   const activeDateFilter = filterContext.getActiveFilterItems("Dates")[0];
@@ -125,13 +93,60 @@ export function Requests() {
 
   const layerFilter = ["all", layerFilterCategory, layerFilterDate];
 
+  const selectedDate = activeDateFilter;
+  const categoriesTableData = mapLocationsToTableData(decodedAndGroupedByCategory);
+  const filteredAndGroupedByCategory = categoriesTableData
+    .map((data: CategoriesTableData) => {
+      return {
+        ...data,
+        hidden: data.hidden.filter((req) => req.date === selectedDate),
+      };
+    })
+    .map((data: CategoriesTableData) => {
+      const getTotalForCategory = () => data.hidden.reduce((partialSum, aidRequest) => partialSum + aidRequest.total, 0);
+      return {
+        ...data,
+        total: getTotalForCategory(),
+      };
+    })
+    .filter((data: CategoriesTableData) => data.total !== 0)
+    .sort((a: any, b: any) => b.total - a.total);
+
+  const locationsTableData = mapCategoriesToTableData(decodedAndGroupedByLocation);
+  const filteredAndGroupedByLocation = locationsTableData
+    .map((data: LocationsTableData) => {
+      return {
+        ...data,
+        decodedAidRequests: data.decodedAidRequests.filter((req) => req.date === selectedDate),
+      };
+    })
+    .map((data: LocationsTableData) => {
+      return {
+        ...data,
+        hidden: data.decodedAidRequests.map((req) => ({ name: req.name, total: req.amount })),
+      };
+    })
+    .map((data: LocationsTableData) => {
+      const getTotalForLocation = () => data.decodedAidRequests.reduce((partialSum, aidRequest) => partialSum + aidRequest.amount, 0);
+      return {
+        ...data,
+        total: getTotalForLocation(),
+      };
+    })
+    .filter((data: LocationsTableData) => data.total !== 0)
+    .sort((a: any, b: any) => b.total - a.total);
+
+  if (!cities) {
+    return <Layout header={<Header />}>{/* <Loader /> */}</Layout>;
+  }
+
   return (
     <Layout header={<Header />}>
       <Main
         aside={
           <Sidebar className="requests-sidebar">
             <MultiTab selectedId={selectedTabId} onChange={setSelectedTabId} labels={[t("by_cities"), t("by_items")]} marginBottom={4} />
-            {selectedTabId === 0 ? memoisedLocationsTable : memoisedCategoriesTable}
+            <CollapsibleTable rows={selectedTabId === 0 ? filteredAndGroupedByLocation : filteredAndGroupedByCategory} />
           </Sidebar>
         }
       >
@@ -147,3 +162,26 @@ export function Requests() {
     </Layout>
   );
 }
+
+type CategoriesTableData = {
+  name: string;
+  total: number;
+  hidden: {
+    name: string;
+    total: number;
+    date: string;
+    amount: number;
+    location: DecodedLocation;
+  }[];
+};
+
+type LocationsTableData = {
+  name: string;
+  total: number;
+  hidden: {
+    name: string;
+    total: number;
+  }[];
+  location: DecodedLocation;
+  decodedAidRequests: DecodedAidRequest[];
+};
