@@ -26,7 +26,6 @@ export function Requests() {
     return processAidRequests(cities, supplies, aidRequests);
   }, [cities, supplies, aidRequests]);
 
-
   const memoisedLocationsTable = useMemo(() => {
     const totalDescending = (a: any, b: any) => b.total - a.total;
     const tableData = decodedAndGroupedByLocation
