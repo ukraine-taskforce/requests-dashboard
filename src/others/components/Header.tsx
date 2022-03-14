@@ -32,7 +32,7 @@ export const Header = ({ children }: HeaderProps) => {
         <Typography variant="h6" component="div" mr={8}>
           Dashboard
         </Typography>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Box sx={{ display: "flex", alignItems: "center", marginLeft: "153px" }}>
           <FilterDropdownGroup
             filters={Object.values(otherFilters)}
             filterGroupOpenHandler={activateFilter}
