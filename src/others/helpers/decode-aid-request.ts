@@ -38,6 +38,19 @@ export const decodeAidRequestGroupedByLocationWithTotal = (
   };
 };
 
+export type DecodedAidRequestGroupedByCategory = {
+  name: string;
+  total: number;
+  decodedAidRequests: Pick<
+    {
+      date: string;
+      amount: number;
+      location: DecodedLocation;
+    },
+    "date" | "amount" | "location"
+  >[];
+};
+
 export const decodeAidRequestGroupedByCategoryWithTotal = (dictionary: Dictionary, aidRequest: GroupedByCategoryWithTotal) => {
   const decodedCategory = decodeCategory(dictionary.supplies, aidRequest.category_id);
 
