@@ -40,7 +40,8 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
 
   const [filterListVisible, setFilterListVisible] = useState(false);
 
-  const selectedFilterItemCount = filterItems.filter(({ selected }) => selected).length;
+  const selectedFilterItems = filterItems.filter(({ selected }) => selected);
+  const selectedFilterItemCount = selectedFilterItems.length;
   const allFiltersSelected = filterItems.every(({ selected }) => !selected);
   const isFilterOpen = filterActive !== undefined ? filterActive : filterListVisible;
 
@@ -73,6 +74,8 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
     </ListItemIcon>
   );
 
+  const filterButtonLabel = singleValueFilter && selectedFilterItemCount === 1 ? selectedFilterItems[0].text : filterName;
+
   return (
     <div
       ref={filterRef}
@@ -87,9 +90,9 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
         endIcon={isFilterOpen ? <ArrowUp /> : <ArrowDown />}
       >
         <Typography mr={1} variant="body2" component="p">
-          {filterName}
+          {filterButtonLabel}
         </Typography>
-        <Chip size="small" color="primary" label={selectedFilterItemCount} />
+        {!singleValueFilter && <Chip size="small" color="primary" label={selectedFilterItemCount} />}
       </Button>
       {isFilterOpen && (
         <List
