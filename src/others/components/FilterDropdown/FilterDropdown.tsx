@@ -1,4 +1,4 @@
-import { Button, Checkbox, Chip, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
+import { Button, Checkbox, Chip, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, ClickAwayListener } from "@mui/material";
 import { FunctionComponent, useRef, useState } from "react";
 import { KeyboardArrowDown as ArrowDown, KeyboardArrowUp as ArrowUp, CheckCircle, CircleOutlined } from "@mui/icons-material";
 import { FilterItem } from "../../contexts/filter";
@@ -23,20 +23,6 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
   filterGroupOpenHandler,
 }) => {
   const filterRef = useRef<HTMLDivElement | null>(null);
-
-  // useEffect(() => {
-  //   const clickEventHandler = (e: Event) => {
-  //     if (filterRef.current && !filterRef.current.contains(e.target as Element)) {
-  //       toggleFilterList();
-  //     }
-  //   };
-
-  //   document.addEventListener("click", clickEventHandler);
-
-  //   return () => {
-  //     document.removeEventListener("click", clickEventHandler);
-  //   };
-  // }, []);
 
   const [filterListVisible, setFilterListVisible] = useState(false);
 
@@ -95,41 +81,43 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
         {!singleValueFilter && <Chip size="small" color="primary" label={selectedFilterItemCount} />}
       </Button>
       {isFilterOpen && (
-        <List
-          sx={{
-            borderRadius: "24px",
-            backgroundColor: "#fff",
-            marginTop: "16px",
-            maxHeight: "500px",
-            overflow: "auto",
-            position: "absolute",
-            zIndex: 1000,
-            minWidth: "300px",
-            color: "#000",
-          }}
-        >
-          {!singleValueFilter && (
-            <ListItem sx={{ justifyContent: "center" }}>
-              <Button color="primary" onClick={clearAllFilters}>
-                Clear
-              </Button>
-            </ListItem>
-          )}
-          <ListItem>
-            <ListItemButton divider={true} onClick={clearAllFilters}>
-              <ListItemText color="#000">All</ListItemText>
-              {checkboxListItemIcon(allFiltersSelected)}
-            </ListItemButton>
-          </ListItem>
-          {filterItems.map(({ id, text, selected }) => (
-            <ListItem key={id}>
-              <ListItemButton onClick={clickHandler(id, selected)}>
-                <ListItemText>{text}</ListItemText>
-                {checkboxListItemIcon(selected)}
+        <ClickAwayListener onClickAway={toggleFilterList}>
+          <List
+            sx={{
+              borderRadius: "24px",
+              backgroundColor: "#fff",
+              marginTop: "16px",
+              maxHeight: "500px",
+              overflow: "auto",
+              position: "absolute",
+              zIndex: 1000,
+              minWidth: "300px",
+              color: "#000",
+            }}
+          >
+            {!singleValueFilter && (
+              <ListItem sx={{ justifyContent: "center" }}>
+                <Button color="primary" onClick={clearAllFilters}>
+                  Clear
+                </Button>
+              </ListItem>
+            )}
+            <ListItem>
+              <ListItemButton divider={true} onClick={clearAllFilters}>
+                <ListItemText color="#000">All</ListItemText>
+                {checkboxListItemIcon(allFiltersSelected)}
               </ListItemButton>
             </ListItem>
-          ))}
-        </List>
+            {filterItems.map(({ id, text, selected }) => (
+              <ListItem key={id}>
+                <ListItemButton onClick={clickHandler(id, selected)}>
+                  <ListItemText>{text}</ListItemText>
+                  {checkboxListItemIcon(selected)}
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </ClickAwayListener>
       )}
     </div>
   );
