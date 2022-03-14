@@ -66,10 +66,11 @@ export const Map = ({sourceWithLayer}: MapProps) => {
 
         {popupInfo && (
           <Popup
-            anchor="top"
             longitude={popupInfo.longitude}
             latitude={popupInfo.latitude}
             onClose={() => setPopupInfo(null)}
+            closeButton={false}
+            closeOnClick={false}
             style={{
               color: '#000000'
             }}
