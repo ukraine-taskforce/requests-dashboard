@@ -27,22 +27,24 @@ export const Map = ({sourceWithLayer}: MapProps) => {
   const [cursor, setCursor] = useState<'auto' | 'pointer'>('auto');
 
   const handleMouseEnter = useCallback((event: MapLayerMouseEvent) => {
-    const features = mapRef?.current?.queryRenderedFeatures(event.point, {
-      layers: ["ukr_water_needs-point"],
-    })
-
-    if (features && features.length > 0) {
-      const requestData = features[0].properties;
-
-      setCursor('pointer');
-
-      setPopupInfo({
-        longitude: event.lngLat.lng,
-        latitude: event.lngLat.lat,
-        description: requestData ? requestData.description : 'Information unavailable',
+    if (mapRef?.current) {
+      const features = mapRef.current.queryRenderedFeatures(event.point, {
+        layers: ["ukr_water_needs-point"],
       })
+
+      if (features && features.length > 0) {
+        const requestData = features[0].properties;
+
+        setCursor('pointer');
+
+        setPopupInfo({
+          longitude: event.lngLat.lng,
+          latitude: event.lngLat.lat,
+          description: requestData ? requestData.description : 'Information unavailable',
+        })
+      }
     }
-  }, []);
+  }, [mapRef]);
 
   const handleMouseLeave = useCallback(() => {
     setCursor('auto');
@@ -76,9 +78,9 @@ export const Map = ({sourceWithLayer}: MapProps) => {
             }}
           >
             <div>
-	    <pre>
-              {popupInfo.description}
-	    </pre>
+              <pre>
+                {popupInfo.description}
+              </pre>
             </div>
           </Popup>
         )}
