@@ -44,7 +44,7 @@ export const Map = ({sourceWithLayer}: MapProps) => {
         })
       }
     }
-  }, [mapRef.current]);
+  }, [mapRef]);
 
   const handleMouseLeave = useCallback(() => {
     setCursor('auto');
