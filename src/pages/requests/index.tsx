@@ -105,7 +105,7 @@ export function Requests() {
 
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
-    features: Array.from(mapAidRequestsToFeatures(decodedAndGroupedByLocation)),
+    features: mapAidRequestsToFeatures(decodedAndGroupedByLocation),
   };
 
   const { selectedTabId, setSelectedTabId } = useSidebarContext();

@@ -13,6 +13,7 @@ type GroupedByDateWithTotal = {
     date: string;
     aidRequests: Omit<DecodedAidRequest, "date">[];
     total: number;
+    totalDescription: string;
 }
 
 type GroupedByLocationAndDateWithTotal = {
@@ -35,8 +36,23 @@ export const mapAidRequestsToFeatures = (decodedAidRequestGroupedByLocation: Dec
                 addAggregatedFeaturePerLocationAndDate(locationGroup, locationAndDateRequests, features);
             })
         });
-    })
-    return features;
+    });
+    const maxPerCategory: { [id:string]: number;} = {};
+    features.forEach(function (feature) {
+      if (feature.properties) {
+        if (!(feature.properties.category in maxPerCategory)) {
+        	 maxPerCategory[feature.properties.category] = 0;
+        }
+        maxPerCategory[feature.properties.category] = Math.max(maxPerCategory[feature.properties.category], feature.properties.amount);
+      }
+    });
+    const featuresWithNormalizedAmount = Array.from(features).map((feature) => {
+      if (feature.properties){
+        feature.properties.normalized_amount = feature.properties.amount / maxPerCategory[feature.properties.category];
+      }
+      return feature;
+    });
+    return featuresWithNormalizedAmount;
 }
 
 export const possibleDates = (requests: AidRequest[]) => {
@@ -54,6 +70,7 @@ function addAggregatedFeaturePerLocationAndDate(
             amount: dateGroup.total,
             date: dateGroup.date,
             category: "ALL",
+	    description: dateGroup.totalDescription,
         },
         geometry: { type: "Point", coordinates: [locationGroup.location.lon, locationGroup.location.lat] }
     })
@@ -70,6 +87,7 @@ function addFeatureForAidRequest(
             amount: aidRequest.amount,
             date: date,
             category: aidRequest.name,
+	    description: aidRequest.name + ": " + aidRequest.amount,
         },
         geometry: { type: "Point", coordinates: [location.lon, location.lat] }
     })
@@ -84,9 +102,11 @@ export const groupLocationGroupByDate = (locationGroup: DecodedAidRequestGrouped
 
 export const assignTotalForDate = (grouped: GroupedByDate): GroupedByDateWithTotal => {
     const getTotalForDate = () => grouped.aidRequests.reduce((partialSum, aidRequest) => partialSum + aidRequest.amount, 0);
+    const getDescriptionForDate =  () => grouped.aidRequests.sort(function(a, b){return b.amount - a.amount;}).reduce((partialDesc, aidRequest) => partialDesc + "\n" + aidRequest.name + ": " + aidRequest.amount, "");
     return {
         ...grouped,
         total: getTotalForDate(),
+	totalDescription: getDescriptionForDate(),
     };
 };
 
