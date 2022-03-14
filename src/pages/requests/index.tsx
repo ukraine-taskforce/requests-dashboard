@@ -94,6 +94,7 @@ export function Requests() {
   const layerFilter = ["all", layerFilterCategory, layerFilterDate];
 
   const selectedDate = activeDateFilter;
+  const activeCategories = activeCategoryFilters;
   const categoriesTableData = mapLocationsToTableData(decodedAndGroupedByCategory);
   const filteredAndGroupedByCategory = categoriesTableData
     .map((data: CategoriesTableData) => {
@@ -102,6 +103,7 @@ export function Requests() {
         hidden: data.hidden.filter((req) => req.date === selectedDate),
       };
     })
+    .filter((data: CategoriesTableData) => (activeCategories.length ? activeCategories.some((category) => data.name === category) : data)) // TODO: activeCategories needs to be full for "ALL"
     .map((data: CategoriesTableData) => {
       const getTotalForCategory = () => data.hidden.reduce((partialSum, aidRequest) => partialSum + aidRequest.total, 0);
       return {
@@ -123,11 +125,13 @@ export function Requests() {
     .map((data: LocationsTableData) => {
       return {
         ...data,
-        hidden: data.decodedAidRequests.map((req) => ({ name: req.name, total: req.amount })),
+        hidden: data.decodedAidRequests
+          .map((req) => ({ name: req.name, total: req.amount }))
+          .filter((req) => (activeCategories.length ? activeCategories.some((category) => req.name === category) : req)), // TODO: activeCategories needs to be full for "ALL"
       };
     })
     .map((data: LocationsTableData) => {
-      const getTotalForLocation = () => data.decodedAidRequests.reduce((partialSum, aidRequest) => partialSum + aidRequest.amount, 0);
+      const getTotalForLocation = () => data.hidden.reduce((partialSum, aidRequest) => partialSum + aidRequest.total, 0);
       return {
         ...data,
         total: getTotalForLocation(),
