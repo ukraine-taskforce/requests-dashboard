@@ -1,4 +1,4 @@
-import MapComponent, { Popup } from "react-map-gl";
+import MapComponent, { Popup, MapRef } from "react-map-gl";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
@@ -22,21 +22,21 @@ const initialUkraineCenterView = {
 };
 
 export const Map = ({sourceWithLayer}: MapProps) => {
-  const mapRef = useRef(null)
+  const mapRef = useRef<MapRef>(null);
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
 
   const handleOnClick = useCallback(event => {
-    // TODO fix TS
-    // @ts-ignore
     const features = mapRef?.current?.queryRenderedFeatures(event.point, {
       layers: ["ukr_water_needs-point"],
     })
 
     if (features && features.length > 0) {
+      const requestData = features[0].properties;
+
       setPopupInfo({
         longitude: event.lngLat.lng,
         latitude: event.lngLat.lat,
-        description: features[0].properties.description
+        description: requestData ? `${requestData.category}: ${requestData.amount}` : 'Information unavailable'
       })
     }
   }, []);
@@ -58,7 +58,6 @@ export const Map = ({sourceWithLayer}: MapProps) => {
             anchor="top"
             longitude={popupInfo.longitude}
             latitude={popupInfo.latitude}
-            closeOnClick={false}
             onClose={() => setPopupInfo(null)}
             style={{
               color: '#000000'
