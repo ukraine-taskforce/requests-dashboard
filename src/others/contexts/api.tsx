@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { QueryClient, useQuery } from "react-query";
+import { fakeRequests } from "../../others/fixtures/fakedata";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -109,6 +110,8 @@ export function useAidRequestQuery() {
   const { i18n } = useTranslation();
 
   return useQuery<AidRequest[]>(`aidRequestQuery${i18n.language}`, async () => {
+    // REMOVE THIS AFTER THE DEMO!
+    return fakeRequests;
     try {
       const result = await fetch(`${API_DOMAIN}/aggregated`)
         .then((res) => {

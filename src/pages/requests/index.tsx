@@ -119,7 +119,7 @@ export function Requests() {
 
   const layerFilterCategory = activeCategoryFilters.length
     ? ["in", ["get", "category"], ["array", ["literal", activeCategoryFilters]]]
-    : ["boolean", true];
+    : ["==", ["get", "category"], "ALL"];
 
   const layerFilterDate = activeDateFilter ? ["==", ["get", "date"], ["string", activeDateFilter]] : ["boolean", true];
 
