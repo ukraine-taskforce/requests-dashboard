@@ -1,36 +1,20 @@
-import { Box } from "@mui/material";
-import { FilterDropdown, FilterDropdownItem } from "./FilterDropdown";
+import { ID } from "../../contexts/api";
+import { Filter } from "../../contexts/filter";
+import { FilterDropdown } from "./FilterDropdown";
 
 type FilterDropdownGroupProps = {
-  filters: FilterDropdownGroupItem[];
+  filters: Filter[];
   filterGroupOpenHandler: (filterName: string) => void;
-  filterGroupUpdateHandler: (filterName: string, newFilterItems: FilterDropdownItem[]) => void;
-};
-
-export type FilterDropdownGroupItem = {
-  active: boolean;
-  filterName: string;
-  filterItems: FilterDropdownItem[];
+  filterGroupUpdateHandler: (filterName: string, filterItemId: ID, value?: boolean) => void;
 };
 
 export const FilterDropdownGroup = ({ filters, filterGroupOpenHandler, filterGroupUpdateHandler }: FilterDropdownGroupProps) => {
-  const filterItemToggleHandler = (currentFilterName: string) => (filterItemId: string, overrideValue?: boolean) => {
-    const currentFilterGroup = filters.find(({ filterName }) => filterName === currentFilterName);
-    if (currentFilterGroup) {
-      const newFilterItems = currentFilterGroup.filterItems.map((newFilterItem) => {
-        if (newFilterItem.id === filterItemId) {
-          newFilterItem.selected = overrideValue !== undefined ? overrideValue : !newFilterItem.selected;
-        }
-
-        return newFilterItem;
-      });
-
-      filterGroupUpdateHandler(currentFilterName, newFilterItems);
-    }
+  const filterItemToggleHandler = (currentFilterName: string) => (filterItemId: ID, overrideValue?: boolean) => {
+    filterGroupUpdateHandler(currentFilterName, filterItemId, overrideValue);
   };
 
   return (
-    <Box sx={{ flexGrow: 8, display: "flex" }}>
+    <div className="filter-dropdown-group" style={{ display: "flex" }}>
       {filters.map(({ filterName, filterItems, active }) => (
         <FilterDropdown
           key={filterName}
@@ -41,6 +25,6 @@ export const FilterDropdownGroup = ({ filters, filterGroupOpenHandler, filterGro
           filterItemToggleHandler={filterItemToggleHandler(filterName)}
         />
       ))}
-    </Box>
+    </div>
   );
 };

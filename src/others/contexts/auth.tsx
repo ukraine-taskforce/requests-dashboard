@@ -23,7 +23,6 @@ export const AuthProvider: React.FunctionComponent = ({ children }) => {
   const [user, setUser] = React.useState<{ name: string }>();
 
   const login = React.useCallback(() => {
-    console.log('login')
     setUser({ name: "mock" });
   }, [setUser]);
 
