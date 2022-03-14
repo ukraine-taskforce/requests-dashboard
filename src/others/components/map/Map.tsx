@@ -1,4 +1,4 @@
-import MapComponent, { Popup, MapRef } from "react-map-gl";
+import MapComponent, { Popup, MapRef, MapLayerMouseEvent } from "react-map-gl";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
@@ -24,8 +24,9 @@ const initialUkraineCenterView = {
 export const Map = ({sourceWithLayer}: MapProps) => {
   const mapRef = useRef<MapRef>(null);
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
+  const [cursor, setCursor] = useState<'auto' | 'pointer'>('auto');
 
-  const handleOnClick = useCallback(event => {
+  const handleMouseEnter = useCallback((event: MapLayerMouseEvent) => {
     const features = mapRef?.current?.queryRenderedFeatures(event.point, {
       layers: ["ukr_water_needs-point"],
     })
@@ -33,12 +34,19 @@ export const Map = ({sourceWithLayer}: MapProps) => {
     if (features && features.length > 0) {
       const requestData = features[0].properties;
 
+      setCursor('pointer');
+
       setPopupInfo({
         longitude: event.lngLat.lng,
         latitude: event.lngLat.lat,
         description: requestData ? `${requestData.category}: ${requestData.amount}` : 'Information unavailable'
       })
     }
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setCursor('auto');
+    setPopupInfo(null);
   }, []);
 
   return (
@@ -49,7 +57,10 @@ export const Map = ({sourceWithLayer}: MapProps) => {
         initialViewState={initialUkraineCenterView}
         mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
         style={{ borderRadius: "24px" }}
-        onClick={handleOnClick}
+        interactiveLayerIds={["ukr_water_needs-point"]}
+        cursor={cursor}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
           {sourceWithLayer}
 
