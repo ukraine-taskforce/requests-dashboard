@@ -37,7 +37,7 @@ export const mapAidRequestsToFeatures = (decodedAidRequestGroupedByLocation: Dec
             })
         });
     });
-    var maxPerCategory: { [id:string]: number;} = {};
+    const maxPerCategory: { [id:string]: number;} = {};
     features.forEach(function (feature) {
       if (feature.properties) {
         if (!(feature.properties.category in maxPerCategory)) {
