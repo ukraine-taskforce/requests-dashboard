@@ -112,6 +112,7 @@ export function useAidRequestQuery() {
   return useQuery<AidRequest[]>(`aidRequestQuery${i18n.language}`, async () => {
     // REMOVE THIS AFTER THE DEMO!
     return fakeRequests;
+    /*
     try {
       const result = await fetch(`${API_DOMAIN}/aggregated`)
         .then((res) => {
@@ -128,7 +129,7 @@ export function useAidRequestQuery() {
       }
 
       throw error;
-    }
+    }*/
   });
 }
 
