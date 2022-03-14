@@ -1,5 +1,5 @@
 import { Box, Grid, Slider, Typography } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import moment from "moment";
 import { useFilter } from "../contexts/filter";
 

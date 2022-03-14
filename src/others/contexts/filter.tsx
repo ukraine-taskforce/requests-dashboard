@@ -43,7 +43,7 @@ export const FilterContextProvider: React.FunctionComponent = ({ children }) => 
     (newFilter: Filter) => {
       setFilters((initFilters) => ({ ...initFilters, [newFilter.filterName]: newFilter }));
     },
-    [setFilters, filters]
+    [setFilters]
   );
 
   const activateFilter = useCallback(

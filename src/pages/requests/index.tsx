@@ -22,7 +22,7 @@ export function Requests() {
   const { data: cities } = useLocationsQuery();
   const { data: supplies } = useSuppliesQuery();
   const { data: aidRequests } = useAidRequestQuery();
-  const { addFilter, getActiveFilterItems } = useFilter();
+  const filterContext = useFilter();
 
   const { decodedAndGroupedByLocation, decodedAndGroupedByCategory } = useMemo(() => {
     return processAidRequests(cities, supplies, aidRequests);
@@ -30,7 +30,7 @@ export function Requests() {
 
   useEffect(() => {
     if (supplies?.length) {
-      addFilter({
+      filterContext.addFilter({
         filterName: "Categories",
         filterItems: supplies.map((category): FilterItem => ({ id: category.name as ID, selected: false, text: category.name })),
         active: false,
@@ -44,7 +44,7 @@ export function Requests() {
         return dateSet;
       }, new Set<string>());
 
-      addFilter({
+      filterContext.addFilter({
         filterName: "Dates",
         filterItems: Array.from(dates)
           .map((date, i): FilterItem => ({ id: date, selected: i === dates.size - 1, text: date }))
@@ -69,7 +69,7 @@ export function Requests() {
     //     singleValueFilter: true,
     //   });
     // }
-  }, [supplies, decodedAndGroupedByLocation]);
+  }, [supplies, decodedAndGroupedByLocation, aidRequests, filterContext]);
 
   const memoisedLocationsTable = useMemo(() => {
     const totalDescending = (a: any, b: any) => b.total - a.total;
@@ -112,8 +112,8 @@ export function Requests() {
     return <Layout header={<Header />}>{/* <Loader /> */}</Layout>;
   }
 
-  const activeCategoryFilters = getActiveFilterItems("Categories");
-  const activeDateFilter = getActiveFilterItems("Dates")[0];
+  const activeCategoryFilters = filterContext.getActiveFilterItems("Categories");
+  const activeDateFilter = filterContext.getActiveFilterItems("Dates")[0];
 
   const layerFilterCategory = activeCategoryFilters.length
     ? ["in", ["get", "category"], ["array", ["literal", activeCategoryFilters]]]

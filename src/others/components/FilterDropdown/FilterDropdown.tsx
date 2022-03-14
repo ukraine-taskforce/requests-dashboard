@@ -1,5 +1,5 @@
 import { Button, Checkbox, Chip, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
-import { FunctionComponent, useEffect, useRef, useState } from "react";
+import { FunctionComponent, useRef, useState } from "react";
 import { KeyboardArrowDown as ArrowDown, KeyboardArrowUp as ArrowUp, CheckCircle, CircleOutlined } from "@mui/icons-material";
 import { FilterItem } from "../../contexts/filter";
 import { ID } from "../../contexts/api";
