@@ -39,7 +39,7 @@ export const Map = ({sourceWithLayer}: MapProps) => {
       setPopupInfo({
         longitude: event.lngLat.lng,
         latitude: event.lngLat.lat,
-        description: requestData ? `${requestData.category}: ${requestData.amount}` : 'Information unavailable'
+        description: requestData ? requestData.description : 'Information unavailable',
       })
     }
   }, []);
@@ -76,7 +76,9 @@ export const Map = ({sourceWithLayer}: MapProps) => {
             }}
           >
             <div>
+	    <pre>
               {popupInfo.description}
+	    </pre>
             </div>
           </Popup>
         )}

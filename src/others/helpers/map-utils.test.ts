@@ -125,7 +125,8 @@ test("mapAidRequestsToFeatures", () => {
                 properties: {
                     amount: 10,
                     category: "Sanitary pads",
-                    date: "2022-03-11"
+                    date: "2022-03-11",
+		    description: "Sanitary pads: 10",
                 },
                 geometry: { type: "Point", coordinates: [36.169, 47.645] },
             },
@@ -134,7 +135,8 @@ test("mapAidRequestsToFeatures", () => {
                 properties: {
                     amount: 3,
                     category: "Batteries",
-                    date: "2022-03-11"
+                    date: "2022-03-11",
+		    description: "Batteries: 3",
                 },
                 geometry: { type: "Point", coordinates: [36.169, 47.645] },
             },
@@ -143,7 +145,8 @@ test("mapAidRequestsToFeatures", () => {
                 properties: {
                     amount: 4,
                     category: "Personal hygiene kits",
-                    date: "2022-03-10"
+                    date: "2022-03-10",
+		    description: "Personal hygiene kits: 4",
                 },
                 geometry: { type: "Point", coordinates: [36.169, 47.645] },
             },
@@ -153,7 +156,8 @@ test("mapAidRequestsToFeatures", () => {
                 properties: {
                     amount: 13,
                     category: "ALL",
-                    date: "2022-03-11"
+                    date: "2022-03-11",
+		    description: "\nSanitary pads: 10\nBatteries: 3",
                 },
                 geometry: { type: "Point", coordinates: [36.169, 47.645] },
             },
@@ -162,7 +166,8 @@ test("mapAidRequestsToFeatures", () => {
                 properties: {
                     amount: 4,
                     category: "ALL",
-                    date: "2022-03-10"
+                    date: "2022-03-10",
+		    description: "\nPersonal hygiene kits: 4",
                 },
                 geometry: { type: "Point", coordinates: [36.169, 47.645] },
             },
@@ -173,7 +178,8 @@ test("mapAidRequestsToFeatures", () => {
                 properties: {
                     amount: 1,
                     category: "Batteries",
-                    date: "2022-03-11"
+                    date: "2022-03-11",
+		    description: "Batteries: 1",
                 },
                 geometry: { type: "Point", coordinates: [30.524, 50.45] },
             },
@@ -182,7 +188,8 @@ test("mapAidRequestsToFeatures", () => {
                 properties: {
                     amount: 2,
                     category: "Baby Products",
-                    date: "2022-03-10"
+                    date: "2022-03-10",
+		    description: "Baby Products: 2",
                 },
                 geometry: { type: "Point", coordinates: [30.524, 50.45] },
             },
@@ -191,7 +198,8 @@ test("mapAidRequestsToFeatures", () => {
                 properties: {
                     amount: 3,
                     category: "Sanitary pads",
-                    date: "2022-03-10"
+                    date: "2022-03-10",
+		    description: "Sanitary pads: 3",
                 },
                 geometry: { type: "Point", coordinates: [30.524, 50.45] },
             },
@@ -200,7 +208,8 @@ test("mapAidRequestsToFeatures", () => {
                 properties: {
                     amount: 5,
                     category: "Personal hygiene kits",
-                    date: "2022-03-10"
+                    date: "2022-03-10",
+		    description: "Personal hygiene kits: 5",		    
                 },
                 geometry: { type: "Point", coordinates: [30.524, 50.45] },
             },
@@ -210,7 +219,8 @@ test("mapAidRequestsToFeatures", () => {
                 properties: {
                     amount: 1,
                     category: "ALL",
-                    date: "2022-03-11"
+                    date: "2022-03-11",
+		    description: "\nBatteries: 1",
                 },
                 geometry: { type: "Point", coordinates: [30.524, 50.45] },
             },
@@ -219,7 +229,8 @@ test("mapAidRequestsToFeatures", () => {
                 properties: {
                     amount: 10,
                     category: "ALL",
-                    date: "2022-03-10"
+                    date: "2022-03-10",
+		    description: "\nPersonal hygiene kits: 5\nSanitary pads: 3\nBaby Products: 2",
                 },
                 geometry: { type: "Point", coordinates: [30.524, 50.45] },
             }
