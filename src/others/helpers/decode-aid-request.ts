@@ -17,7 +17,10 @@ export type Dictionary = {
   supplies: Supply[];
 };
 
-export const decodeAidRequestGroupedByLocationWithTotal = (dictionary: Dictionary, aidRequest: GroupedByLocationWithTotal): DecodedAidRequestGroupedByLocation => {
+export const decodeAidRequestGroupedByLocationWithTotal = (
+  dictionary: Dictionary,
+  aidRequest: GroupedByLocationWithTotal
+): DecodedAidRequestGroupedByLocation => {
   const decodedLocation = decodeLocation(dictionary.locations, aidRequest.city_id);
 
   const decodedAidRequests = aidRequest.aidRequests

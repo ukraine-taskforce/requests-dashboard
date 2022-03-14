@@ -19,6 +19,7 @@ import { Requests } from "./pages/requests";
 import { Incidents } from "./pages/incidents";
 import { NotFound } from "./pages/notFound";
 import { AuthProvider } from "./others/contexts/auth";
+import { FilterContextProvider } from "./others/contexts/filter";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -26,18 +27,20 @@ ReactDOM.render(
       <QueryClientProvider client={queryClient}>
         <MuiThemeProvider theme={muiTheme}>
           <SidebarContextProvider>
-            <CssBaseline />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route element={<AuthWrapper />}>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/requests" element={<Requests />} />
-                  <Route path="/incidents" element={<Incidents />} />
-                </Route>
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
+            <FilterContextProvider>
+              <CssBaseline />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/login" element={<Login />} />
+                  <Route element={<AuthWrapper />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/requests" element={<Requests />} />
+                    <Route path="/incidents" element={<Incidents />} />
+                  </Route>
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </FilterContextProvider>
           </SidebarContextProvider>
         </MuiThemeProvider>
       </QueryClientProvider>
