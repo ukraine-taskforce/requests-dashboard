@@ -133,7 +133,7 @@ export function useAidRequestQuery() {
   });
 }
 
-const mockAidRequests = [
+/*const mockAidRequests = [
   { date: "2022-03-10", city_id: 1, category_id: "personal_hygiene_kits", requested_amount: 14 },
   { date: "2022-03-10", city_id: 1, category_id: "water", requested_amount: 20 },
   { date: "2022-03-10", city_id: 1, category_id: "food", requested_amount: 14 },
@@ -146,4 +146,4 @@ const mockAidRequests = [
   { date: "2022-03-09", city_id: 3, category_id: "water", requested_amount: 14 },
   { date: "2022-03-09", city_id: 4, category_id: "torches", requested_amount: 99 },
   { date: "2022-03-09", city_id: 4, category_id: "food", requested_amount: 20 },
-];
+];*/
