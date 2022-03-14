@@ -68,6 +68,7 @@ export const TimelineSlider = ({ dates }: TimelineSliderProps) => {
               aria-label="Timeline"
               defaultValue={dates.length}
               onChange={handleSliderChange}
+              track={false}
               step={1}
               marks
               min={1}

@@ -24,13 +24,15 @@ export function Requests() {
   const { data: aidRequests } = useAidRequestQuery();
   const filterContext = useFilter();
 
+  const addFilter = filterContext.addFilter;
+
   const { decodedAndGroupedByLocation, decodedAndGroupedByCategory } = useMemo(() => {
     return processAidRequests(cities, supplies, aidRequests);
   }, [cities, supplies, aidRequests]);
 
   useEffect(() => {
     if (supplies?.length) {
-      filterContext.addFilter({
+      addFilter({
         filterName: "Categories",
         filterItems: supplies.map((category): FilterItem => ({ id: category.name as ID, selected: false, text: category.name })),
         active: false,
@@ -44,7 +46,7 @@ export function Requests() {
         return dateSet;
       }, new Set<string>());
 
-      filterContext.addFilter({
+      addFilter({
         filterName: "Dates",
         filterItems: Array.from(dates)
           .map((date, i): FilterItem => ({ id: date, selected: i === dates.size - 1, text: date }))
@@ -69,7 +71,7 @@ export function Requests() {
     //     singleValueFilter: true,
     //   });
     // }
-  }, [supplies, decodedAndGroupedByLocation, aidRequests, filterContext]);
+  }, [supplies, decodedAndGroupedByLocation, aidRequests, addFilter]);
 
   const memoisedLocationsTable = useMemo(() => {
     const totalDescending = (a: any, b: any) => b.total - a.total;

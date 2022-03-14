@@ -18,6 +18,7 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
   filterItems = [],
   filterName,
   filterActive,
+  singleValueFilter,
   filterItemToggleHandler,
   filterGroupOpenHandler,
 }) => {
@@ -47,6 +48,14 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
   const toggleFilterList = () => {
     filterGroupOpenHandler && filterGroupOpenHandler(filterName);
     setFilterListVisible((filterListVisible) => !filterListVisible);
+  };
+
+  const clickHandler = (id: ID, selected: boolean) => () => {
+    if (selected) {
+      filterItemToggleHandler(id, false);
+    } else {
+      filterItemToggleHandler(id);
+    }
   };
 
   const checkboxListItemIcon = (value: boolean) => (
@@ -96,11 +105,13 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
             color: "#000",
           }}
         >
-          <ListItem sx={{ justifyContent: "center" }}>
-            <Button color="primary" onClick={clearAllFilters}>
-              Clear
-            </Button>
-          </ListItem>
+          {!singleValueFilter && (
+            <ListItem sx={{ justifyContent: "center" }}>
+              <Button color="primary" onClick={clearAllFilters}>
+                Clear
+              </Button>
+            </ListItem>
+          )}
           <ListItem>
             <ListItemButton divider={true} onClick={clearAllFilters}>
               <ListItemText color="#000">All</ListItemText>
@@ -109,7 +120,7 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
           </ListItem>
           {filterItems.map(({ id, text, selected }) => (
             <ListItem key={id}>
-              <ListItemButton onClick={() => filterItemToggleHandler(id)}>
+              <ListItemButton onClick={clickHandler(id, selected)}>
                 <ListItemText>{text}</ListItemText>
                 {checkboxListItemIcon(selected)}
               </ListItemButton>
