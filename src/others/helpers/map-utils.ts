@@ -35,8 +35,23 @@ export const mapAidRequestsToFeatures = (decodedAidRequestGroupedByLocation: Dec
                 addAggregatedFeaturePerLocationAndDate(locationGroup, locationAndDateRequests, features);
             })
         });
-    })
-    return features;
+    });
+    var maxPerCategory: { [id:string]: number;} = {};
+    features.forEach(function (feature) {
+      if (feature.properties) {
+        if (!(feature.properties.category in maxPerCategory)) {
+        	 maxPerCategory[feature.properties.category] = 0;
+        }
+        maxPerCategory[feature.properties.category] = Math.max(maxPerCategory[feature.properties.category], feature.properties.amount);
+      }
+    }, Object.create(null));
+    const featuresWithNormalizedAmount = Array.from(features).map((feature) => {
+      if (feature.properties){
+        feature.properties.normalized_amount = feature.properties.amount / maxPerCategory[feature.properties.category];
+      }
+      return feature;
+    });
+    return featuresWithNormalizedAmount;
 }
 
 export const possibleDates = (requests: AidRequest[]) => {
