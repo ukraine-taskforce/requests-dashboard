@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { QueryClient, useQuery } from "react-query";
+import { fakeRequests } from "../../others/fixtures/fakedata";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -109,6 +110,9 @@ export function useAidRequestQuery() {
   const { i18n } = useTranslation();
 
   return useQuery<AidRequest[]>(`aidRequestQuery${i18n.language}`, async () => {
+    // REMOVE THIS AFTER THE DEMO!
+    return fakeRequests;
+    /*
     try {
       const result = await fetch(`${API_DOMAIN}/aggregated`)
         .then((res) => {
@@ -125,11 +129,11 @@ export function useAidRequestQuery() {
       }
 
       throw error;
-    }
+    }*/
   });
 }
 
-const mockAidRequests = [
+/*const mockAidRequests = [
   { date: "2022-03-10", city_id: 1, category_id: "personal_hygiene_kits", requested_amount: 14 },
   { date: "2022-03-10", city_id: 1, category_id: "water", requested_amount: 20 },
   { date: "2022-03-10", city_id: 1, category_id: "food", requested_amount: 14 },
@@ -142,4 +146,4 @@ const mockAidRequests = [
   { date: "2022-03-09", city_id: 3, category_id: "water", requested_amount: 14 },
   { date: "2022-03-09", city_id: 4, category_id: "torches", requested_amount: 99 },
   { date: "2022-03-09", city_id: 4, category_id: "food", requested_amount: 20 },
-];
+];*/
