@@ -23,33 +23,34 @@ const initialUkraineCenterView = {
 
 const MAP_STYLE = process.env.REACT_APP_MAPLIBRE_MAP_STYLE || "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 
-export const Map = ({sourceWithLayer}: MapProps) => {
+export const Map = ({ sourceWithLayer }: MapProps) => {
   const mapRef = useRef<MapRef>(null);
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
-  const [cursor, setCursor] = useState<'auto' | 'pointer'>('auto');
+  const [cursor, setCursor] = useState<"auto" | "pointer">("auto");
 
-  const handleMouseEnter = useCallback((event: MapLayerMouseEvent) => {
-    if (mapRef?.current) {
-      const features = mapRef.current.queryRenderedFeatures(event.point, {
-        layers: ["ukr_water_needs-point"],
-      })
+  const handleMouseEnter = useCallback(
+    (event: MapLayerMouseEvent) => {
+      if (mapRef?.current) {
+        const features = mapRef.current.queryRenderedFeatures(event.point);
 
-      if (features && features.length > 0) {
-        const requestData = features[0].properties;
+        if (features && features.length > 0) {
+          const requestData = features[0].properties;
 
-        setCursor('pointer');
+          setCursor("pointer");
 
-        setPopupInfo({
-          longitude: event.lngLat.lng,
-          latitude: event.lngLat.lat,
-          description: requestData ? requestData.description : 'Information unavailable',
-        })
+          setPopupInfo({
+            longitude: event.lngLat.lng,
+            latitude: event.lngLat.lat,
+            description: requestData ? requestData.description : "Information unavailable",
+          });
+        }
       }
-    }
-  }, [mapRef]);
+    },
+    [mapRef]
+  );
 
   const handleMouseLeave = useCallback(() => {
-    setCursor('auto');
+    setCursor("auto");
     setPopupInfo(null);
   }, []);
 
@@ -61,12 +62,11 @@ export const Map = ({sourceWithLayer}: MapProps) => {
         initialViewState={initialUkraineCenterView}
         mapStyle={MAP_STYLE}
         style={{ borderRadius: "24px" }}
-        interactiveLayerIds={["ukr_water_needs-point"]}
         cursor={cursor}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-          {sourceWithLayer}
+        {sourceWithLayer}
 
         {popupInfo && (
           <Popup
@@ -76,17 +76,15 @@ export const Map = ({sourceWithLayer}: MapProps) => {
             closeButton={false}
             closeOnClick={false}
             style={{
-              color: '#000000'
+              color: "#000000",
             }}
           >
             <div>
-              <pre>
-                {popupInfo.description}
-              </pre>
+              <pre>{popupInfo.description}</pre>
             </div>
           </Popup>
         )}
       </MapComponent>
     </Box>
   );
-}
+};

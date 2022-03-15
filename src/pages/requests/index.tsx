@@ -156,7 +156,7 @@ export function Requests() {
       >
         <Map
           sourceWithLayer={
-            <Source id="ukr_water_needs" type="geojson" data={geojson}>
+            <Source type="geojson" data={geojson}>
               {/* @ts-ignore */}
               <Layer {...layerStyle} filter={layerFilter} />
             </Source>
