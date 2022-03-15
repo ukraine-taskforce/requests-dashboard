@@ -21,6 +21,8 @@ const initialUkraineCenterView = {
   zoom: 5,
 };
 
+const MAP_STYLE = process.env.REACT_APP_MAPLIBRE_MAP_STYLE || "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
+
 export const Map = ({sourceWithLayer}: MapProps) => {
   const mapRef = useRef<MapRef>(null);
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
@@ -57,7 +59,7 @@ export const Map = ({sourceWithLayer}: MapProps) => {
         ref={mapRef}
         mapLib={maplibregl}
         initialViewState={initialUkraineCenterView}
-        mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+        mapStyle={MAP_STYLE}
         style={{ borderRadius: "24px" }}
         interactiveLayerIds={["ukr_water_needs-point"]}
         cursor={cursor}
