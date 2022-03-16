@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { QueryClient, useQuery } from "react-query";
-import { fakeRequests } from "../../others/fixtures/fakedata";
+import { fakeRequests } from "../../others/fixtures/fakeRequestsV2";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
