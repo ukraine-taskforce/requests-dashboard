@@ -16,8 +16,8 @@ import { queryClient } from "./others/contexts/api";
 import { Home } from "./pages/home";
 import { Login } from "./pages/login";
 import { Requests } from "./pages/requests";
-import { Incidents } from "./pages/incidents";
 import { NotFound } from "./pages/notFound";
+import { ResetPassword } from "./pages/resetPassword";
 import { AuthProvider } from "./others/contexts/auth";
 import { FilterContextProvider } from "./others/contexts/filter";
 
@@ -32,10 +32,10 @@ ReactDOM.render(
               <BrowserRouter>
                 <Routes>
                   <Route path="/login" element={<Login />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
                   <Route element={<AuthWrapper />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/requests" element={<Requests />} />
-                    <Route path="/incidents" element={<Incidents />} />
                   </Route>
                   <Route path="*" element={<NotFound />} />
                 </Routes>

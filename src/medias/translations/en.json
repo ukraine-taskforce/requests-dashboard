@@ -39,9 +39,12 @@
   "ugt": "Ukraine Global Taskforce",
   "page_not_exist": "This page does not exist",
   "go_to_homepage": "Go to the homepage",
-
   "by_cities": "By cities",
   "by_items": "By items",
   "email": "email",
-  "password": "password"
+  "password": "password",
+  "error_access": "You are not allowed to see a map, please request access to an administrator",
+  "login": "Login",
+  "request_new_password": "Forgot password ?",
+  "request_new_password_label": "You will receive a new password on your email"
 }

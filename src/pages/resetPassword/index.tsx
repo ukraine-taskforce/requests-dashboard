@@ -12,21 +12,20 @@ import { AuthStatus, useAuth } from "../../others/contexts/auth";
 
 import { ImgBrand } from "../../medias/images/UGT_Asset_Brand";
 
-export function Login() {
+export function ResetPassword() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { login, status } = useAuth();
+  const { resetPassword, status } = useAuth();
   const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
 
   // For caching purposes
   useSuppliesQuery();
   useLocationsQuery();
 
   const handleSubmit = React.useCallback(async () => {
-    login(email, password);
-    navigate("/");
-  }, [login, navigate, email, password]);
+    await resetPassword(email);
+    navigate("/login");
+  }, [resetPassword, navigate, email]);
 
   return (
     <Container maxWidth="sm">
@@ -36,6 +35,9 @@ export function Login() {
           {t("ugt")}
         </Typography>
       </Box>
+      <Typography variant="h4" component="h1" gutterBottom sx={{ margin: "auto" }}>
+        {t("request_new_password_label")}
+      </Typography>
       <form onSubmit={handleSubmit}>
         <Box sx={{ mb: 10, display: "flex", flexDirection: "column" }}>
           <TextField
@@ -48,22 +50,9 @@ export function Login() {
             value={email}
             onChange={(event) => setEmail(event.currentTarget.value)}
           />
-          <TextField
-            sx={{ mb: 2 }}
-            label={t("password")}
-            placeholder="password"
-            type="password"
-            inputProps={{ "aria-label": t("password") }}
-            variant="filled"
-            value={password}
-            onChange={(event) => setPassword(event.currentTarget.value)}
-          />
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column" }}>
-          <Button sx={{ mb: 2 }} variant="contained" type="submit" disabled={status === AuthStatus.Loading}>
-            {t("login")}
-          </Button>
-          <Button sx={{ mb: 2 }} variant="outlined"  disabled={status === AuthStatus.Loading} onClick={() => navigate("/request-password")}>
+          <Button sx={{ mb: 2 }} variant="outlined" disabled={status === AuthStatus.Loading}>
             {t("request_new_password")}
           </Button>
         </Box>
