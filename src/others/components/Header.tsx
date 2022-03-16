@@ -13,6 +13,7 @@ import { useAuth } from "../contexts/auth";
 
 import { useSidebarContext } from "./sidebar-context";
 import { TimelineSlider } from "./TimelineSlider";
+import { FileDownloaderMenu } from "./FileDownloaderMenu";
 
 export interface HeaderProps {
   children?: ReactNode;
@@ -33,10 +34,11 @@ export const Header = ({ children }: HeaderProps) => {
         <IconButton size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }} onClick={toggle}>
           <MenuIcon />
         </IconButton>
+
         <Typography variant="h6" component="div" mr={8}>
           Dashboard
         </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", marginLeft: "153px" }}>
+        <Box sx={{ display: "flex", flexGrow: "1", alignItems: "center", marginLeft: "153px" }}>
           <FilterDropdownGroup
             filters={Object.values(otherFilters)}
             filterGroupOpenHandler={activateFilter}
@@ -46,6 +48,9 @@ export const Header = ({ children }: HeaderProps) => {
         </Box>
         {children}
         <OutputIcon onClick={logout} sx={{ width: 30, height: 30, marginLeft: "auto", cursor: "pointer" }} />
+        <Box sx={{ justifySelf: "flex-end" }}>
+          <FileDownloaderMenu />
+        </Box>
       </Toolbar>
     </AppBar>
   );
