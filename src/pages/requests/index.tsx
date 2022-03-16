@@ -51,10 +51,11 @@ export function Requests() {
       addFilter({
         filterName: "Dates",
         filterItems: Array.from(dates)
-          .map((date, i): FilterItem => ({ id: date, selected: i === dates.size - 1, text: date }))
           .sort((a, b) => {
-            return new Date(a.text).getTime() - new Date(b.text).getTime();
-          }),
+            return new Date(a).getTime() - new Date(b).getTime();
+          })
+          .map((date, i): FilterItem => ({ id: date, selected: i === dates.size - 1, text: date }))
+         ,
         active: false,
         singleValueFilter: true,
       });
