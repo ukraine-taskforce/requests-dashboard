@@ -23,20 +23,20 @@ const supplies = [
 ];
 
 const cities = [
-  { id: 1, name: "Kyiv", lat: 50.45, lon: 30.524 },
-  { id: 2, name: "Chernihiv", lat: 51.494, lon: 31.294 },
-  { id: 30, name: "Vinnytsia", lat: 49.232, lon: 28.467 },
-  { id: 1220, name: "Rovenky", lat: 48.089, lon: 39.368 },
-  { id: 1221, name: "Lymanske", lat: 46.661, lon: 29.976 },
-  { id: 1222, name: "Staromykhailivka", lat: 48, lon: 37.583 },
-  { id: 1223, name: "Alupka", lat: 44.42, lon: 34.048 },
-  { id: 1224, name: "Nyzhnii Naholchyk", lat: 48.02, lon: 39.059 },
-  { id: 1225, name: "Yesaulivka", lat: 48.051, lon: 39.025 },
-  { id: 1226, name: "Zaliznychne", lat: 47.645, lon: 36.169 },
-  { id: 1227, name: "Haivoron", lat: 48.336, lon: 29.867 },
-  { id: 1228, name: "Gvardeiskoe, Crimea ", lat: 45.115, lon: 34.023 },
-  { id: 1229, name: "Khrystynivka", lat: 48.812, lon: 29.967 },
-  { id: 1230, name: "Kirovske, Donetsk Oblast 86300", lat: 48.145, lon: 38.354 },
+  { id: 1, name: "Kyiv", lat: 50.45, lon: 30.524, region_id: "1" },
+  { id: 2, name: "Chernihiv", lat: 51.494, lon: 31.294, region_id: "1" },
+  { id: 30, name: "Vinnytsia", lat: 49.232, lon: 28.467, region_id: "1" },
+  { id: 1220, name: "Rovenky", lat: 48.089, lon: 39.368, region_id: "1" },
+  { id: 1221, name: "Lymanske", lat: 46.661, lon: 29.976, region_id: "1" },
+  { id: 1222, name: "Staromykhailivka", lat: 48, lon: 37.583, region_id: "1" },
+  { id: 1223, name: "Alupka", lat: 44.42, lon: 34.048, region_id: "1" },
+  { id: 1224, name: "Nyzhnii Naholchyk", lat: 48.02, lon: 39.059, region_id: "1" },
+  { id: 1225, name: "Yesaulivka", lat: 48.051, lon: 39.025, region_id: "1" },
+  { id: 1226, name: "Zaliznychne", lat: 47.645, lon: 36.169, region_id: "1" },
+  { id: 1227, name: "Haivoron", lat: 48.336, lon: 29.867, region_id: "" },
+  { id: 1228, name: "Gvardeiskoe, Crimea ", lat: 45.115, lon: 34.023, region_id: "1" },
+  { id: 1229, name: "Khrystynivka", lat: 48.812, lon: 29.967, region_id: "1" },
+  { id: 1230, name: "Kirovske, Donetsk Oblast 86300", lat: 48.145, lon: 38.354, region_id: "1" },
 ];
 
 const exampleAggregatedRequests = [
@@ -79,7 +79,7 @@ test("processAidRequests.decodedAndGroupedByLocation has an expected value", () 
 
   expect(processedAidRequests.decodedAndGroupedByLocation).toEqual([
     {
-      location: { name: "Kyiv", lat: 50.45, lon: 30.524 },
+      location: { name: "Kyiv", lat: 50.45, lon: 30.524, region_id: "1" },
       total: 18,
       decodedAidRequests: [
         { date: "2022-03-11", amount: 4, name: "Bedding" },
@@ -91,17 +91,17 @@ test("processAidRequests.decodedAndGroupedByLocation has an expected value", () 
       ],
     },
     {
-      location: { name: "Chernihiv", lat: 51.494, lon: 31.294 },
+      location: { name: "Chernihiv", lat: 51.494, lon: 31.294, region_id: "1" },
       total: 1,
       decodedAidRequests: [{ date: "2022-03-10", amount: 1, name: "Personal hygiene kits" }],
     },
     {
-      location: { name: "Vinnytsia", lat: 49.232, lon: 28.467 },
+      location: { name: "Vinnytsia", lat: 49.232, lon: 28.467, region_id: "1" },
       total: 4,
       decodedAidRequests: [{ date: "2022-03-11", amount: 4, name: "Batteries" }],
     },
     {
-      location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+      location: { name: "Zaliznychne", lat: 47.645, lon: 36.169, region_id: "1" },
       total: 159,
       decodedAidRequests: [
         { date: "2022-03-11", amount: 10, name: "Sanitary pads" },
@@ -133,12 +133,12 @@ test("processAidRequests.decodedAndGroupedByCategory has an expected value", () 
         {
           date: "2022-03-11",
           amount: 10,
-          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169, region_id: "1" },
         },
         {
           date: "2022-03-10",
           amount: 2,
-          location: { name: "Kyiv", lat: 50.45, lon: 30.524 },
+          location: { name: "Kyiv", lat: 50.45, lon: 30.524, region_id: "1" },
         },
       ],
     },
@@ -149,17 +149,17 @@ test("processAidRequests.decodedAndGroupedByCategory has an expected value", () 
         {
           date: "2022-03-12",
           amount: 4,
-          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169, region_id: "1" },
         },
         {
           date: "2022-03-10",
           amount: 1,
-          location: { name: "Chernihiv", lat: 51.494, lon: 31.294 },
+          location: { name: "Chernihiv", lat: 51.494, lon: 31.294, region_id: "1" },
         },
         {
           date: "2022-03-11",
           amount: 21,
-          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169, region_id: "1" },
         },
       ],
     },
@@ -170,7 +170,7 @@ test("processAidRequests.decodedAndGroupedByCategory has an expected value", () 
         {
           date: "2022-03-11",
           amount: 4,
-          location: { name: "Kyiv", lat: 50.45, lon: 30.524 },
+          location: { name: "Kyiv", lat: 50.45, lon: 30.524, region_id: "1" },
         },
       ],
     },
@@ -181,7 +181,7 @@ test("processAidRequests.decodedAndGroupedByCategory has an expected value", () 
         {
           date: "2022-03-11",
           amount: 15,
-          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169, region_id: "1" },
         },
       ],
     },
@@ -192,7 +192,7 @@ test("processAidRequests.decodedAndGroupedByCategory has an expected value", () 
         {
           date: "2022-03-11",
           amount: 4,
-          location: { name: "Kyiv", lat: 50.45, lon: 30.524 },
+          location: { name: "Kyiv", lat: 50.45, lon: 30.524, region_id: "1" },
         },
       ],
     },
@@ -203,17 +203,17 @@ test("processAidRequests.decodedAndGroupedByCategory has an expected value", () 
         {
           date: "2022-03-11",
           amount: 19,
-          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169, region_id: "1" },
         },
         {
           date: "2022-03-10",
           amount: 2,
-          location: { name: "Kyiv", lat: 50.45, lon: 30.524 },
+          location: { name: "Kyiv", lat: 50.45, lon: 30.524, region_id: "1" },
         },
         {
           date: "2022-03-12",
           amount: 4,
-          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169, region_id: "1" },
         },
       ],
     },
@@ -224,12 +224,12 @@ test("processAidRequests.decodedAndGroupedByCategory has an expected value", () 
         {
           date: "2022-03-11",
           amount: 16,
-          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169, region_id: "1" },
         },
         {
           date: "2022-03-12",
           amount: 4,
-          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169, region_id: "1" },
         },
       ],
     },
@@ -240,7 +240,7 @@ test("processAidRequests.decodedAndGroupedByCategory has an expected value", () 
         {
           date: "2022-03-11",
           amount: 10,
-          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169, region_id: "1" },
         },
       ],
     },
@@ -251,7 +251,7 @@ test("processAidRequests.decodedAndGroupedByCategory has an expected value", () 
         {
           date: "2022-03-11",
           amount: 11,
-          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169, region_id: "1" },
         },
       ],
     },
@@ -262,12 +262,12 @@ test("processAidRequests.decodedAndGroupedByCategory has an expected value", () 
         {
           date: "2022-03-10",
           amount: 2,
-          location: { name: "Kyiv", lat: 50.45, lon: 30.524 },
+          location: { name: "Kyiv", lat: 50.45, lon: 30.524, region_id: "1" },
         },
         {
           date: "2022-03-11",
           amount: 10,
-          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169, region_id: "1" },
         },
       ],
     },
@@ -278,12 +278,12 @@ test("processAidRequests.decodedAndGroupedByCategory has an expected value", () 
         {
           date: "2022-03-11",
           amount: 4,
-          location: { name: "Kyiv", lat: 50.45, lon: 30.524 },
+          location: { name: "Kyiv", lat: 50.45, lon: 30.524, region_id: "1" },
         },
         {
           date: "2022-03-11",
           amount: 4,
-          location: { name: "Vinnytsia", lat: 49.232, lon: 28.467 },
+          location: { name: "Vinnytsia", lat: 49.232, lon: 28.467, region_id: "1" },
         },
       ],
     },
@@ -294,7 +294,7 @@ test("processAidRequests.decodedAndGroupedByCategory has an expected value", () 
         {
           date: "2022-03-11",
           amount: 20,
-          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169, region_id: "1" },
         },
       ],
     },
@@ -305,7 +305,7 @@ test("processAidRequests.decodedAndGroupedByCategory has an expected value", () 
         {
           date: "2022-03-11",
           amount: 15,
-          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+          location: { name: "Zaliznychne", lat: 47.645, lon: 36.169, region_id: "1" },
         },
       ],
     },
