@@ -11,6 +11,8 @@ jobs:
       REACT_APP_API_DOMAIN: ${{ secrets.PROD_API_URL }}
       REACT_APP_MAPLIBRE_MAP_STYLE: ${{ secrets.MAP_STYLE }}
       REACT_APP_REQUESTS_SOURCE: ${{ secrets.PROD_REQUESTS_SOURCE }}
+      REACT_APP_CLIENT_ID: ${{ secrets.PROD_COGNITO_CLIENT }}
+      REACT_APP_USERPOOL_ID: ${{ secrets.PROD_COGNITO_POOL }}
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
