@@ -13,13 +13,15 @@ export interface TimelineSliderProps {
 export const TimelineSlider = ({ dates }: TimelineSliderProps) => {
   const [endDate, setEndDate] = useState<moment.Moment>(moment());
   const [startDate, setStartDate] = useState<moment.Moment>(moment());
-  const [selectedDate, setDate] = useState(endDate.toDate());
+  const [initialDate, setInitialDate] = useState<Date | null>(new Date());
+  const [selectedDate, setDate] = useState<Date | null>(null);
   const { toggleFilterItem } = useFilter();
 
   useEffect(() => {
     if (dates.length) {
       setStartDate(moment(dates[0], inputDateFormat));
       setEndDate(moment(dates[dates.length - 1], inputDateFormat));
+      !selectedDate && setInitialDate(moment(dates[dates.length - 1], inputDateFormat).toDate());
     }
   }, [dates]);
 
@@ -43,12 +45,14 @@ export const TimelineSlider = ({ dates }: TimelineSliderProps) => {
       if (typeof newValue === "number") {
         const newDate = dates[newValue - 1];
 
+        setInitialDate(null);
         setDate(moment(newDate, inputDateFormat).toDate());
         toggleFilterItem("Dates", newDate);
       }
     };
 
     const rangeLabel = `${startDate.format(dateDisplayFormat)} - ${endDate.format(dateDisplayFormat)}`;
+    const selectedDateLabel = initialDate ? moment(initialDate).format(dateDisplayFormat) : moment(selectedDate).format(dateDisplayFormat);
 
     return (
       <Box
@@ -61,7 +65,7 @@ export const TimelineSlider = ({ dates }: TimelineSliderProps) => {
           color: "#fff",
         }}
       >
-        <Typography sx={{ fontSize: 16, marginLeft: 12 }}>{moment(selectedDate).format(dateDisplayFormat)}</Typography>
+        <Typography sx={{ fontSize: 16, marginLeft: 12 }}>{selectedDateLabel}</Typography>
         <Grid container spacing={3} alignItems="center">
           <Grid item xs sx={{ marginLeft: 2 }}>
             <Slider
