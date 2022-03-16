@@ -21,9 +21,7 @@ const initialUkraineCenterView = {
   zoom: 5,
 };
 
-//const MAP_STYLE = process.env.REACT_APP_MAPLIBRE_MAP_STYLE || "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
-const MAP_STYLE = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
-
+const MAP_STYLE = process.env.REACT_APP_MAPLIBRE_MAP_STYLE || "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 
 export const Map = ({sourceWithLayer}: MapProps) => {
   const mapRef = useRef<MapRef>(null);
