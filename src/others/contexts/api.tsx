@@ -19,6 +19,7 @@ export interface Location {
   name: string;
   lat: number;
   lon: number;
+  region_id: string;
 }
 
 export function useLocationsQuery() {
@@ -38,10 +39,10 @@ export function useLocationsQuery() {
     } catch (error) {
       if (process.env.NODE_ENV !== "production") {
         return [
-          { id: 1, name: "Kyiv", lat: 50.45, lon: 30.524 },
-          { id: 2, name: "Kyinka", lat: 51.494, lon: 31.294 },
-          { id: 3, name: "Kyrnasivka", lat: 46.484, lon: 30.732 },
-          { id: 4, name: "Kyrylivka", lat: 50.351, lon: 30.95 },
+          { id: 1, name: "Kyiv", lat: 50.45, lon: 30.524, region_id: "UKR-ADM1-14850775B25539455" },
+          { id: 2, name: "Kyinka", lat: 51.494, lon: 31.294, region_id: "UKR-ADM1-14850775B25539455" },
+          { id: 3, name: "Kyrnasivka", lat: 46.484, lon: 30.732, region_id: "UKR-ADM1-14850775B25539455"},
+          { id: 4, name: "Kyrylivka", lat: 50.351, lon: 30.95, region_id: "UKR-ADM2-31201334B8340102" },
         ];
       }
 
