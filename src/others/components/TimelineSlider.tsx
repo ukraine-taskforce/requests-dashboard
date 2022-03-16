@@ -1,10 +1,18 @@
 import { Box, Grid, Slider, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import moment from "moment";
 import { useFilter } from "../contexts/filter";
 
 const dateDisplayFormat = "DD.MM";
 const inputDateFormat = "YYYY-MM-DD";
+
+function usePreviousDates(value: string[]) {
+  const ref = useRef<string[]>();
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+  return ref.current;
+}
 export interface TimelineSliderProps {
   // Timeline slider assums that dates are sorted and distinct,
   // passed as a strings in format DD-MM-YYYY.
@@ -13,15 +21,21 @@ export interface TimelineSliderProps {
 export const TimelineSlider = ({ dates }: TimelineSliderProps) => {
   const [endDate, setEndDate] = useState<moment.Moment>(moment());
   const [startDate, setStartDate] = useState<moment.Moment>(moment());
-  const [selectedDate, setDate] = useState(endDate.toDate());
+  const [selectedDate, setDate] = useState<Date | undefined>(undefined);
   const { toggleFilterItem } = useFilter();
+  const prevDates = usePreviousDates(dates);
 
   useEffect(() => {
+    const endDate = moment(dates[dates.length - 1], inputDateFormat)
     if (dates.length) {
       setStartDate(moment(dates[0], inputDateFormat));
-      setEndDate(moment(dates[dates.length - 1], inputDateFormat));
+      setEndDate(endDate);
     }
-  }, [dates]);
+
+    if (prevDates && prevDates.length !== dates.length) {
+      setDate(endDate.toDate())
+    }
+  }, [prevDates, dates]);
 
   if (dates.length <= 1) {
     return (
@@ -61,7 +75,7 @@ export const TimelineSlider = ({ dates }: TimelineSliderProps) => {
           color: "#fff",
         }}
       >
-        <Typography sx={{ fontSize: 16, marginLeft: 12 }}>{moment(selectedDate).format(dateDisplayFormat)}</Typography>
+        {selectedDate && <Typography sx={{ fontSize: 16, marginLeft: 12 }}>{moment(selectedDate).format(dateDisplayFormat)}</Typography>}
         <Grid container spacing={3} alignItems="center">
           <Grid item xs sx={{ marginLeft: 2 }}>
             <Slider
