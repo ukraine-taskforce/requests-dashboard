@@ -11,6 +11,7 @@ export const queryClient = new QueryClient({
 });
 
 export const API_DOMAIN = process.env.REACT_APP_API_DOMAIN || "http://127.0.0.1";
+export const REQUESTS_SOURCE = process.env.REACT_APP_REQUESTS_SOURCE || "api";
 
 export type ID = string | number;
 
@@ -111,40 +112,24 @@ export function useAidRequestQuery() {
   const { i18n } = useTranslation();
 
   return useQuery<AidRequest[]>(`aidRequestQuery${i18n.language}`, async () => {
-    // REMOVE THIS AFTER THE DEMO!
-    return fakeRequests;
-    /*
-    try {
-      const result = await fetch(`${API_DOMAIN}/aggregated`)
-        .then((res) => {
-          if (!res.ok) throw new Error(res.statusText);
+    if (REQUESTS_SOURCE === "fakeRequestsV2") {
+      return fakeRequests;
+    }
+    if (REQUESTS_SOURCE === "api") {
+      try {
+        const result = await fetch(`${API_DOMAIN}/aggregated`)
+          .then((res) => {
+            if (!res.ok) throw new Error(res.statusText);
 
-          return res;
-        })
-        .then((res) => res.json());
+            return res;
+          })
+          .then((res) => res.json());
 
-      return result.data;
-    } catch (error) {
-      if (process.env.NODE_ENV !== "production") {
-        return mockAidRequests;
+        return result.data;
+      } catch (error) {
+        throw error;
       }
-
-      throw error;
-    }*/
+    }
+    throw new Error("Request source [" + REQUESTS_SOURCE + "] is not supported.");
   });
 }
-
-/*const mockAidRequests = [
-  { date: "2022-03-10", city_id: 1, category_id: "personal_hygiene_kits", requested_amount: 14 },
-  { date: "2022-03-10", city_id: 1, category_id: "water", requested_amount: 20 },
-  { date: "2022-03-10", city_id: 1, category_id: "food", requested_amount: 14 },
-  { date: "2022-03-10", city_id: 1, category_id: "water", requested_amount: 14 },
-  { date: "2022-03-10", city_id: 1, category_id: "medical_kits_supplies", requested_amount: 10 },
-  { date: "2022-03-10", city_id: 1, category_id: "food", requested_amount: 20 },
-  { date: "2022-03-09", city_id: 1, category_id: "medical_kits_supplies", requested_amount: 14 },
-  { date: "2022-03-09", city_id: 1, category_id: "water", requested_amount: 20 },
-  { date: "2022-03-09", city_id: 3, category_id: "food", requested_amount: 14 },
-  { date: "2022-03-09", city_id: 3, category_id: "water", requested_amount: 14 },
-  { date: "2022-03-09", city_id: 4, category_id: "torches", requested_amount: 99 },
-  { date: "2022-03-09", city_id: 4, category_id: "food", requested_amount: 20 },
-];*/
