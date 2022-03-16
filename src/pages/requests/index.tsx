@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Layer, Source } from "react-map-gl";
 import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 
-import { useLocationsQuery, useAidRequestQuery, useSuppliesQuery, ID } from "../../others/contexts/api";
+import { useLocationsQuery, useAidRequestQuery, useSuppliesQuery } from "../../others/contexts/api";
 import { Layout } from "../../others/components/Layout";
 import { Map } from "../../others/components/map/Map";
 import { Header } from "../../others/components/Header";
