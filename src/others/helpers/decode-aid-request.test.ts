@@ -23,17 +23,17 @@ const dictionary = {
     { id: "gloves", name: "Gloves" },
   ],
   locations: [
-    { id: 1220, name: "Rovenky", lat: 48.089, lon: 39.368 },
-    { id: 1221, name: "Lymanske", lat: 46.661, lon: 29.976 },
-    { id: 1222, name: "Staromykhailivka", lat: 48, lon: 37.583 },
-    { id: 1223, name: "Alupka", lat: 44.42, lon: 34.048 },
-    { id: 1224, name: "Nyzhnii Naholchyk", lat: 48.02, lon: 39.059 },
-    { id: 1225, name: "Yesaulivka", lat: 48.051, lon: 39.025 },
-    { id: 1226, name: "Zaliznychne", lat: 47.645, lon: 36.169 },
-    { id: 1227, name: "Haivoron", lat: 48.336, lon: 29.867 },
-    { id: 1228, name: "Gvardeiskoe, Crimea ", lat: 45.115, lon: 34.023 },
-    { id: 1229, name: "Khrystynivka", lat: 48.812, lon: 29.967 },
-    { id: 1230, name: "Kirovske, Donetsk Oblast 86300", lat: 48.145, lon: 38.354 },
+    { id: 1220, name: "Rovenky", lat: 48.089, lon: 39.368, region_id: "r1" },
+    { id: 1221, name: "Lymanske", lat: 46.661, lon: 29.976, region_id: "r2" },
+    { id: 1222, name: "Staromykhailivka", lat: 48, lon: 37.583, region_id: "r3" },
+    { id: 1223, name: "Alupka", lat: 44.42, lon: 34.048, region_id: "r3" },
+    { id: 1224, name: "Nyzhnii Naholchyk", lat: 48.02, lon: 39.059, region_id: "r1" },
+    { id: 1225, name: "Yesaulivka", lat: 48.051, lon: 39.025, region_id: "r2" },
+    { id: 1226, name: "Zaliznychne", lat: 47.645, lon: 36.169, region_id: "r2" },
+    { id: 1227, name: "Haivoron", lat: 48.336, lon: 29.867, region_id: "r1" },
+    { id: 1228, name: "Gvardeiskoe, Crimea ", lat: 45.115, lon: 34.023, region_id: "r11" },
+    { id: 1229, name: "Khrystynivka", lat: 48.812, lon: 29.967, region_id: "r100" },
+    { id: 1230, name: "Kirovske, Donetsk Oblast 86300", lat: 48.145, lon: 38.354, region_id: "" },
   ],
 };
 
@@ -101,7 +101,7 @@ test("decodeAidRequestGroupedByLocationWithTotal", () => {
   const decodedGroupedByLocation = decodeAidRequestGroupedByLocationWithTotal(dictionary, aidRequestGroupedByLocationWithTotal);
 
   expect(decodedGroupedByLocation).toEqual({
-    location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
+    location: { name: "Zaliznychne", lat: 47.645, lon: 36.169, region_id: "r2" },
     total: 159,
     decodedAidRequests: [
       { date: "2022-03-11", amount: 10, name: "Sanitary pads" },
