@@ -1,21 +1,21 @@
 import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
-import { useAuth } from "../contexts/auth";
+import { AuthStatus, useAuth } from "../contexts/auth";
 
 export interface AuthWrapperProps {}
 
 export const AuthWrapper: React.FunctionComponent<AuthWrapperProps> = () => {
-  const { isLoggedIn } = useAuth();
+  const { status } = useAuth();
   const location = useLocation();
 
-  if (!isLoggedIn) {
+  if (status === AuthStatus.Loading) {
+    return null;
+  }
+
+  if (status === AuthStatus.SignedOut) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  return (
-    <React.Fragment>
-      <Outlet />
-    </React.Fragment>
-  );
+  return <Outlet />;
 };

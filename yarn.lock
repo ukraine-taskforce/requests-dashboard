@@ -5844,6 +5844,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"amazon-cognito-identity-js@npm:^5.2.8":
+  version: 5.2.8
+  resolution: "amazon-cognito-identity-js@npm:5.2.8"
+  dependencies:
+    buffer: 4.9.2
+    crypto-js: ^4.1.1
+    fast-base64-decode: ^1.0.0
+    isomorphic-unfetch: ^3.0.0
+    js-cookie: ^2.2.1
+  checksum: b65b6aa0c28ce22678144667e80ee07ce3b0f9a66bd1e054c9e8f3ab3ea5632c98ac25624e56f6023bff4851f30310bd8f510575547342dac17431c160fba84c
+  languageName: node
+  linkType: hard
+
 "ansi-align@npm:^3.0.0":
   version: 3.0.1
   resolution: "ansi-align@npm:3.0.1"
@@ -6961,7 +6974,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buffer@npm:^4.3.0":
+"buffer@npm:4.9.2, buffer@npm:^4.3.0":
   version: 4.9.2
   resolution: "buffer@npm:4.9.2"
   dependencies:
@@ -7981,6 +7994,13 @@ __metadata:
     randombytes: ^2.0.0
     randomfill: ^1.0.3
   checksum: c1609af82605474262f3eaa07daa0b2140026bd264ab316d4bf1170272570dbe02f0c49e29407fe0d3634f96c507c27a19a6765fb856fed854a625f9d15618e2
+  languageName: node
+  linkType: hard
+
+"crypto-js@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "crypto-js@npm:4.1.1"
+  checksum: b3747c12ee3a7632fab3b3e171ea50f78b182545f0714f6d3e7e2858385f0f4101a15f2517e033802ce9d12ba50a391575ff4638c9de3dd9b2c4bc47768d5425
   languageName: node
   linkType: hard
 
@@ -9788,6 +9808,13 @@ __metadata:
     snapdragon: ^0.8.1
     to-regex: ^3.0.1
   checksum: a41531b8934735b684cef5e8c5a01d0f298d7d384500ceca38793a9ce098125aab04ee73e2d75d5b2901bc5dddd2b64e1b5e3bf19139ea48bac52af4a92f1d00
+  languageName: node
+  linkType: hard
+
+"fast-base64-decode@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "fast-base64-decode@npm:1.0.0"
+  checksum: 4c59eb1775a7f132333f296c5082476fdcc8f58d023c42ed6d378d2e2da4c328c7a71562f271181a725dd17cdaa8f2805346cc330cdbad3b8e4b9751508bd0a3
   languageName: node
   linkType: hard
 
@@ -12041,6 +12068,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"isomorphic-unfetch@npm:^3.0.0":
+  version: 3.1.0
+  resolution: "isomorphic-unfetch@npm:3.1.0"
+  dependencies:
+    node-fetch: ^2.6.1
+    unfetch: ^4.2.0
+  checksum: 82b92fe4ec2823a81ab0fc0d11bd94d710e6f9a940d56b3cba31896d4345ec9ffc7949f4ff31ebcae84f6b95f7ebf3474c4c7452b834eb4078ea3f2c37e459c5
+  languageName: node
+  linkType: hard
+
 "istanbul-lib-coverage@npm:^3.0.0, istanbul-lib-coverage@npm:^3.0.1, istanbul-lib-coverage@npm:^3.2.0":
   version: 3.2.0
   resolution: "istanbul-lib-coverage@npm:3.2.0"
@@ -12711,6 +12748,13 @@ __metadata:
   bin:
     jest: bin/jest.js
   checksum: 96f1d69042b3c6dfc695f2a4e4b0db38af6fb78582ad1a02beaa57cfcd77cbd31567d7d865c1c85709b7c3e176eefa3b2035ffecd646005f15d8ef528eccf205
+  languageName: node
+  linkType: hard
+
+"js-cookie@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "js-cookie@npm:2.2.1"
+  checksum: 9b1fb980a1c5e624fd4b28ea4867bb30c71e04c4484bb3a42766344c533faa684de9498e443425479ec68609e96e27b60614bfe354877c449c631529b6d932f2
   languageName: node
   linkType: hard
 
@@ -19296,6 +19340,7 @@ __metadata:
     "@types/node": ^16.11.26
     "@types/react": ^17.0.39
     "@types/react-dom": ^17.0.13
+    amazon-cognito-identity-js: ^5.2.8
     husky: ^7.0.4
     i18next: ^21.6.13
     jest-watch-typeahead: 0.6.5
@@ -19315,7 +19360,6 @@ __metadata:
     s3-publish: ^2.1.0
     typescript: ^4.6.2
     web-vitals: ^2.1.4
-    webpack: ^5.70.0
   languageName: unknown
   linkType: soft
 
@@ -20161,7 +20205,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:^5.64.4, webpack@npm:^5.70.0, webpack@npm:^5.9.0":
+"webpack@npm:^5.64.4, webpack@npm:^5.9.0":
   version: 5.70.0
   resolution: "webpack@npm:5.70.0"
   dependencies:

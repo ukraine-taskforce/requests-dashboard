@@ -1,3 +1,4 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Box from "@mui/material/Box";
@@ -6,19 +7,30 @@ import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
-import { useLocationsQuery, useSuppliesQuery } from "../../others/contexts/api";
-import { useAuth } from "../../others/contexts/auth";
+import { AuthStatus, useAuth } from "../../others/contexts/auth";
 
 import { ImgBrand } from "../../medias/images/UGT_Asset_Brand";
 
 export function Login() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, status } = useAuth();
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
 
-  // For caching purposes
-  useSuppliesQuery();
-  useLocationsQuery();
+  const handleSubmit = React.useCallback(
+    async (event) => {
+      event.preventDefault();
+      await login(username, password);
+    },
+    [login, username, password]
+  );
+
+  React.useEffect(() => {
+    if (status === AuthStatus.SignedIn) {
+      navigate("/");
+    }
+  }, [status, navigate]);
 
   return (
     <Container maxWidth="sm">
@@ -28,39 +40,39 @@ export function Login() {
           {t("ugt")}
         </Typography>
       </Box>
-      <Box sx={{ mb: 10, display: "flex", flexDirection: "column" }}>
-        <TextField
-          sx={{ mb: 2 }}
-          label={t("email")}
-          placeholder="jane.doe@mail.com"
-          type="email"
-          inputProps={{ "aria-label": t("email") }}
-          variant="filled"
-        />
-        <TextField
-          sx={{ mb: 2 }}
-          label={t("password")}
-          placeholder="password"
-          type="password"
-          inputProps={{ "aria-label": t("password") }}
-          variant="filled"
-        />
-      </Box>
-      <Box sx={{ display: "flex", flexDirection: "column" }}>
-        <Button
-          sx={{ mb: 2 }}
-          variant="contained"
-          onClick={() => {
-            login();
-            navigate("/");
-          }}
-        >
-          {t("login")}
-        </Button>
-        <Button sx={{ mb: 2 }} variant="outlined">
-          {t("request_new_password")}
-        </Button>
-      </Box>
+      <form onSubmit={handleSubmit}>
+        <Box sx={{ mb: 10, display: "flex", flexDirection: "column" }}>
+          <TextField
+            sx={{ mb: 2 }}
+            label={t("login")}
+            placeholder="username"
+            autoComplete="login"
+            inputProps={{ "aria-label": t("email") }}
+            variant="filled"
+            value={username}
+            onChange={(event) => setUsername(event.currentTarget.value)}
+          />
+          <TextField
+            sx={{ mb: 2 }}
+            label={t("password")}
+            placeholder="password"
+            type="password"
+            autoComplete="password"
+            inputProps={{ "aria-label": t("password") }}
+            variant="filled"
+            value={password}
+            onChange={(event) => setPassword(event.currentTarget.value)}
+          />
+        </Box>
+        <Box sx={{ display: "flex", flexDirection: "column" }}>
+          <Button sx={{ mb: 2 }} variant="contained" type="submit" disabled={!username || !password || status === AuthStatus.Loading}>
+            {t("login")}
+          </Button>
+          <Button sx={{ mb: 2 }} variant="outlined" disabled={status === AuthStatus.Loading} onClick={() => navigate("/reset-password")}>
+            {t("request_new_password")}
+          </Button>
+        </Box>
+      </form>
     </Container>
   );
 }

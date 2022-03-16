@@ -39,9 +39,15 @@
   "ugt": "Ukraine Global Taskforce",
   "page_not_exist": "This page does not exist",
   "go_to_homepage": "Go to the homepage",
-
+  "go_to_logib": "Go back to the login form",
   "by_cities": "By cities",
   "by_items": "By items",
-  "email": "email",
-  "password": "password"
+  "password": "Password",
+  "login": "Login",
+  "code": "Code",
+  "request_new_password": "Forgot password ?",
+  "reset_password": "Reset Password",
+  "request_new_password_label": "You will receive a confirmation code on your email",
+  "password_change_success": "Your password was modified successfully",
+  "code_sent": "We sent a confirmation code to your email"
 }
