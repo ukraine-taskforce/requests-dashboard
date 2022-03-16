@@ -111,10 +111,10 @@ export function useAidRequestQuery() {
   const { i18n } = useTranslation();
 
   return useQuery<AidRequest[]>(`aidRequestQuery${i18n.language}`, async () => {
-    if (REQUESTS_SOURCE == "fakeRequestsV2") {
+    if (REQUESTS_SOURCE === "fakeRequestsV2") {
       return fakeRequests;
     }
-    if (REQUESTS_SOURCE == "api") {
+    if (REQUESTS_SOURCE === "api") {
       try {
         const result = await fetch(`${API_DOMAIN}/aggregated`)
           .then((res) => {
