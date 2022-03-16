@@ -47,10 +47,10 @@ export const Header = ({ children }: HeaderProps) => {
           {dates && <TimelineSlider dates={dates} />}
         </Box>
         {children}
-        <OutputIcon onClick={logout} sx={{ width: 30, height: 30, marginLeft: "auto", cursor: "pointer" }} />
         <Box sx={{ justifySelf: "flex-end" }}>
           <FileDownloaderMenu />
         </Box>
+        <OutputIcon onClick={logout} sx={{ width: 30, height: 30, marginLeft: "auto", cursor: "pointer" }} />
       </Toolbar>
     </AppBar>
   );
