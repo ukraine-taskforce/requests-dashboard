@@ -11,6 +11,7 @@ export const queryClient = new QueryClient({
 });
 
 export const API_DOMAIN = process.env.REACT_APP_API_DOMAIN || "http://127.0.0.1";
+export const REQUESTS_SOURCE = process.env.REACT_APP_REQUESTS_SOURCE || "api";
 
 export type ID = string | number;
 
@@ -19,6 +20,7 @@ export interface Location {
   name: string;
   lat: number;
   lon: number;
+  region_id: string;
 }
 
 export function useLocationsQuery() {
@@ -38,10 +40,10 @@ export function useLocationsQuery() {
     } catch (error) {
       if (process.env.NODE_ENV !== "production") {
         return [
-          { id: 1, name: "Kyiv", lat: 50.45, lon: 30.524 },
-          { id: 2, name: "Kyinka", lat: 51.494, lon: 31.294 },
-          { id: 3, name: "Kyrnasivka", lat: 46.484, lon: 30.732 },
-          { id: 4, name: "Kyrylivka", lat: 50.351, lon: 30.95 },
+          { id: 1, name: "Kyiv", lat: 50.45, lon: 30.524, region_id: "UKR-ADM1-14850775B25539455" },
+          { id: 2, name: "Kyinka", lat: 51.494, lon: 31.294, region_id: "UKR-ADM1-14850775B25539455" },
+          { id: 3, name: "Kyrnasivka", lat: 46.484, lon: 30.732, region_id: "UKR-ADM1-14850775B25539455"},
+          { id: 4, name: "Kyrylivka", lat: 50.351, lon: 30.95, region_id: "UKR-ADM2-31201334B8340102" },
         ];
       }
 
@@ -110,40 +112,24 @@ export function useAidRequestQuery() {
   const { i18n } = useTranslation();
 
   return useQuery<AidRequest[]>(`aidRequestQuery${i18n.language}`, async () => {
-    // REMOVE THIS AFTER THE DEMO!
-    return fakeRequests;
-    /*
-    try {
-      const result = await fetch(`${API_DOMAIN}/aggregated`)
-        .then((res) => {
-          if (!res.ok) throw new Error(res.statusText);
+    if (REQUESTS_SOURCE === "fakeRequestsV2") {
+      return fakeRequests;
+    }
+    if (REQUESTS_SOURCE === "api") {
+      try {
+        const result = await fetch(`${API_DOMAIN}/aggregated`)
+          .then((res) => {
+            if (!res.ok) throw new Error(res.statusText);
 
-          return res;
-        })
-        .then((res) => res.json());
+            return res;
+          })
+          .then((res) => res.json());
 
-      return result.data;
-    } catch (error) {
-      if (process.env.NODE_ENV !== "production") {
-        return mockAidRequests;
+        return result.data;
+      } catch (error) {
+        throw error;
       }
-
-      throw error;
-    }*/
+    }
+    throw new Error("Request source [" + REQUESTS_SOURCE + "] is not supported.");
   });
 }
-
-/*const mockAidRequests = [
-  { date: "2022-03-10", city_id: 1, category_id: "personal_hygiene_kits", requested_amount: 14 },
-  { date: "2022-03-10", city_id: 1, category_id: "water", requested_amount: 20 },
-  { date: "2022-03-10", city_id: 1, category_id: "food", requested_amount: 14 },
-  { date: "2022-03-10", city_id: 1, category_id: "water", requested_amount: 14 },
-  { date: "2022-03-10", city_id: 1, category_id: "medical_kits_supplies", requested_amount: 10 },
-  { date: "2022-03-10", city_id: 1, category_id: "food", requested_amount: 20 },
-  { date: "2022-03-09", city_id: 1, category_id: "medical_kits_supplies", requested_amount: 14 },
-  { date: "2022-03-09", city_id: 1, category_id: "water", requested_amount: 20 },
-  { date: "2022-03-09", city_id: 3, category_id: "food", requested_amount: 14 },
-  { date: "2022-03-09", city_id: 3, category_id: "water", requested_amount: 14 },
-  { date: "2022-03-09", city_id: 4, category_id: "torches", requested_amount: 99 },
-  { date: "2022-03-09", city_id: 4, category_id: "food", requested_amount: 20 },
-];*/

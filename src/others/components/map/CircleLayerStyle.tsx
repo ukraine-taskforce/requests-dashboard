@@ -10,9 +10,9 @@ export const layerStyle: LayerProps = {
       ["linear"],
       ["zoom"],
       7,
-      ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 1, 1, 4],
+      ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 1, 1, 12],
       16,
-      ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 5, 1, 70],
+      ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 5, 1, 300],
     ],
     "circle-color": [
       "interpolate",
