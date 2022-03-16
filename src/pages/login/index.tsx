@@ -7,7 +7,6 @@ import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
-import { useLocationsQuery, useSuppliesQuery } from "../../others/contexts/api";
 import { AuthStatus, useAuth } from "../../others/contexts/auth";
 
 import { ImgBrand } from "../../medias/images/UGT_Asset_Brand";
@@ -16,17 +15,22 @@ export function Login() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { login, status } = useAuth();
-  const [email, setEmail] = React.useState("");
+  const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
 
-  // For caching purposes
-  useSuppliesQuery();
-  useLocationsQuery();
+  const handleSubmit = React.useCallback(
+    async (event) => {
+      event.preventDefault();
+      await login(username, password);
+    },
+    [login, username, password]
+  );
 
-  const handleSubmit = React.useCallback(async () => {
-    login(email, password);
-    navigate("/");
-  }, [login, navigate, email, password]);
+  React.useEffect(() => {
+    if (status === AuthStatus.SignedIn) {
+      navigate("/");
+    }
+  }, [status, navigate]);
 
   return (
     <Container maxWidth="sm">
@@ -40,19 +44,20 @@ export function Login() {
         <Box sx={{ mb: 10, display: "flex", flexDirection: "column" }}>
           <TextField
             sx={{ mb: 2 }}
-            label={t("email")}
-            placeholder="jane.doe@mail.com"
-            type="email"
+            label={t("login")}
+            placeholder="username"
+            autoComplete="login"
             inputProps={{ "aria-label": t("email") }}
             variant="filled"
-            value={email}
-            onChange={(event) => setEmail(event.currentTarget.value)}
+            value={username}
+            onChange={(event) => setUsername(event.currentTarget.value)}
           />
           <TextField
             sx={{ mb: 2 }}
             label={t("password")}
             placeholder="password"
             type="password"
+            autoComplete="password"
             inputProps={{ "aria-label": t("password") }}
             variant="filled"
             value={password}
@@ -60,10 +65,10 @@ export function Login() {
           />
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column" }}>
-          <Button sx={{ mb: 2 }} variant="contained" type="submit" disabled={status === AuthStatus.Loading}>
+          <Button sx={{ mb: 2 }} variant="contained" type="submit" disabled={!username || !password || status === AuthStatus.Loading}>
             {t("login")}
           </Button>
-          <Button sx={{ mb: 2 }} variant="outlined"  disabled={status === AuthStatus.Loading} onClick={() => navigate("/request-password")}>
+          <Button sx={{ mb: 2 }} variant="outlined" disabled={status === AuthStatus.Loading} onClick={() => navigate("/reset-password")}>
             {t("request_new_password")}
           </Button>
         </Box>

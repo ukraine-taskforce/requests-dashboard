@@ -8,9 +8,9 @@ const clientId = process.env.REACT_APP_CLIENT_ID || "";
 const userPool = new CognitoUserPool({ UserPoolId: userPoolId, ClientId: clientId });
 
 export enum AuthStatus {
-  SignedIn,
-  SignedOut,
-  Loading,
+  SignedIn = "SignedIn",
+  SignedOut = "SignedOut",
+  Loading = "Loading",
 }
 
 export interface AuthContextValue {
@@ -18,7 +18,8 @@ export interface AuthContextValue {
   user: CognitoUser | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  resetPassword: (username: string) => Promise<void>;
+  sendCode: (username: string) => Promise<void>;
+  confirmPassword: (code: string, username: string, newPassword: string) => Promise<void>;
 }
 
 const AuthContext = React.createContext<AuthContextValue>({
@@ -26,7 +27,8 @@ const AuthContext = React.createContext<AuthContextValue>({
   user: null,
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
-  resetPassword: () => Promise.resolve(),
+  sendCode: () => Promise.resolve(),
+  confirmPassword: () => Promise.resolve(),
 });
 
 export function useAuth() {
@@ -36,10 +38,14 @@ export function useAuth() {
 async function getUserSession() {
   const currentUser = userPool.getCurrentUser();
 
-  new Promise(function (resolve, reject) {
-    currentUser?.getSession(function (err: any, session: any) {
-      if (err) {
-        reject(err);
+  return new Promise(function (resolve, reject) {
+    if (!currentUser) {
+      reject();
+    }
+
+    currentUser?.getSession((error: any, session: any) => {
+      if (error) {
+        reject(error);
       } else {
         resolve(session);
       }
@@ -47,13 +53,28 @@ async function getUserSession() {
   });
 }
 
-async function resetUserPassword(username: string) {
-  new Promise(function (resolve, reject) {
+async function sendUserResetCode(username: string) {
+  return new Promise(function (resolve, reject) {
     const nextUser = new CognitoUser({
       Username: username,
       Pool: userPool,
     });
+
     nextUser.forgotPassword({
+      onSuccess: () => resolve(null),
+      onFailure: (err: any) => reject(err),
+    });
+  });
+}
+
+async function changeUserPassword(code: string, username: string, newPassword: string) {
+  return new Promise(function (resolve, reject) {
+    const nextUser = new CognitoUser({
+      Username: username,
+      Pool: userPool,
+    });
+
+    nextUser.confirmPassword(code, newPassword, {
       onSuccess: () => resolve(null),
       onFailure: (err: any) => reject(err),
     });
@@ -75,7 +96,6 @@ export const AuthProvider: React.FunctionComponent = ({ children }) => {
         setStatus(AuthStatus.SignedOut);
       }
     };
-
     getCurrentSession();
   }, [status, setStatus]);
 
@@ -84,8 +104,6 @@ export const AuthProvider: React.FunctionComponent = ({ children }) => {
       if (status !== AuthStatus.SignedOut) {
         throw new Error("A user is already signed in");
       }
-
-      setStatus(AuthStatus.Loading);
 
       const authenticationDetails = new AuthenticationDetails({
         Username: username,
@@ -99,12 +117,24 @@ export const AuthProvider: React.FunctionComponent = ({ children }) => {
       try {
         await new Promise((resolve, reject) => {
           nextUser.authenticateUser(authenticationDetails, {
-            onSuccess: () => resolve(null),
+            onSuccess: () => {
+              setStatus(AuthStatus.SignedIn);
+              resolve(null);
+            },
             onFailure: (err: any) => reject(err),
+            newPasswordRequired: () => {
+              nextUser.completeNewPasswordChallenge(
+                password,
+                {},
+                {
+                  onSuccess: () => {},
+                  onFailure: () => {},
+                }
+              );
+              resolve(null);
+            },
           });
         });
-
-        setStatus(AuthStatus.SignedIn);
       } catch (error) {
         setStatus(AuthStatus.SignedOut);
         throw error;
@@ -118,28 +148,29 @@ export const AuthProvider: React.FunctionComponent = ({ children }) => {
     setStatus(AuthStatus.SignedOut);
   }, [setStatus]);
 
-  const resetPassword = React.useCallback(
-    async (username: string) => {
-      setStatus(AuthStatus.Loading);
+  const sendCode = React.useCallback(async (username: string) => {
+    try {
+      await sendUserResetCode(username);
+    } catch (error) {
+      throw error;
+    }
+  }, []);
 
-      try {
-        await resetUserPassword(username);
-
-        setStatus(AuthStatus.SignedOut);
-      } catch (error) {
-        setStatus(AuthStatus.SignedOut);
-        throw error;
-      }
-    },
-    [setStatus]
-  );
+  const confirmPassword = React.useCallback(async (code: string, username: string, newPassword: string) => {
+    try {
+      await changeUserPassword(code, username, newPassword);
+    } catch (error) {
+      throw error;
+    }
+  }, []);
 
   return (
     <AuthContext.Provider
       value={{
         login,
         logout,
-        resetPassword,
+        sendCode,
+        confirmPassword,
         status,
         user: userPool.getCurrentUser(),
       }}
