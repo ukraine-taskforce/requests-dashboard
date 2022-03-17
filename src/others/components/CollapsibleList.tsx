@@ -18,7 +18,7 @@ export const CollapsibleTable = ({ rows, ...tableProps }: CollapsibleTableProps)
         <TableBody sx={{ "& > *": { paddingY: 2 } }} className="collapsible-table-body">
           {rows.map((row, index) => (
             // TODO: last item should not have border
-            <CollapsibleListItem key={row.name + index} {...row} wrapperProps={{ paddingY: 2 }} />
+            <CollapsibleListItem key={`${row.left}-${index}`} {...row} wrapperProps={{ paddingY: 2 }} />
           ))}
         </TableBody>
       </Table>

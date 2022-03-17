@@ -2,6 +2,7 @@ import { useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Layer, Source } from "react-map-gl";
 import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
+import { orderBy, groupBy, map, assignInWith, reduce } from "lodash";
 
 import { useLocationsQuery, useAidRequestQuery, useSuppliesQuery, ID } from "../../others/contexts/api";
 import { Layout } from "../../others/components/Layout";
@@ -12,12 +13,20 @@ import { Sidebar } from "../../others/components/Sidebar";
 import { MultiTab } from "../../others/components/MultiTab";
 import { CollapsibleTable } from "../../others/components/CollapsibleList";
 import { layerStyle } from "../../others/components/map/CircleLayerStyle";
-import { mapAidRequestsToFeatures } from "../../others/helpers/map-utils";
+import { mapAidRequestsToFeatures, adaptToMap } from "../../others/helpers/map-utils";
 import { processAidRequests } from "../../others/helpers/process-aid-request";
 import { useSidebarContext } from "../../others/components/sidebar-context";
 import { FilterItem, useFilter } from "../../others/contexts/filter";
 import { DecodedLocation, DecodedAidRequest } from "../../others/helpers/decode-aid-request";
 import { mapLocationsToTableData, mapCategoriesToTableData } from "./map-to-table-data";
+
+import {
+  processByCities,
+  processedByCitiesToTableData,
+  getUniqueDates,
+  translateToLocation,
+  translateToSupply,
+} from "../../others/helpers/aid-request-grouped";
 
 export function Requests() {
   const { t } = useTranslation();
@@ -27,10 +36,6 @@ export function Requests() {
   const filterContext = useFilter();
 
   const addFilter = filterContext.addFilter;
-
-  const { decodedAndGroupedByLocation, decodedAndGroupedByCategory } = useMemo(() => {
-    return processAidRequests(cities, supplies, aidRequests);
-  }, [cities, supplies, aidRequests]);
 
   useEffect(() => {
     if (supplies?.length) {
@@ -50,12 +55,11 @@ export function Requests() {
 
       addFilter({
         filterName: "Dates",
-        filterItems: Array.from(dates)
+        filterItems: getUniqueDates(aidRequests)
           .sort((a, b) => {
             return new Date(a).getTime() - new Date(b).getTime();
           })
-          .map((date, i): FilterItem => ({ id: date, selected: i === dates.size - 1, text: date }))
-         ,
+          .map((date, i): FilterItem => ({ id: date, selected: i === dates.size - 1, text: date })),
         active: false,
         singleValueFilter: true,
       });
@@ -74,17 +78,32 @@ export function Requests() {
     //     singleValueFilter: true,
     //   });
     // }
-  }, [supplies, decodedAndGroupedByLocation, aidRequests, addFilter]);
+  }, [supplies, aidRequests, addFilter]);
+
+  const activeCategoryFilters = filterContext.getActiveFilterItems("Categories");
+  const activeDateFilter = String(filterContext.getActiveFilterItems("Dates")[0]); // TODO: change to string type, it's always string
+
+  const { processedByCities, mapData } = useMemo(() => {
+    if (!cities || !aidRequests || !supplies) {
+      return {
+        processedByCities: [],
+        mapData: [],
+      };
+    }
+    // const temp = aidRequests.slice(0, 100);
+    const processedByCities = processByCities(aidRequests, activeDateFilter);
+    const mapData = processedByCities.map((aidRequest) => adaptToMap(aidRequest, translateToLocation(cities), translateToSupply(supplies)));
+
+    return {
+      processedByCities,
+      mapData,
+    };
+  }, [aidRequests, cities, supplies, activeDateFilter]);
 
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
-    features: mapAidRequestsToFeatures(decodedAndGroupedByLocation),
+    features: mapAidRequestsToFeatures(mapData),
   };
-
-  const { selectedTabId, setSelectedTabId } = useSidebarContext();
-
-  const activeCategoryFilters = filterContext.getActiveFilterItems("Categories");
-  const activeDateFilter = filterContext.getActiveFilterItems("Dates")[0];
 
   const layerFilterCategory = activeCategoryFilters.length
     ? ["in", ["get", "category"], ["array", ["literal", activeCategoryFilters]]]
@@ -94,52 +113,30 @@ export function Requests() {
 
   const layerFilter = ["all", layerFilterCategory, layerFilterDate];
 
-  const selectedDate = activeDateFilter;
-  const activeCategories = activeCategoryFilters;
-  const categoriesTableData = mapLocationsToTableData(decodedAndGroupedByCategory);
-  const filteredAndGroupedByCategory = categoriesTableData
-    .map((data: CategoriesTableData) => {
-      return {
-        ...data,
-        hidden: data.hidden.filter((req) => req.date === selectedDate),
-      };
-    })
-    .filter((data: CategoriesTableData) => (activeCategories.length ? activeCategories.some((category) => data.name === category) : data)) // TODO: activeCategories needs to be full for "ALL"
-    .map((data: CategoriesTableData) => {
-      const getTotalForCategory = () => data.hidden.reduce((partialSum, aidRequest) => partialSum + aidRequest.total, 0);
-      return {
-        ...data,
-        total: getTotalForCategory(),
-      };
-    })
-    .filter((data: CategoriesTableData) => data.total !== 0)
-    .sort((a: any, b: any) => b.total - a.total);
+  // const categoriesTableData = mapLocationsToTableData(decodedAndGroupedByCategory);
+  // const filteredAndGroupedByCategory = categoriesTableData
+  //   .map((data: CategoriesTableData) => {
+  //     return {
+  //       ...data,
+  //       hidden: data.hidden.filter((req) => req.date === selectedDate),
+  //     };
+  //   })
+  //   .filter((data: CategoriesTableData) => (activeCategories.length ? activeCategories.some((category) => data.name === category) : data)) // TODO: activeCategories needs to be full for "ALL"
+  //   .map((data: CategoriesTableData) => {
+  //     const getTotalForCategory = () => data.hidden.reduce((partialSum, aidRequest) => partialSum + aidRequest.total, 0);
+  //     return {
+  //       ...data,
+  //       total: getTotalForCategory(),
+  //     };
+  //   })
+  //   .filter((data: CategoriesTableData) => data.total !== 0)
+  //   .sort((a: any, b: any) => b.total - a.total);
 
-  const locationsTableData = mapCategoriesToTableData(decodedAndGroupedByLocation);
-  const filteredAndGroupedByLocation = locationsTableData
-    .map((data: LocationsTableData) => {
-      return {
-        ...data,
-        decodedAidRequests: data.decodedAidRequests.filter((req) => req.date === selectedDate),
-      };
-    })
-    .map((data: LocationsTableData) => {
-      return {
-        ...data,
-        hidden: data.decodedAidRequests
-          .map((req) => ({ name: req.name, total: req.amount }))
-          .filter((req) => (activeCategories.length ? activeCategories.some((category) => req.name === category) : req)), // TODO: activeCategories needs to be full for "ALL"
-      };
-    })
-    .map((data: LocationsTableData) => {
-      const getTotalForLocation = () => data.hidden.reduce((partialSum, aidRequest) => partialSum + aidRequest.total, 0);
-      return {
-        ...data,
-        total: getTotalForLocation(),
-      };
-    })
-    .filter((data: LocationsTableData) => data.total !== 0)
-    .sort((a: any, b: any) => b.total - a.total);
+  // const locationsTableData = mapCategoriesToTableData(decodedAndGroupedByLocation);
+
+  const filteredAndGroupedByLocation = processedByCities.map(processedByCitiesToTableData);
+
+  const { selectedTabId, setSelectedTabId } = useSidebarContext();
 
   if (!cities) {
     return <Layout header={<Header />}>{/* <Loader /> */}</Layout>;
@@ -151,7 +148,8 @@ export function Requests() {
         aside={
           <Sidebar className="requests-sidebar">
             <MultiTab selectedId={selectedTabId} onChange={setSelectedTabId} labels={[t("by_cities"), t("by_items")]} marginBottom={4} />
-            <CollapsibleTable rows={selectedTabId === 0 ? filteredAndGroupedByLocation : filteredAndGroupedByCategory} />
+            {/* <CollapsibleTable rows={selectedTabId === 0 ? filteredAndGroupedByLocation : filteredAndGroupedByCategory} /> */}
+            <CollapsibleTable rows={filteredAndGroupedByLocation} />
           </Sidebar>
         }
       >

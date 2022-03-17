@@ -9,7 +9,7 @@ export type DecodedAidRequestGroupedByLocation = {
   decodedAidRequests: DecodedAidRequest[];
 };
 
-export type DecodedLocation = Pick<Location, "name" | "lat" | "lon">;
+export type DecodedLocation = Location;
 export type DecodedAidRequest = { date: string; name: string; amount: number };
 
 export type Dictionary = {
@@ -71,7 +71,9 @@ export const decodeAidRequestGroupedByCategoryWithTotal = (dictionary: Dictionar
 
 const decodeLocation = (locations: Location[], cityId: ID): DecodedLocation => {
   const location = locations.find((location) => String(location.id) === String(cityId));
-  return omit(location, "id");
+  if (!location) throw new Error(`Locatin: ${location} is not defined`);
+
+  return location;
 };
 
 const decodeCategory = (categories: Supply[], category_id: ID): string => {
