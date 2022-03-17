@@ -1,6 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { QueryClient, useQuery } from "react-query";
+import React from "react";
+
 import { fakeRequests } from "../../others/fixtures/fakeRequestsV2";
+import { useAuth } from "./auth";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,12 +26,32 @@ export interface Location {
   region_id: string;
 }
 
+function useFetch() {
+  const { session } = useAuth();
+
+  const query = React.useCallback(
+    (input: RequestInfo, init?: RequestInit) =>{
+      return fetch(input, {
+        headers: {
+          Authorization: session?.accessToken.jwtToken || "",
+        },
+        ...init,
+      })},
+    [session]
+  );
+
+  return {
+    query
+  };
+}
+
 export function useLocationsQuery() {
   const { i18n } = useTranslation();
+  const { query } = useFetch();
 
   return useQuery<Location[]>(`locationQuery${i18n.language}`, async () => {
     try {
-      const result = await fetch(`${API_DOMAIN}/locations?locale=${i18n.language}&include_metadata=true`)
+      const result = await query(`${API_DOMAIN}/locations?locale=${i18n.language}&include_metadata=true`)
         .then((res) => {
           if (!res.ok) throw new Error(res.statusText);
 
@@ -42,7 +65,7 @@ export function useLocationsQuery() {
         return [
           { id: 1, name: "Kyiv", lat: 50.45, lon: 30.524, region_id: "UKR-ADM1-14850775B25539455" },
           { id: 2, name: "Kyinka", lat: 51.494, lon: 31.294, region_id: "UKR-ADM1-14850775B25539455" },
-          { id: 3, name: "Kyrnasivka", lat: 46.484, lon: 30.732, region_id: "UKR-ADM1-14850775B25539455"},
+          { id: 3, name: "Kyrnasivka", lat: 46.484, lon: 30.732, region_id: "UKR-ADM1-14850775B25539455" },
           { id: 4, name: "Kyrylivka", lat: 50.351, lon: 30.95, region_id: "UKR-ADM2-31201334B8340102" },
         ];
       }
@@ -59,10 +82,11 @@ export interface Supply {
 
 export function useSuppliesQuery() {
   const { i18n } = useTranslation();
+  const { query } = useFetch();
 
   return useQuery<Supply[]>(`suppliesQuery${i18n.language}`, async () => {
     try {
-      const result = await fetch(`${API_DOMAIN}/supplies?locale=${i18n.language}`)
+      const result = await query(`${API_DOMAIN}/supplies?locale=${i18n.language}`)
         .then((res) => {
           if (!res.ok) throw new Error(res.statusText);
 
@@ -110,6 +134,7 @@ export interface AidRequest {
 
 export function useAidRequestQuery() {
   const { i18n } = useTranslation();
+  const { query } = useFetch();
 
   return useQuery<AidRequest[]>(`aidRequestQuery${i18n.language}`, async () => {
     if (REQUESTS_SOURCE === "fakeRequestsV2") {
@@ -117,7 +142,7 @@ export function useAidRequestQuery() {
     }
     if (REQUESTS_SOURCE === "api") {
       try {
-        const result = await fetch(`${API_DOMAIN}/aggregated`)
+        const result = await query(`${API_DOMAIN}/aggregated`)
           .then((res) => {
             if (!res.ok) throw new Error(res.statusText);
 
