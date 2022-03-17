@@ -1,4 +1,4 @@
-import { processByCities, processByCategories } from "./aid-request-grouped";
+import { groupByCities, groupByCategories, filterByCategoryIds } from "./aid-request-grouped";
 
 const supplies = [
   { id: "food", name: "Food" },
@@ -63,18 +63,39 @@ const exampleAggregatedRequests = [
   { date: "2022-03-11", city_id: 1226, category_id: "baby_food", requested_amount: 15 },
 ];
 
-// test("filters aid requests by date, exposes city_id and total of aid requests for a given city_id", () => {
-//   const processedByCities = processByCities(exampleAggregatedRequests, "2022-03-11");
+// TODO: pimp the tests
+test("filterByCategoryIds", () => {
+  const filtered = filterByCategoryIds(exampleAggregatedRequests, ["personal_hygiene_kits"]);
 
-//   expect(processedByCities).toEqual(aidRequestsGroupedByCityId);
-// });
+  expect(filtered).toEqual([
+    {
+      date: "2022-03-12",
+      city_id: 1226,
+      category_id: "personal_hygiene_kits",
+      requested_amount: 4,
+    },
+    {
+      date: "2022-03-10",
+      city_id: 2,
+      category_id: "personal_hygiene_kits",
+      requested_amount: 1,
+    },
+    {
+      date: "2022-03-11",
+      city_id: 1226,
+      category_id: "personal_hygiene_kits",
+      requested_amount: 21,
+    },
+  ]);
+});
 
-test("processByCities first group", () => {
-  const firstGroup = processByCities(exampleAggregatedRequests, "2022-03-11")[0];
+// TODO: pimp the tests
+test("groupByCities data shape", () => {
+  const firstGroup = groupByCities(exampleAggregatedRequests)[0];
 
   expect(firstGroup).toEqual({
     city_id: 1,
-    total: 12,
+    total: 18,
     aidRequests: [
       {
         date: "2022-03-11",
@@ -89,165 +110,55 @@ test("processByCities first group", () => {
         requested_amount: 4,
       },
       {
+        date: "2022-03-10",
+        city_id: 1,
+        category_id: "sanitary_pads",
+        requested_amount: 2,
+      },
+      {
+        date: "2022-03-10",
+        city_id: 1,
+        category_id: "food",
+        requested_amount: 2,
+      },
+      {
         date: "2022-03-11",
         city_id: 1,
         category_id: "batteries",
         requested_amount: 4,
       },
+      {
+        date: "2022-03-10",
+        city_id: 1,
+        category_id: "baby_products",
+        requested_amount: 2,
+      },
     ],
   });
 });
 
-test("processByCategories first group", () => {
-  const firstGroup = processByCategories(exampleAggregatedRequests, "2022-03-11")[0];
+// TODO: pimp the tests
+test("groupByCategories  data shape", () => {
+  const firstGroup = groupByCategories(exampleAggregatedRequests)[0];
 
   console.log(firstGroup);
 
   expect(firstGroup).toEqual({
     category_id: "sanitary_pads",
-    total: 10,
+    total: 12,
     aidRequests: [
       {
         date: "2022-03-11",
         city_id: 1226,
         category_id: "sanitary_pads",
         requested_amount: 10,
+      },
+      {
+        date: "2022-03-10",
+        city_id: 1,
+        category_id: "sanitary_pads",
+        requested_amount: 2,
       },
     ],
   });
 });
-
-const aidRequestsGroupedByCityId = [
-  {
-    city_id: 1,
-    total: 12,
-    aidRequests: [
-      { city_id: 1, date: "2022-03-11", category_id: "bedding", requested_amount: 4 },
-      { city_id: 1, date: "2022-03-11", category_id: "candles", requested_amount: 4 },
-      {
-        city_id: 1,
-        date: "2022-03-10",
-        category_id: "sanitary_pads",
-        requested_amount: 2,
-      },
-      { city_id: 1, date: "2022-03-10", category_id: "food", requested_amount: 2 },
-      {
-        city_id: 1,
-        date: "2022-03-11",
-        category_id: "batteries",
-        requested_amount: 4,
-      },
-      {
-        city_id: 1,
-        date: "2022-03-10",
-        category_id: "baby_products",
-        requested_amount: 2,
-      },
-    ],
-  },
-  {
-    city_id: 2,
-    total: 1,
-    aidRequests: [
-      {
-        city_id: 2,
-        date: "2022-03-10",
-        category_id: "personal_hygiene_kits",
-        requested_amount: 1,
-      },
-    ],
-  },
-  {
-    city_id: 30,
-    total: 4,
-    aidRequests: [
-      {
-        city_id: 30,
-        date: "2022-03-11",
-        category_id: "batteries",
-        requested_amount: 4,
-      },
-    ],
-  },
-  {
-    city_id: 1226,
-    total: 147,
-    aidRequests: [
-      {
-        city_id: 1226,
-        date: "2022-03-11",
-        category_id: "sanitary_pads",
-        requested_amount: 10,
-      },
-      {
-        city_id: 1226,
-        date: "2022-03-12",
-        category_id: "personal_hygiene_kits",
-        requested_amount: 4,
-      },
-      { city_id: 1226, date: "2022-03-11", category_id: "masks", requested_amount: 15 },
-      {
-        city_id: 1226,
-        date: "2022-03-11",
-        category_id: "baby_products",
-        requested_amount: 19,
-      },
-      {
-        city_id: 1226,
-        date: "2022-03-11",
-        category_id: "medical_kits_supplies",
-        requested_amount: 16,
-      },
-      {
-        city_id: 1226,
-        date: "2022-03-11",
-        category_id: "torches",
-        requested_amount: 10,
-      },
-      { city_id: 1226, date: "2022-03-11", category_id: "water", requested_amount: 11 },
-      {
-        city_id: 1226,
-        date: "2022-03-11",
-        category_id: "personal_hygiene_kits",
-        requested_amount: 21,
-      },
-      {
-        city_id: 1226,
-        date: "2022-03-11",
-        category_id: "tampons",
-        requested_amount: 20,
-      },
-      { city_id: 1226, date: "2022-03-11", category_id: "food", requested_amount: 10 },
-      {
-        city_id: 1226,
-        date: "2022-03-12",
-        category_id: "medical_kits_supplies",
-        requested_amount: 4,
-      },
-      {
-        city_id: 1226,
-        date: "2022-03-12",
-        category_id: "baby_products",
-        requested_amount: 4,
-      },
-      {
-        city_id: 1226,
-        date: "2022-03-11",
-        category_id: "baby_food",
-        requested_amount: 15,
-      },
-    ],
-  },
-];
-
-// test("AidRequestGrouped.byCityId with assignTotal calculates total for 4th group equal to 159", () => {
-//   const aidRequestGroupedWithTotal = new AidRequestGrouped(exampleAggregatedRequests, [assignTotal]);
-
-//   expect(aidRequestGroupedWithTotal.byCityId[3].total).toEqual(159);
-// });
-
-// test("AidRequestGrouped.byCityId with findLocation finds location", () => {
-//   const aidRequestGroupedWithTotal = new AidRequestGrouped(exampleAggregatedRequests, [findLocation]);
-
-//   expect(aidRequestGroupedWithTotal.byCityId[3].total).toEqual(159);
-// });

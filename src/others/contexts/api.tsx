@@ -16,7 +16,7 @@ export const REQUESTS_SOURCE = process.env.REACT_APP_REQUESTS_SOURCE || "api";
 export type ID = string | number;
 
 export interface Location {
-  id: ID;
+  id: number;
   name: string;
   lat: number;
   lon: number;
@@ -42,7 +42,7 @@ export function useLocationsQuery() {
         return [
           { id: 1, name: "Kyiv", lat: 50.45, lon: 30.524, region_id: "UKR-ADM1-14850775B25539455" },
           { id: 2, name: "Kyinka", lat: 51.494, lon: 31.294, region_id: "UKR-ADM1-14850775B25539455" },
-          { id: 3, name: "Kyrnasivka", lat: 46.484, lon: 30.732, region_id: "UKR-ADM1-14850775B25539455"},
+          { id: 3, name: "Kyrnasivka", lat: 46.484, lon: 30.732, region_id: "UKR-ADM1-14850775B25539455" },
           { id: 4, name: "Kyrylivka", lat: 50.351, lon: 30.95, region_id: "UKR-ADM2-31201334B8340102" },
         ];
       }
@@ -53,7 +53,7 @@ export function useLocationsQuery() {
 }
 
 export interface Supply {
-  id: ID;
+  id: string;
   name: string;
 }
 

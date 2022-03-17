@@ -1,5 +1,5 @@
 import { ReactText } from "react";
-import { groupBy, map, keys, uniq } from "lodash";
+import { groupBy, map, keys, uniq, filter, eq, every } from "lodash";
 import { Location, Supply, AidRequest, ID } from "../contexts/api";
 
 export const translateToLocation =
@@ -17,14 +17,16 @@ export const translateToSupply =
     return supply;
   };
 
-export const getUniqueDates = (aidRequests: AidRequest[]) => {
-  return uniq(keys(groupBy(aidRequests, "date")));
+export const sortDates = (a: string, b: string) => {
+  return new Date(a).getTime() - new Date(b).getTime();
 };
 
-export const processByCities = (aidRequests: AidRequest[], date: string) => {
-  const filteredByDate = groupBy(aidRequests, "date")[date];
+export const filterByCategoryIds = (aidRequests: AidRequest[], categoryIds: string[]) => {
+  return filter(aidRequests, (req) => every(categoryIds, (id) => eq(id, req.category_id)));
+};
 
-  const groupedByCityId = groupBy(filteredByDate, "city_id");
+export const groupByCities = (aidRequests: AidRequest[]) => {
+  const groupedByCityId = groupBy(aidRequests, "city_id");
 
   const groupedByCityIdWithTotal = map(groupedByCityId, (reqs, city_id) => {
     return { city_id: Number(city_id), total: totalCalculator(reqs), aidRequests: [...reqs] };
@@ -33,10 +35,8 @@ export const processByCities = (aidRequests: AidRequest[], date: string) => {
   return groupedByCityIdWithTotal;
 };
 
-export const processByCategories = (aidRequests: AidRequest[], date: string) => {
-  const filteredByDate = groupBy(aidRequests, "date")[date];
-
-  const groupedByCategoryId = groupBy(filteredByDate, "category_id");
+export const groupByCategories = (aidRequests: AidRequest[]) => {
+  const groupedByCategoryId = groupBy(aidRequests, "category_id");
 
   const groupedByCategoryIdWithTotal = map(groupedByCategoryId, (reqs, category_id) => {
     return { category_id, total: totalCalculator(reqs), aidRequests: [...reqs] };

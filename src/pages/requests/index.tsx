@@ -2,6 +2,7 @@ import { useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Layer, Source } from "react-map-gl";
 import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
+import { groupBy, isEmpty, uniq, keys } from "lodash";
 
 import { useLocationsQuery, useAidRequestQuery, useSuppliesQuery, ID } from "../../others/contexts/api";
 import { useSidebarContext } from "../../others/components/sidebar-context";
@@ -17,11 +18,12 @@ import { layerStyle } from "../../others/components/map/CircleLayerStyle";
 import { mapAidRequestsToFeatures, adaptToMap } from "../../others/helpers/map-utils";
 
 import {
-  processByCities,
-  processByCategories,
+  sortDates,
+  filterByCategoryIds,
+  groupByCities,
+  groupByCategories,
   processedByCitiesToTableData,
   processedByCategoriesToTableData,
-  getUniqueDates,
   translateToLocation,
   translateToSupply,
 } from "../../others/helpers/aid-request-grouped";
@@ -35,29 +37,35 @@ export function Requests() {
 
   const addFilter = filterContext.addFilter;
 
+  // First create a lookup table for all aid requests grouped by dates and memoise it
+  // TODO: consider discarding dates from longer than 7 days ago
+  const aidRequestsGroupedByDate = useMemo(() => {
+    if (!aidRequests?.length) return {};
+
+    return groupBy(aidRequests, "date");
+  }, [aidRequests]);
+
+  // Initialize filter context with data coming from BE (supplies, dates, location)
+  // TODO: consider moving this to a component higher up in the render tree
+  // TODO: consider simplifying filterContext API
   useEffect(() => {
     if (supplies?.length) {
       addFilter({
         filterName: "Categories",
-        filterItems: supplies.map((category): FilterItem => ({ id: category.name as ID, selected: false, text: category.name })),
+        filterItems: supplies.map((category): FilterItem => ({ id: category.id, selected: false, text: category.name })),
         active: false,
         singleValueFilter: true,
       });
     }
 
-    if (aidRequests?.length) {
-      const dates = aidRequests.reduce((dateSet, request) => {
-        dateSet.add(request.date);
-        return dateSet;
-      }, new Set<string>());
+    if (!isEmpty(aidRequestsGroupedByDate)) {
+      const uniqueDatesSorted = uniq(keys(aidRequestsGroupedByDate)).sort(sortDates);
 
       addFilter({
         filterName: "Dates",
-        filterItems: getUniqueDates(aidRequests)
-          .sort((a, b) => {
-            return new Date(a).getTime() - new Date(b).getTime();
-          })
-          .map((date, i): FilterItem => ({ id: date, selected: i === dates.size - 1, text: date })),
+        filterItems: uniqueDatesSorted.map(
+          (date, i): FilterItem => ({ id: date, selected: i === uniqueDatesSorted.length - 1, text: date })
+        ),
         active: false,
         singleValueFilter: true,
       });
@@ -76,38 +84,60 @@ export function Requests() {
     //     singleValueFilter: true,
     //   });
     // }
-  }, [supplies, aidRequests, addFilter]);
+  }, [supplies, aidRequestsGroupedByDate, addFilter]);
 
   const activeCategoryFilters = filterContext.getActiveFilterItems("Categories");
   const activeDateFilter = String(filterContext.getActiveFilterItems("Dates")[0]); // TODO: change to string type, it's always string
 
-  const { processedByCities, processedByCategories, mapData } = useMemo(() => {
-    if (!cities || !aidRequests || !supplies) {
+  // Filter aid requests by given date and by category (and possibly city in the next step)
+  const aidRequestsFiltered = useMemo(() => {
+    if (!activeDateFilter || isEmpty(aidRequestsGroupedByDate)) return [];
+
+    console.log("aidRequestsGroupedByDate", aidRequestsGroupedByDate);
+
+    const filteredByDate = aidRequestsGroupedByDate[activeDateFilter];
+    const filteredByCategories = filterByCategoryIds(filteredByDate, activeCategoryFilters);
+
+    return filteredByCategories;
+  }, [aidRequestsGroupedByDate, activeDateFilter, activeCategoryFilters]);
+
+  // Group aid requests them according to tables' needs
+  // TODO: consider moving this step to the table component
+  const { groupedByCities, groupedByCategories } = useMemo(() => {
+    if (!aidRequestsFiltered.length) {
       return {
-        processedByCities: [],
-        processedByCategories: [],
-        mapData: [],
+        groupedByCities: [],
+        groupedByCategories: [],
       };
     }
 
-    const processedByCities = processByCities(aidRequests, activeDateFilter);
-    const processedByCategories = processByCategories(aidRequests, activeDateFilter);
-    const mapData = processedByCities.map((aidRequest) => adaptToMap(aidRequest, translateToLocation(cities), translateToSupply(supplies)));
+    const groupedByCities = groupByCities(aidRequestsFiltered);
+    const groupedByCategories = groupByCategories(aidRequestsFiltered);
 
     return {
-      processedByCities,
-      processedByCategories,
-      mapData,
+      groupedByCities,
+      groupedByCategories,
     };
-  }, [aidRequests, cities, supplies, activeDateFilter]);
+  }, [aidRequestsFiltered]);
 
-  const tableDataByCities = processedByCities.map(processedByCitiesToTableData);
-  const tableDataByCategories = processedByCategories.map(processedByCategoriesToTableData);
+  // Map filtered aid requests to data consumable by map component
+  // TODO: consider refactoring map so that it consumes raw AidRequest[]
+  // NOTE: adaptToMap has been added temporarily
+  const isMapDataAvailable = cities && supplies && groupedByCities.length;
+  const mapData = isMapDataAvailable
+    ? groupedByCities.map((aidRequest) => adaptToMap(aidRequest, translateToLocation(cities), translateToSupply(supplies)))
+    : [];
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
     features: mapAidRequestsToFeatures(mapData),
   };
 
+  const tableDataByCities = groupedByCities.map(processedByCitiesToTableData);
+  const tableDataByCategories = groupedByCategories.map(processedByCategoriesToTableData);
+
+  // TODO: move this logic to map component - it should get filters via context and process them accordingly
+  // TODO: fix filter mapping - it should use category_id
+  // TODO: add some comments / typing explaining what kind of black the magic is happening here :)
   const layerFilterCategory = activeCategoryFilters.length
     ? ["in", ["get", "category"], ["array", ["literal", activeCategoryFilters]]]
     : ["==", ["get", "category"], "ALL"];
