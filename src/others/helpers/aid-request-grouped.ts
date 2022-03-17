@@ -1,5 +1,5 @@
 import { ReactText } from "react";
-import { orderBy, groupBy, map, assignInWith, reduce, entries, values, keys, uniq, find } from "lodash";
+import { groupBy, map, keys, uniq } from "lodash";
 import { Location, Supply, AidRequest, ID } from "../contexts/api";
 
 export const translateToLocation =
@@ -27,13 +27,22 @@ export const processByCities = (aidRequests: AidRequest[], date: string) => {
   const groupedByCityId = groupBy(filteredByDate, "city_id");
 
   const groupedByCityIdWithTotal = map(groupedByCityId, (reqs, city_id) => {
-    console.log(totalCalculator(reqs));
     return { city_id: Number(city_id), total: totalCalculator(reqs), aidRequests: [...reqs] };
   });
 
-  console.log("groupedByCityIdWithTotal", groupedByCityIdWithTotal);
-
   return groupedByCityIdWithTotal;
+};
+
+export const processByCategories = (aidRequests: AidRequest[], date: string) => {
+  const filteredByDate = groupBy(aidRequests, "date")[date];
+
+  const groupedByCategoryId = groupBy(filteredByDate, "category_id");
+
+  const groupedByCategoryIdWithTotal = map(groupedByCategoryId, (reqs, category_id) => {
+    return { category_id, total: totalCalculator(reqs), aidRequests: [...reqs] };
+  });
+
+  return groupedByCategoryIdWithTotal;
 };
 
 type ProcessedByCities = {
@@ -42,7 +51,13 @@ type ProcessedByCities = {
   aidRequests: AidRequest[];
 };
 
-export const processedByCitiesToTableData = ({ city_id, total, aidRequests }: ProcessedByCities) => {
+type ProcessedByCategories = {
+  category_id: string;
+  total: number;
+  aidRequests: AidRequest[];
+};
+
+export const processedByCitiesToTableData = ({ city_id, total, aidRequests }: ProcessedByCities): TableData => {
   return {
     left: city_id,
     right: total,
@@ -55,7 +70,18 @@ export const processedByCitiesToTableData = ({ city_id, total, aidRequests }: Pr
   };
 };
 
-// export processedByCategoriesToTableData
+export const processedByCategoriesToTableData = ({ category_id, total, aidRequests }: ProcessedByCategories): TableData => {
+  return {
+    left: category_id,
+    right: total,
+    hidden: map(aidRequests, (req) => {
+      return {
+        left: req.city_id,
+        right: req.requested_amount,
+      };
+    }),
+  };
+};
 
 type TableData = {
   left: ReactText;

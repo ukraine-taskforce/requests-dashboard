@@ -1,7 +1,20 @@
 import omit from "lodash/omit";
 
-import { GroupedByLocationWithTotal, GroupedByCategoryWithTotal } from "./assign-total";
-import { Location, Supply, ID } from "../contexts/api";
+import { Location, Supply, ID, AidRequest } from "../contexts/api";
+
+// TODO: Delete this file once map-utils start using raw AidRequest only
+
+export type GroupedByLocationWithTotal = {
+  total: number;
+  city_id: ID;
+  aidRequests: Omit<AidRequest, "city_id">[];
+};
+
+export type GroupedByCategoryWithTotal = {
+  total: number;
+  category_id: ID;
+  aidRequests: Omit<AidRequest, "category_id">[];
+};
 
 export type DecodedAidRequestGroupedByLocation = {
   location: DecodedLocation;

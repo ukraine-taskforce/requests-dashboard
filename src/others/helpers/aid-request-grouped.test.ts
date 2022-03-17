@@ -1,4 +1,4 @@
-import { processByCities } from "./aid-request-grouped";
+import { processByCities, processByCategories } from "./aid-request-grouped";
 
 const supplies = [
   { id: "food", name: "Food" },
@@ -69,7 +69,7 @@ const exampleAggregatedRequests = [
 //   expect(processedByCities).toEqual(aidRequestsGroupedByCityId);
 // });
 
-test("first group", () => {
+test("processByCities first group", () => {
   const firstGroup = processByCities(exampleAggregatedRequests, "2022-03-11")[0];
 
   expect(firstGroup).toEqual({
@@ -93,6 +93,25 @@ test("first group", () => {
         city_id: 1,
         category_id: "batteries",
         requested_amount: 4,
+      },
+    ],
+  });
+});
+
+test("processByCategories first group", () => {
+  const firstGroup = processByCategories(exampleAggregatedRequests, "2022-03-11")[0];
+
+  console.log(firstGroup);
+
+  expect(firstGroup).toEqual({
+    category_id: "sanitary_pads",
+    total: 10,
+    aidRequests: [
+      {
+        date: "2022-03-11",
+        city_id: 1226,
+        category_id: "sanitary_pads",
+        requested_amount: 10,
       },
     ],
   });

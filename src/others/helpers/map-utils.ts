@@ -6,18 +6,18 @@ import type { Feature, Geometry, GeoJsonProperties } from "geojson";
 
 type GroupedByDate = {
   date: string;
-  aidRequests: Omit<DecodedAidRequest, "date">[];
+  aidRequests: Omit<DecodedAidRequest, "date">[]; // TODO: consider replacing with AidRequest
 };
 
 type GroupedByDateWithTotal = {
   date: string;
-  aidRequests: Omit<DecodedAidRequest, "date">[];
+  aidRequests: Omit<DecodedAidRequest, "date">[]; // TODO: consider replacing with AidRequest
   total: number;
   totalDescription: string;
 };
 
 type GroupedByLocationAndDateWithTotal = {
-  location: DecodedLocation;
+  location: DecodedLocation; // TODO: consider replacing with Location
   aidRequestsByDateWithTotal: GroupedByDateWithTotal[];
 };
 
@@ -38,7 +38,7 @@ type GroupedByCityId = {
 
 export const adaptToMap = (
   aidRequestGroupedByCityId: GroupedByCityId,
-  locationTranslator: (city_id: number) => DecodedLocation,
+  locationTranslator: (city_id: number) => DecodedLocation, // TODO: consider replacing with Location
   supplyTranslator: (category_id: ID) => Supply
 ): DecodedAidRequestGroupedByLocation => {
   return {
@@ -112,8 +112,8 @@ function addAggregatedFeaturePerLocationAndDate(
 }
 
 function addFeatureForAidRequest(
-  aidRequest: Omit<DecodedAidRequest, "date">,
-  location: DecodedLocation,
+  aidRequest: Omit<DecodedAidRequest, "date">, // TODO: consider replacing with AidRequest
+  location: DecodedLocation, // TODO: consider replacing with Location
   date: string,
   features: Set<Feature<Geometry, GeoJsonProperties>>
 ) {
