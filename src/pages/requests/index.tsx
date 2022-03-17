@@ -157,7 +157,7 @@ export function Requests() {
         aside={
           <Sidebar className="requests-sidebar">
             <MultiTab selectedId={selectedTabId} onChange={setSelectedTabId} labels={[t("by_cities"), t("by_items")]} marginBottom={4} />
-            <CollapsibleTable rows={selectedTabId === 0 ? tableDataByCities : tableDataByCategories} />
+            <CollapsibleTable rows={selectedTabId === 0 ? tableDataByCities : tableDataByCategories} sortRight={sortDesc} />
           </Sidebar>
         }
       >
@@ -173,3 +173,5 @@ export function Requests() {
     </Layout>
   );
 }
+
+const sortDesc = (a: number, b: number) => b - a;
