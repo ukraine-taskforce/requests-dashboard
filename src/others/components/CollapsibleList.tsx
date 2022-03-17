@@ -11,12 +11,14 @@ export interface CollapsibleTableProps extends TableContainerProps {
 }
 
 export const CollapsibleTable = ({ rows, ...tableProps }: CollapsibleTableProps) => {
+  // TODO: implement proper infinite scroll
+  const visibleRows = rows.slice(0, 30);
   return (
     // TODO: add rounded corners
     <TableContainer component={Paper} {...tableProps}>
       <Table aria-label="collapsible table">
         <TableBody sx={{ "& > *": { paddingY: 2 } }} className="collapsible-table-body">
-          {rows.map((row, index) => (
+          {visibleRows.map((row, index) => (
             // TODO: last item should not have border
             <CollapsibleListItem key={`${row.left}-${index}`} {...row} wrapperProps={{ paddingY: 2 }} />
           ))}
