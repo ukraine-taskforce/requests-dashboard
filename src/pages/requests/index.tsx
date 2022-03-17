@@ -174,8 +174,20 @@ export function Requests() {
               <Layer {...layerStyle} filter={layerFilter} />
             </Source>,
             <Source id="states" type="geojson" data={regionsGeo} key="states">
-              <Layer id="state-borders" type="line" layout={{}} paint={{"line-color": "#627BC1", 'line-width': 2}} />
-              <Layer id="state-fills" type="fill" layout={{}} paint={{"fill-color": ['interpolate', ['linear'], ['get', 'index'], 0, 'rgba(33, 102, 127, 0)', 200, 'rgb(200,0,0)'], "fill-opacity": 0.75}} />
+              <Layer id="state-borders" type="line" layout={{}} paint={{"line-color": "black", 'line-width': 1}} />
+              <Layer id="state-fills" type="fill" layout={{}} 
+              paint={{
+                "fill-color": [
+                      "interpolate",
+                      ["linear"], 
+                      ["zoom"],
+                      7,
+                      ["interpolate", ["linear"], ["get", "index"], 0, 'rgba(200, 0, 0, 0)', 200, 'rgb(200,0,0)'],
+                      8,
+                      ["interpolate", ["linear"], ["get", "index"], 0, 'rgba(255,255,255,0)', 200, 'rgba(255,255,255,0)'],
+                      ],
+                      
+             }} />
             </Source>
 	  ]}
         />
