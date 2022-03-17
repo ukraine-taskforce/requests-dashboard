@@ -16,6 +16,7 @@ import { mapAidRequestsToFeatures } from "../../others/helpers/map-utils";
 import { processAidRequests } from "../../others/helpers/process-aid-request";
 import { useSidebarContext } from "../../others/components/sidebar-context";
 import { FilterItem, useFilter } from "../../others/contexts/filter";
+import { adminRegions } from "../../others/fixtures/regions";
 import { DecodedLocation, DecodedAidRequest } from "../../others/helpers/decode-aid-request";
 import { mapLocationsToTableData, mapCategoriesToTableData } from "./map-to-table-data";
 
@@ -80,6 +81,17 @@ export function Requests() {
     type: "FeatureCollection",
     features: mapAidRequestsToFeatures(decodedAndGroupedByLocation),
   };
+  const regionsGeo: FeatureCollection<Geometry, GeoJsonProperties> = {
+    type: "FeatureCollection",
+    features: adminRegions,
+  };
+  var i = 0;
+  for (const region of regionsGeo.features) {
+    if (region.properties) {
+      region.properties.index = i;
+    }
+    i = i + 1;
+  }
 
   const { selectedTabId, setSelectedTabId } = useSidebarContext();
 
@@ -156,12 +168,16 @@ export function Requests() {
         }
       >
         <Map
-          sourceWithLayer={
-            <Source id="ukr_water_needs" type="geojson" data={geojson}>
+          sourceWithLayer={[
+            <Source id="ukr_water_needs" type="geojson" data={geojson} key="circles">
               {/* @ts-ignore */}
               <Layer {...layerStyle} filter={layerFilter} />
+            </Source>,
+            <Source id="states" type="geojson" data={regionsGeo} key="states">
+              <Layer id="state-borders" type="line" layout={{}} paint={{"line-color": "#627BC1", 'line-width': 2}} />
+              <Layer id="state-fills" type="fill" layout={{}} paint={{"fill-color": ['interpolate', ['linear'], ['get', 'index'], 0, 'rgba(33, 102, 127, 0)', 200, 'rgb(200,0,0)'], "fill-opacity": 0.75}} />
             </Source>
-          }
+	  ]}
         />
       </Main>
     </Layout>
