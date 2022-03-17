@@ -16,7 +16,7 @@ import { mapAidRequestsToFeatures } from "../../others/helpers/map-utils";
 import { processAidRequests } from "../../others/helpers/process-aid-request";
 import { useSidebarContext } from "../../others/components/sidebar-context";
 import { FilterItem, useFilter } from "../../others/contexts/filter";
-import { adminRegions } from "../../others/fixtures/regions";
+import { adminRegions } from "../../others/fixtures/regionsP3";
 import { DecodedLocation, DecodedAidRequest } from "../../others/helpers/decode-aid-request";
 import { mapLocationsToTableData, mapCategoriesToTableData } from "./map-to-table-data";
 
