@@ -1,4 +1,3 @@
-import { ReactText } from "react";
 import { groupBy, map, filter, eq, every } from "lodash";
 import { Location, Supply, AidRequest, ID } from "../contexts/api";
 

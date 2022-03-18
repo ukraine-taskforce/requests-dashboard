@@ -10,8 +10,6 @@ import Typography from "@mui/material/Typography";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
-import { useDictionaryContext } from "../../others/contexts/dictionary-context";
-
 export type ListItem = {
   name: ReactText;
   value: ReactText;
@@ -21,7 +19,6 @@ export type ListItem = {
 
 export const CollapsibleListItem = ({ name, value, hidden, wrapperProps, ...rest }: ListItem) => {
   const [open, setOpen] = useState(false);
-  const { translateLocation, translateSupply } = useDictionaryContext();
 
   return (
     <>

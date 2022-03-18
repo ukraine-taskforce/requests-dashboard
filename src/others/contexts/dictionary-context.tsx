@@ -31,7 +31,7 @@ export const DictionaryContextProvider = ({ children }: DictionaryContextProvide
   useEffect(() => {
     dictionaryState.setSupplies(supplies || []);
     dictionaryState.setLocations(locations || []);
-  }, [supplies?.length, locations?.length]);
+  }, [supplies, locations, dictionaryState]);
 
   return <DictionaryContext.Provider value={dictionaryState}>{children}</DictionaryContext.Provider>;
 };
