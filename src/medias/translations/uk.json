@@ -41,8 +41,22 @@
   "go_to_homepage": "Перейдіть на домашню сторінку",
 
 
-  "by_cities": "За містами",
-  "by_items": "By елементами",
+  "by_cities": "Міста",
+  "by_items": "Категорії",
   "email": "електронна пошта",
-  "password": "пароль"
+  "password": "пароль",
+  "request_new_password": "Забули пароль",
+  "login2": "Увійти",
+  "login": "Ім'я",
+  "request_new_password_label": "Ви отримаєте код підтвердження на ваш email",
+  "code_sent": "Ми відправили код підтвердження на ваш email",
+  "reset_password": "Відновити пароль",
+  "password_change_success": "Ваш пароль був успішно змінений",
+  "code": "Код",
+  "dashboard": "Фільтри",
+  "all": "Всі",
+  "no_dates": "Відсутні дати для вибору",
+  "clear": "Очистити",
+  "FILTER_Categories": "Категорії",
+  "requests": "запитів"
 }

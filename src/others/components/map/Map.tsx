@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import MapComponent, { Popup, MapRef, MapLayerMouseEvent } from "react-map-gl";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -28,6 +29,7 @@ const initialUkraineCenterView = {
 const MAP_STYLE = process.env.REACT_APP_MAPLIBRE_MAP_STYLE || "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 
 export const Map = ({ sourceWithLayer }: MapProps) => {
+  const { t } = useTranslation();
   const mapRef = useRef<MapRef>(null);
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
   const [cursor, setCursor] = useState<"auto" | "pointer">("auto");
@@ -96,7 +98,7 @@ export const Map = ({ sourceWithLayer }: MapProps) => {
               {popupInfo.data ? (
                 <>
                   <Typography variant="h6" component="div">
-                    {popupInfo.data.city}: {popupInfo.data.totalItems} requests
+                    {popupInfo.data.city}: {popupInfo.data.totalItems} {t("requests")}
                   </Typography>
                   <Typography variant="body1" style={{ whiteSpace: "pre-line" }}>
                     {popupInfo.data.description}

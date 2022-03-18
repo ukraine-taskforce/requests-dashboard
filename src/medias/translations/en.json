@@ -49,5 +49,12 @@
   "reset_password": "Reset Password",
   "request_new_password_label": "You will receive a confirmation code on your email",
   "password_change_success": "Your password was modified successfully",
-  "code_sent": "We sent a confirmation code to your email"
+  "code_sent": "We sent a confirmation code to your email",
+  "login2": "Login",
+  "dashboard": "Dashboard",
+  "all": "All",
+  "no_dates": "No available date range.",
+  "clear": "Clear",
+  "FILTER_Categories": "Categories",
+  "requests": "requests"
 }
