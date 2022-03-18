@@ -93,8 +93,6 @@ export function Requests() {
   const aidRequestsFiltered = useMemo(() => {
     if (!activeDateFilter || isEmpty(aidRequestsGroupedByDate)) return [];
 
-    console.log("aidRequestsGroupedByDate", aidRequestsGroupedByDate);
-
     const filteredByDate = aidRequestsGroupedByDate[activeDateFilter];
     const filteredByCategories = filterByCategoryIds(filteredByDate, activeCategoryFilters);
 
