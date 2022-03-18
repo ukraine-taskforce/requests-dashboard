@@ -1,4 +1,4 @@
-import { groupByCities, groupByCategories, filterByCategoryIds } from "./aid-request-grouped";
+import { groupByCities, groupByCategories, filterByCategoryIds } from "./aid-request-helpers";
 
 const supplies = [
   { id: "food", name: "Food" },

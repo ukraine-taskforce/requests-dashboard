@@ -1,5 +1,5 @@
 import { ReactText } from "react";
-import { groupBy, map, keys, uniq, filter, eq, every } from "lodash";
+import { groupBy, map, filter, eq, every } from "lodash";
 import { Location, Supply, AidRequest, ID } from "../contexts/api";
 
 import { ListItem } from "../components/CollapsibleListItem";
@@ -47,13 +47,13 @@ export const groupByCategories = (aidRequests: AidRequest[]) => {
   return groupedByCategoryIdWithTotal;
 };
 
-type ProcessedByCities = {
+type GroupedByCities = {
   city_id: number;
   total: number;
   aidRequests: AidRequest[];
 };
 
-type ProcessedByCategories = {
+type GroupedByCategories = {
   category_id: string;
   total: number;
   aidRequests: AidRequest[];
@@ -61,7 +61,7 @@ type ProcessedByCategories = {
 
 type TableData = ListItem;
 
-export const processedByCitiesToTableData = ({ city_id, total, aidRequests }: ProcessedByCities): TableData => {
+export const groupedByCitiesToTableData = ({ city_id, total, aidRequests }: GroupedByCities): TableData => {
   return {
     name: city_id,
     value: total,
@@ -74,7 +74,7 @@ export const processedByCitiesToTableData = ({ city_id, total, aidRequests }: Pr
   };
 };
 
-export const processedByCategoriesToTableData = ({ category_id, total, aidRequests }: ProcessedByCategories): TableData => {
+export const groupedByCategoriesToTableData = ({ category_id, total, aidRequests }: GroupedByCategories): TableData => {
   return {
     name: category_id,
     value: total,

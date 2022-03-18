@@ -17,17 +17,16 @@ import { MultiTab } from "../../others/components/MultiTab";
 import { CollapsibleTable } from "../../others/components/CollapsibleList";
 import { layerStyle } from "../../others/components/map/CircleLayerStyle";
 import { mapAidRequestsToFeatures, adaptToMap } from "../../others/helpers/map-utils";
-
 import {
   sortDates,
   filterByCategoryIds,
   groupByCities,
   groupByCategories,
-  processedByCitiesToTableData,
-  processedByCategoriesToTableData,
+  groupedByCitiesToTableData,
+  groupedByCategoriesToTableData,
   translateToLocation,
   translateToSupply,
-} from "../../others/helpers/aid-request-grouped";
+} from "../../others/helpers/aid-request-helpers";
 
 export function Requests() {
   const { t } = useTranslation();
@@ -133,8 +132,8 @@ export function Requests() {
     features: mapAidRequestsToFeatures(mapData),
   };
 
-  const tableDataByCities = groupedByCities.map(processedByCitiesToTableData);
-  const tableDataByCategories = groupedByCategories.map(processedByCategoriesToTableData);
+  const tableDataByCities = groupedByCities.map(groupedByCitiesToTableData);
+  const tableDataByCategories = groupedByCategories.map(groupedByCategoriesToTableData);
 
   // TODO: move this logic to map component - it should get filters via context and process them accordingly
   // TODO: fix filter mapping - it should use category_id
