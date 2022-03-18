@@ -1,5 +1,4 @@
 import { AuthenticationDetails, CognitoUser, CognitoUserPool } from "amazon-cognito-identity-js";
-// import "cross-fetch/polyfill";
 import React from "react";
 
 const userPoolId = process.env.REACT_APP_USERPOOL_ID || "";
@@ -13,18 +12,24 @@ export enum AuthStatus {
   Loading = "Loading",
 }
 
+interface Session {
+  accessToken: { jwtToken: string };
+}
+
 export interface AuthContextValue {
   status: AuthStatus;
   user: CognitoUser | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   sendCode: (username: string) => Promise<void>;
+  session: Session | null;
   confirmPassword: (code: string, username: string, newPassword: string) => Promise<void>;
 }
 
 const AuthContext = React.createContext<AuthContextValue>({
   status: AuthStatus.Loading,
   user: null,
+  session: null,
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
   sendCode: () => Promise.resolve(),
@@ -35,7 +40,7 @@ export function useAuth() {
   return React.useContext(AuthContext);
 }
 
-async function getUserSession() {
+async function getUserSession(): Promise<Session> {
   const currentUser = userPool.getCurrentUser();
 
   return new Promise(function (resolve, reject) {
@@ -83,16 +88,18 @@ async function changeUserPassword(code: string, username: string, newPassword: s
 
 export const AuthProvider: React.FunctionComponent = ({ children }) => {
   const [status, setStatus] = React.useState<AuthStatus>(AuthStatus.Loading);
+  const [session, setSession] = React.useState<Session | null>(null);
 
   React.useEffect(() => {
     const getCurrentSession = async () => {
       try {
-        const session: any = await getUserSession();
+        const session = await getUserSession();
 
-        window.localStorage.setItem("accessToken", `${session.accessToken.jwtToken}`);
-        window.localStorage.setItem("refreshToken", `${session.refreshToken.token}`);
+        console.log("initSession", session);
+        setSession(session);
         setStatus(AuthStatus.SignedIn);
       } catch (err) {
+        setSession(null);
         setStatus(AuthStatus.SignedOut);
       }
     };
@@ -172,6 +179,7 @@ export const AuthProvider: React.FunctionComponent = ({ children }) => {
         sendCode,
         confirmPassword,
         status,
+        session,
         user: userPool.getCurrentUser(),
       }}
     >
