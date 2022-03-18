@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Box, Grid, Slider, Typography } from "@mui/material";
 import { useEffect, useState, useRef } from "react";
 import moment from "moment";
@@ -19,6 +20,7 @@ export interface TimelineSliderProps {
   dates: string[];
 }
 export const TimelineSlider = ({ dates }: TimelineSliderProps) => {
+  const { t } = useTranslation();
   const [endDate, setEndDate] = useState<moment.Moment>(moment());
   const [startDate, setStartDate] = useState<moment.Moment>(moment());
   const [selectedDate, setDate] = useState<Date | undefined>(undefined);
@@ -49,7 +51,7 @@ export const TimelineSlider = ({ dates }: TimelineSliderProps) => {
           color: "#fff",
         }}
       >
-        <Typography sx={{ fontSize: 16, textAlign: "center" }}>No dates or one date provided.</Typography>
+        <Typography sx={{ fontSize: 16, textAlign: "center" }}>{t("no_dates")}</Typography>
       </Box>
     );
   } else {

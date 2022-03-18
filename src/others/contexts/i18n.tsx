@@ -14,8 +14,9 @@ export type AvailableLang = "en" | "uk";
 export const availableLangs = Object.keys(resources).sort();
 
 function getInitLang() {
-  const browserLang = navigator.language.split("-")[0].toLowerCase();
-  return availableLangs.includes(browserLang) ? browserLang : "en";
+  return "uk";
+  //const browserLang = navigator.language.split("-")[0].toLowerCase();
+  //return availableLangs.includes(browserLang) ? browserLang : "en";
 }
 
 i18n
