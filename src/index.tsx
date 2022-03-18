@@ -9,8 +9,8 @@ import { muiTheme } from "./styles/theme";
 import "./index.css";
 import "./others/contexts/i18n";
 import reportWebVitals from "./reportWebVitals";
-
-import { SidebarContextProvider } from "./others/components/sidebar-context";
+import { DictionaryContextProvider } from "./others/contexts/dictionary-context";
+import { SidebarContextProvider } from "./others/contexts/sidebar-context";
 import { AuthWrapper } from "./others/components/AuthWrapper";
 import { queryClient } from "./others/contexts/api";
 import { Home } from "./pages/home";
@@ -26,22 +26,24 @@ ReactDOM.render(
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
         <MuiThemeProvider theme={muiTheme}>
-          <SidebarContextProvider>
-            <FilterContextProvider>
-              <CssBaseline />
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route element={<AuthWrapper />}>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/requests" element={<Requests />} />
-                  </Route>
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
-            </FilterContextProvider>
-          </SidebarContextProvider>
+          <DictionaryContextProvider>
+            <SidebarContextProvider>
+              <FilterContextProvider>
+                <CssBaseline />
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route element={<AuthWrapper />}>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/requests" element={<Requests />} />
+                    </Route>
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </BrowserRouter>
+              </FilterContextProvider>
+            </SidebarContextProvider>
+          </DictionaryContextProvider>
         </MuiThemeProvider>
       </QueryClientProvider>
     </AuthProvider>

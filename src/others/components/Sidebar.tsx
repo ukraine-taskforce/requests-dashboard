@@ -2,7 +2,7 @@ import * as React from "react";
 import { ReactNode } from "react";
 import Box, { BoxProps } from "@mui/material/Box";
 
-import { useSidebarContext } from "./sidebar-context";
+import { useSidebarContext } from "../contexts/sidebar-context";
 
 export interface SidebarProps extends BoxProps {
   children?: ReactNode;

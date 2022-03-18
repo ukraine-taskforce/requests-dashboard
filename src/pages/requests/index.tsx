@@ -4,8 +4,9 @@ import { Layer, Source } from "react-map-gl";
 import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import { groupBy, isEmpty, uniq, keys } from "lodash";
 
-import { useLocationsQuery, useAidRequestQuery, useSuppliesQuery, ID } from "../../others/contexts/api";
-import { useSidebarContext } from "../../others/components/sidebar-context";
+import { useAidRequestQuery } from "../../others/contexts/api";
+import { useDictionaryContext } from "../../others/contexts/dictionary-context";
+import { useSidebarContext } from "../../others/contexts/sidebar-context";
 import { FilterItem, useFilter } from "../../others/contexts/filter";
 import { Layout } from "../../others/components/Layout";
 import { Map } from "../../others/components/map/Map";
@@ -30,9 +31,9 @@ import {
 
 export function Requests() {
   const { t } = useTranslation();
-  const { data: cities } = useLocationsQuery();
-  const { data: supplies } = useSuppliesQuery();
   const { data: aidRequests } = useAidRequestQuery();
+  const { locations, supplies, translateLocation, translateSupply } = useDictionaryContext();
+
   const filterContext = useFilter();
 
   const addFilter = filterContext.addFilter;
@@ -123,9 +124,9 @@ export function Requests() {
   // Map filtered aid requests to data consumable by map component
   // TODO: consider refactoring map so that it consumes raw AidRequest[]
   // NOTE: adaptToMap has been added temporarily
-  const isMapDataAvailable = cities && supplies && groupedByCities.length;
+  const isMapDataAvailable = locations.length && supplies.length && groupedByCities.length;
   const mapData = isMapDataAvailable
-    ? groupedByCities.map((aidRequest) => adaptToMap(aidRequest, translateToLocation(cities), translateToSupply(supplies)))
+    ? groupedByCities.map((aidRequest) => adaptToMap(aidRequest, translateToLocation(locations), translateToSupply(supplies)))
     : [];
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
@@ -147,17 +148,35 @@ export function Requests() {
 
   const { selectedTabId, setSelectedTabId } = useSidebarContext();
 
-  if (!cities) {
-    return <Layout header={<Header />}>{/* <Loader /> */}</Layout>;
-  }
+  // TODO: implement proper loaders
+  // if (!locations) {
+  //   return <Layout header={<Header />}>{/* <Loader /> */}</Layout>;
+  // }
 
+  const loadingMessage = "";
+  const byCities = selectedTabId === 0;
   return (
     <Layout header={<Header />}>
       <Main
         aside={
           <Sidebar className="requests-sidebar">
             <MultiTab selectedId={selectedTabId} onChange={setSelectedTabId} labels={[t("by_cities"), t("by_items")]} marginBottom={4} />
-            <CollapsibleTable rows={selectedTabId === 0 ? tableDataByCities : tableDataByCategories} sortRight={sortDesc} />
+            <CollapsibleTable
+              rows={byCities ? tableDataByCities : tableDataByCategories}
+              renderRowData={(row) => ({
+                name: byCities
+                  ? translateLocation(Number(row.name))?.name || loadingMessage
+                  : translateSupply(String(row.name))?.name || loadingMessage,
+                value: row.value,
+                hidden: row.hidden.map(({ name, value }) => ({
+                  name: byCities
+                    ? translateSupply(String(name))?.name || loadingMessage
+                    : translateLocation(Number(name))?.name || loadingMessage,
+                  value: value,
+                })),
+              })}
+              sortRight={sortDesc}
+            />
           </Sidebar>
         }
       >

@@ -2,6 +2,8 @@ import { ReactText } from "react";
 import { groupBy, map, keys, uniq, filter, eq, every } from "lodash";
 import { Location, Supply, AidRequest, ID } from "../contexts/api";
 
+import { ListItem } from "../components/CollapsibleListItem";
+
 export const translateToLocation =
   (cities: Location[]) =>
   (city_id: number): Location => {
@@ -57,14 +59,16 @@ type ProcessedByCategories = {
   aidRequests: AidRequest[];
 };
 
+type TableData = ListItem;
+
 export const processedByCitiesToTableData = ({ city_id, total, aidRequests }: ProcessedByCities): TableData => {
   return {
-    left: city_id,
-    right: total,
+    name: city_id,
+    value: total,
     hidden: map(aidRequests, (req) => {
       return {
-        left: req.category_id,
-        right: req.requested_amount,
+        name: req.category_id,
+        value: req.requested_amount,
       };
     }),
   };
@@ -72,24 +76,15 @@ export const processedByCitiesToTableData = ({ city_id, total, aidRequests }: Pr
 
 export const processedByCategoriesToTableData = ({ category_id, total, aidRequests }: ProcessedByCategories): TableData => {
   return {
-    left: category_id,
-    right: total,
+    name: category_id,
+    value: total,
     hidden: map(aidRequests, (req) => {
       return {
-        left: req.city_id,
-        right: req.requested_amount,
+        name: req.city_id,
+        value: req.requested_amount,
       };
     }),
   };
-};
-
-type TableData = {
-  left: ReactText;
-  right: ReactText;
-  hidden: {
-    left: ReactText;
-    right: ReactText;
-  }[];
 };
 
 const totalCalculator = (aidRequests: AidRequest[]) => aidRequests.reduce((sum, aidRequest) => sum + aidRequest.requested_amount, 0);

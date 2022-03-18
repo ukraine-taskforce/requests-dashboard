@@ -10,15 +10,18 @@ import Typography from "@mui/material/Typography";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
+import { useDictionaryContext } from "../../others/contexts/dictionary-context";
+
 export type ListItem = {
-  left: ReactText;
-  right: ReactText;
+  name: ReactText;
+  value: ReactText;
   hidden: Omit<ListItem, "hidden">[];
   wrapperProps?: BoxProps;
 };
 
-export const CollapsibleListItem = ({ left, right, hidden, wrapperProps, ...rest }: ListItem) => {
+export const CollapsibleListItem = ({ name, value, hidden, wrapperProps, ...rest }: ListItem) => {
   const [open, setOpen] = useState(false);
+  const { translateLocation, translateSupply } = useDictionaryContext();
 
   return (
     <>
@@ -32,13 +35,13 @@ export const CollapsibleListItem = ({ left, right, hidden, wrapperProps, ...rest
         <TableCell className="cell-name" align="left" component="th" scope="row">
           {/* TODO: that should be bold */}
           <Typography variant="subtitle1" gutterBottom component="div" sx={{ margin: 0 }}>
-            {left}
+            {name}
           </Typography>
         </TableCell>
 
         <TableCell align="right">
           <Typography variant="subtitle1" gutterBottom component="div" sx={{ margin: 0 }}>
-            {right}
+            {value}
           </Typography>
         </TableCell>
       </TableRow>
@@ -49,16 +52,16 @@ export const CollapsibleListItem = ({ left, right, hidden, wrapperProps, ...rest
             <Box sx={{ margin: 1 }}>
               <Table size="small" aria-label="tbd">
                 <TableBody>
-                  {hidden.map(({ left, right }, index) => (
-                    <TableRow key={`${left}-${index}`} sx={{ "& > *": { borderBottom: "unset", paddingX: 1 } }}>
+                  {hidden.map(({ name, value }, index) => (
+                    <TableRow key={`${name}-${index}`} sx={{ "& > *": { borderBottom: "unset", paddingX: 1 } }}>
                       <TableCell component="th" scope="row">
                         <Typography variant="subtitle2" gutterBottom component="div" sx={{ margin: 0 }}>
-                          {left}
+                          {name}
                         </Typography>
                       </TableCell>
                       <TableCell align="right">
                         <Typography variant="subtitle2" gutterBottom component="div" sx={{ margin: 0 }}>
-                          {right}
+                          {value}
                         </Typography>
                       </TableCell>
                     </TableRow>
