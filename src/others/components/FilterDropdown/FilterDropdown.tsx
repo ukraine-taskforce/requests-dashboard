@@ -100,7 +100,7 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
             {!singleValueFilter && (
               <ListItem sx={{ justifyContent: "center" }}>
                 <Button color="primary" onClick={clearAllFilters}>
-		  {t("clear")}
+                  {t("clear")}
                 </Button>
               </ListItem>
             )}

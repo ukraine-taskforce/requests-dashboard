@@ -36,7 +36,7 @@ export const Header = ({ children }: HeaderProps) => {
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" component="div" mr={8}>
-	  {t("dashboard")}
+          {t("dashboard")}
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center", marginLeft: "153px" }}>
           <FilterDropdownGroup
