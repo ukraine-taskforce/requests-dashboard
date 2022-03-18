@@ -61,19 +61,18 @@ export function Requests() {
       });
     }
 
-    // TODO: to implement cities
-    // if (decodedAndGroupedByLocation.length) {
-    //   const filterItems: FilterItem[] = decodedAndGroupedByLocation.map(
-    //     (city): FilterItem => ({ id: city.location.name.toLowerCase().replace(" ", "-"), text: city.location.name, selected: false })
-    //   );
+    if (decodedAndGroupedByLocation.length) {
+      const filterItems: FilterItem[] = decodedAndGroupedByLocation.map(
+        (city): FilterItem => ({ id: city.location.name.toLowerCase().replace(" ", "-"), text: city.location.name, selected: false })
+      );
 
-    //   addFilter({
-    //     filterName: "Cities",
-    //     filterItems,
-    //     active: false,
-    //     singleValueFilter: true,
-    //   });
-    // }
+      addFilter({
+        filterName: "Cities",
+        filterItems,
+        active: false,
+        singleValueFilter: false,
+      });
+    }
   }, [supplies, decodedAndGroupedByLocation, aidRequests, addFilter]);
 
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {

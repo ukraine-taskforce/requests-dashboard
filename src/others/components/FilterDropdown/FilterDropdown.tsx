@@ -1,9 +1,21 @@
 import { useTranslation } from "react-i18next";
-import { Button, Checkbox, Chip, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, ClickAwayListener } from "@mui/material";
+import {
+  Button,
+  Checkbox,
+  Chip,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+  ClickAwayListener,
+} from "@mui/material";
 import { FunctionComponent, useRef, useState } from "react";
 import { KeyboardArrowDown as ArrowDown, KeyboardArrowUp as ArrowUp, CheckCircle, CircleOutlined } from "@mui/icons-material";
 import { FilterItem } from "../../contexts/filter";
 import { ID } from "../../contexts/api";
+import { ListWithSearch } from "./ListWithSearch";
 
 type FilterDropdownProps = {
   filterName: string;
@@ -83,43 +95,56 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
         {!singleValueFilter && <Chip size="small" color="primary" label={selectedFilterItemCount} />}
       </Button>
       {isFilterOpen && (
-        <ClickAwayListener onClickAway={toggleFilterList}>
-          <List
-            sx={{
-              borderRadius: "24px",
-              backgroundColor: "#fff",
-              marginTop: "16px",
-              maxHeight: "500px",
-              overflow: "auto",
-              position: "absolute",
-              zIndex: 1000,
-              minWidth: "300px",
-              color: "#000",
-            }}
-          >
-            {!singleValueFilter && (
-              <ListItem sx={{ justifyContent: "center" }}>
-                <Button color="primary" onClick={clearAllFilters}>
-                  {t("clear")}
-                </Button>
-              </ListItem>
-            )}
-            <ListItem>
-              <ListItemButton divider={true} onClick={clearAllFilters}>
-                <ListItemText color="#000">{t("all")}</ListItemText>
-                {checkboxListItemIcon(allFiltersSelected)}
-              </ListItemButton>
-            </ListItem>
-            {filterItems.map(({ id, text, selected }) => (
-              <ListItem key={id}>
-                <ListItemButton onClick={clickHandler(id, selected)}>
-                  <ListItemText>{text}</ListItemText>
-                  {checkboxListItemIcon(selected)}
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-        </ClickAwayListener>
+        <>
+          {filterName === "Cities" ? (
+            <ListWithSearch
+              filterItems={filterItems}
+              selectedFilterItemCount={selectedFilterItemCount}
+              selectedFilterItems={selectedFilterItems}
+              clickHandler={clickHandler}
+              checkboxListItemIcon={checkboxListItemIcon}
+              toggleFilterList={toggleFilterList}
+            />
+          ) : (
+            <ClickAwayListener onClickAway={toggleFilterList}>
+              <List
+                sx={{
+                  borderRadius: "24px",
+                  backgroundColor: "#fff",
+                  marginTop: "16px",
+                  maxHeight: "500px",
+                  overflow: "auto",
+                  position: "absolute",
+                  zIndex: 1000,
+                  minWidth: "300px",
+                  color: "#000",
+                }}
+              >
+                {!singleValueFilter && (
+                  <ListItem sx={{ justifyContent: "center" }}>
+                    <Button color="primary" onClick={clearAllFilters}>
+                      {t("clear")}
+                    </Button>
+                  </ListItem>
+                )}
+                <ListItem>
+                  <ListItemButton divider={true} onClick={clearAllFilters}>
+                    <ListItemText color="#000">{t("all")}</ListItemText>
+                    {checkboxListItemIcon(allFiltersSelected)}
+                  </ListItemButton>
+                </ListItem>
+                {filterItems.map(({ id, text, selected }) => (
+                  <ListItem key={id}>
+                    <ListItemButton onClick={clickHandler(id, selected)}>
+                      <ListItemText>{text}</ListItemText>
+                      {checkboxListItemIcon(selected)}
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            </ClickAwayListener>
+          )}
+        </>
       )}
     </div>
   );
