@@ -94,8 +94,6 @@ export const AuthProvider: React.FunctionComponent = ({ children }) => {
     const getCurrentSession = async () => {
       try {
         const session = await getUserSession();
-
-        console.log("initSession", session);
         setSession(session);
         setStatus(AuthStatus.SignedIn);
       } catch (err) {
