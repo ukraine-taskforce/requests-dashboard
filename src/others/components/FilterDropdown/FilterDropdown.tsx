@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button, Checkbox, Chip, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, ClickAwayListener } from "@mui/material";
 import { FunctionComponent, useRef, useState } from "react";
 import { KeyboardArrowDown as ArrowDown, KeyboardArrowUp as ArrowUp, CheckCircle, CircleOutlined } from "@mui/icons-material";
@@ -22,6 +23,7 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
   filterItemToggleHandler,
   filterGroupOpenHandler,
 }) => {
+  const { t } = useTranslation();
   const filterRef = useRef<HTMLDivElement | null>(null);
 
   const [filterListVisible, setFilterListVisible] = useState(false);
@@ -60,7 +62,7 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
     </ListItemIcon>
   );
 
-  const filterButtonLabel = singleValueFilter && selectedFilterItemCount === 1 ? selectedFilterItems[0].text : filterName;
+  const filterButtonLabel = singleValueFilter && selectedFilterItemCount === 1 ? selectedFilterItems[0].text : t("FILTER_" + filterName);
 
   return (
     <div
@@ -98,13 +100,13 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
             {!singleValueFilter && (
               <ListItem sx={{ justifyContent: "center" }}>
                 <Button color="primary" onClick={clearAllFilters}>
-                  Clear
+                  {t("clear")}
                 </Button>
               </ListItem>
             )}
             <ListItem>
               <ListItemButton divider={true} onClick={clearAllFilters}>
-                <ListItemText color="#000">All</ListItemText>
+                <ListItemText color="#000">{t("all")}</ListItemText>
                 {checkboxListItemIcon(allFiltersSelected)}
               </ListItemButton>
             </ListItem>

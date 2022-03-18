@@ -66,7 +66,7 @@ export function Login() {
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column" }}>
           <Button sx={{ mb: 2 }} variant="contained" type="submit" disabled={!username || !password || status === AuthStatus.Loading}>
-            {t("login")}
+            {t("login2")}
           </Button>
           <Button sx={{ mb: 2 }} variant="outlined" disabled={status === AuthStatus.Loading} onClick={() => navigate("/reset-password")}>
             {t("request_new_password")}
