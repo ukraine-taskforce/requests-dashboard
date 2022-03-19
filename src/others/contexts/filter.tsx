@@ -18,7 +18,7 @@ export interface FilterContextValue {
   addFilter: (newFilter: Filter) => void;
   activateFilter: (filterName: string) => void;
   toggleFilterItem: (filterName: string, filterItemId: string, value?: boolean) => void;
-  getActiveFilterItems: (filterName: string) => string[];
+  getActiveFilterItems: (filterName: string, field?: keyof FilterItem) => (boolean | string)[];
 }
 
 const initFilterContextValue: FilterContextValue = {
@@ -91,10 +91,18 @@ export const FilterContextProvider: React.FunctionComponent = ({ children }) => 
     [setFilters]
   );
 
-  const getActiveFilterItems = (filterName: string) => {
+  const getActiveFilterItems = (filterName: string, field?: keyof FilterItem) => {
     const currentFilter = filters[filterName];
     if (currentFilter) {
-      return currentFilter.filterItems.filter(({ selected }) => selected).map(({ id }) => id);
+      return currentFilter.filterItems
+        .filter(({ selected }) => selected)
+        .map((item) => {
+          if (field) {
+            return item[field];
+          }
+
+          return item.id;
+        });
     }
 
     return [];
