@@ -38,7 +38,6 @@ export function Requests() {
   const addFilter = filterContext.addFilter;
 
   // First create a lookup table for all aid requests grouped by dates and memoise it
-  // TODO: consider discarding dates from longer than 7 days ago
   const aidRequestsGroupedByDate = useMemo(() => {
     if (!aidRequests?.length) return {};
 

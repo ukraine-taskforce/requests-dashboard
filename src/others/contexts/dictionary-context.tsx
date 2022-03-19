@@ -16,7 +16,7 @@ export const DictionaryContext = createContext<DictionaryState | null>(null);
 export const useDictionaryContext = () => {
   const dictionaryContext = useContext(DictionaryContext);
   if (!dictionaryContext) {
-    throw new Error("dictionaryContext must be used within ictionaryContextProvider");
+    throw new Error("dictionaryContext must be used within dictionaryContextProvider");
   }
   return dictionaryContext;
 };

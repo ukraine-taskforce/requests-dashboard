@@ -22,7 +22,7 @@ export type DecodedAidRequestGroupedByLocation = {
   decodedAidRequests: DecodedAidRequest[];
 };
 
-export type DecodedLocation = Location;
+export type DecodedLocation = Location; // TODO: remove once map consumes DictionaryContext properly, i.e. relying on Location as data model and translate on render
 export type DecodedAidRequest = { date: string; name: string; amount: number };
 
 export type Dictionary = {
@@ -84,7 +84,7 @@ export const decodeAidRequestGroupedByCategoryWithTotal = (dictionary: Dictionar
 
 const decodeLocation = (locations: Location[], cityId: ID): DecodedLocation => {
   const location = locations.find((location) => String(location.id) === String(cityId));
-  if (!location) throw new Error(`Locatin: ${location} is not defined`);
+  if (!location) throw new Error(`Location: ${location} is not defined`);
 
   return location;
 };
