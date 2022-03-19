@@ -89,4 +89,5 @@ export const groupedByCategoriesToTableData = ({ category_id, total, aidRequests
   };
 };
 
-const totalCalculator = (aidRequests: AidRequest[]) => aidRequests.reduce((sum, aidRequest) => sum + aidRequest.requested_amount, 0);
+const totalCalculator = (aidRequests: AidRequest[]): number =>
+  aidRequests.reduce((sum, aidRequest) => sum + aidRequest.requested_amount, 0);

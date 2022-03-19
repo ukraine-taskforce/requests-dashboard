@@ -167,12 +167,14 @@ export function Requests() {
                   ? translateLocation(Number(row.name))?.name || loadingMessage
                   : translateSupply(String(row.name))?.name || loadingMessage,
                 value: row.value,
-                hidden: row.hidden.map(({ name, value }) => ({
-                  name: byCities
-                    ? translateSupply(String(name))?.name || loadingMessage
-                    : translateLocation(Number(name))?.name || loadingMessage,
-                  value: value,
-                })),
+                hidden: row.hidden
+                  .map(({ name, value }) => ({
+                    name: byCities
+                      ? translateSupply(String(name))?.name || loadingMessage
+                      : translateLocation(Number(name))?.name || loadingMessage,
+                    value: value,
+                  }))
+                  .sort((a, b) => Number(b.value) - Number(a.value)),
               })}
               sortRight={sortDesc}
             />
