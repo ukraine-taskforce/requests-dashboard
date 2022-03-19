@@ -54,8 +54,24 @@ test("filterByCategoryIds returns all aid requests if the array of accepted cate
   expect(filtered).toEqual(exampleAggregatedRequests);
 });
 
-// TODO: pimp the tests
-test("groupByCityIdWithTotal data shape", () => {
+test("groupByCityIdWithTotal returns an array of aid requests grouped by city_id with total and aidRequests for each city_id", () => {
+  const grouped = groupByCityIdWithTotal(exampleAggregatedRequests);
+
+  expect(grouped).toContainEqual({
+    city_id: expect.any(Number),
+    total: expect.any(Number),
+    aidRequests: expect.arrayContaining([
+      {
+        date: expect.any(String),
+        city_id: expect.any(Number),
+        category_id: expect.any(String),
+        requested_amount: expect.any(Number),
+      },
+    ]),
+  });
+});
+
+test("groupByCityIdWithTotal with exampleAggregatedRequests", () => {
   const firstGroup = groupByCityIdWithTotal(exampleAggregatedRequests)[0];
 
   expect(firstGroup).toEqual({
@@ -102,11 +118,25 @@ test("groupByCityIdWithTotal data shape", () => {
   });
 });
 
-// TODO: pimp the tests
-test("groupByCategoryIdWithTotal  data shape", () => {
-  const firstGroup = groupByCategoryIdWithTotal(exampleAggregatedRequests)[0];
+test("groupByCategoryIdWithTotal returns an array of aid requests grouped by category_id with total and aidRequests for each category_id", () => {
+  const grouped = groupByCategoryIdWithTotal(exampleAggregatedRequests);
 
-  console.log(firstGroup);
+  expect(grouped).toContainEqual({
+    category_id: expect.any(String),
+    total: expect.any(Number),
+    aidRequests: expect.arrayContaining([
+      {
+        date: expect.any(String),
+        city_id: expect.any(Number),
+        category_id: expect.any(String),
+        requested_amount: expect.any(Number),
+      },
+    ]),
+  });
+});
+
+test("groupByCategoryIdWithTotal with exampleAggregatedRequests", () => {
+  const firstGroup = groupByCategoryIdWithTotal(exampleAggregatedRequests)[0];
 
   expect(firstGroup).toEqual({
     category_id: "sanitary_pads",
