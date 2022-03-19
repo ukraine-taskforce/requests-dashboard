@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -20,6 +21,7 @@ export interface HeaderProps {
 }
 
 export const Header = ({ children }: HeaderProps) => {
+  const { t } = useTranslation();
   const { toggle } = useSidebarContext();
   const { logout } = useAuth();
   const { filters, activateFilter, toggleFilterItem } = useFilter();
@@ -36,7 +38,7 @@ export const Header = ({ children }: HeaderProps) => {
         </IconButton>
 
         <Typography variant="h6" component="div" mr={8}>
-          Dashboard
+          {t("dashboard")}
         </Typography>
         <Box sx={{ display: "flex", flexGrow: "1", alignItems: "center", marginLeft: "153px" }}>
           <FilterDropdownGroup

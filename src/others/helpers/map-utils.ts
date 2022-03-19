@@ -21,8 +21,17 @@ type GroupedByLocationAndDateWithTotal = {
     aidRequestsByDateWithTotal: GroupedByDateWithTotal[];
 }
 
+interface RequestProperties {
+  amount: number;
+  normalized_amount?: number;
+  date: string;
+  category: string;
+  description: string;
+  city: string;
+}
+
 export const mapAidRequestsToFeatures = (decodedAidRequestGroupedByLocation: DecodedAidRequestGroupedByLocation[]) => {
-    let features = new Set<Feature<Geometry, GeoJsonProperties>>()
+  let features = new Set<Feature<Geometry, RequestProperties>>()
     decodedAidRequestGroupedByLocation.forEach(locationGroup => {
         const decodedAidRequestsGroupedByLocationAndDate: GroupedByLocationAndDateWithTotal[] = [{
             location: locationGroup.location,
@@ -63,14 +72,15 @@ export const possibleDates = (requests: AidRequest[]) => {
 function addAggregatedFeaturePerLocationAndDate(
     locationGroup: DecodedAidRequestGroupedByLocation,
     dateGroup: GroupedByDateWithTotal,
-    features: Set<Feature<Geometry, GeoJsonProperties>>) {
+    features: Set<Feature<Geometry, RequestProperties>>) {
     features.add({
         type: "Feature",
         properties: {
-            amount: dateGroup.total,
-            date: dateGroup.date,
-            category: "ALL",
-	    description: dateGroup.totalDescription,
+          amount: dateGroup.total,
+          date: dateGroup.date,
+          category: "ALL",
+          description: dateGroup.totalDescription,
+          city: locationGroup.location.name,
         },
         geometry: { type: "Point", coordinates: [locationGroup.location.lon, locationGroup.location.lat] }
     })
@@ -84,10 +94,11 @@ function addFeatureForAidRequest(
     features.add({
         type: "Feature",
         properties: {
-            amount: aidRequest.amount,
-            date: date,
-            category: aidRequest.name,
-	    description: aidRequest.name + ": " + aidRequest.amount,
+          amount: aidRequest.amount,
+          date: date,
+          category: aidRequest.name,
+          description: aidRequest.name + ": " + aidRequest.amount,
+          city: location.name,
         },
         geometry: { type: "Point", coordinates: [location.lon, location.lat] }
     })
@@ -104,9 +115,9 @@ export const assignTotalForDate = (grouped: GroupedByDate): GroupedByDateWithTot
     const getTotalForDate = () => grouped.aidRequests.reduce((partialSum, aidRequest) => partialSum + aidRequest.amount, 0);
     const getDescriptionForDate =  () => grouped.aidRequests.sort(function(a, b){return b.amount - a.amount;}).reduce((partialDesc, aidRequest) => partialDesc + "\n" + aidRequest.name + ": " + aidRequest.amount, "");
     return {
-        ...grouped,
-        total: getTotalForDate(),
-	totalDescription: getDescriptionForDate(),
+      ...grouped,
+      total: getTotalForDate(),
+      totalDescription: getDescriptionForDate(),
     };
 };
 
