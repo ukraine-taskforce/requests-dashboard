@@ -31,7 +31,7 @@ import {
 export function Requests() {
   const { t } = useTranslation();
   const { data: aidRequests } = useAidRequestQuery();
-  const { locations, supplies, translateLocation, translateSupply } = useDictionaryContext();
+  const { locationDict, suppliesDict, translateLocation, translateSupply } = useDictionaryContext();
 
   const filterContext = useFilter();
 
@@ -49,10 +49,10 @@ export function Requests() {
   // TODO: consider moving this to a component higher up in the render tree
   // TODO: consider simplifying filterContext API
   useEffect(() => {
-    if (supplies?.length) {
+    if (suppliesDict) {
       addFilter({
         filterName: "Categories",
-        filterItems: supplies.map((category): FilterItem => ({ id: category.id, selected: false, text: category.name })),
+        filterItems: Object.values(suppliesDict).map((category): FilterItem => ({ id: category.id, selected: false, text: category.name })),
         active: false,
         singleValueFilter: true,
       });
@@ -84,7 +84,7 @@ export function Requests() {
     //     singleValueFilter: true,
     //   });
     // }
-  }, [supplies, aidRequestsGroupedByDate, addFilter]);
+  }, [suppliesDict, aidRequestsGroupedByDate, addFilter]);
 
   const activeCategoryFilters = filterContext.getActiveFilterItems("Categories");
   const activeDateFilter = String(filterContext.getActiveFilterItems("Dates")[0]); // TODO: change to string type, it's always string
@@ -121,9 +121,11 @@ export function Requests() {
   // Map filtered aid requests to data consumable by map component
   // TODO: consider refactoring map so that it consumes raw AidRequest[]
   // NOTE: adaptToMap has been added temporarily
-  const isMapDataAvailable = locations.length && supplies.length && groupedByCities.length;
+  const isMapDataAvailable = locationDict && suppliesDict && groupedByCities.length;
   const mapData = isMapDataAvailable
-    ? groupedByCities.map((aidRequest) => adaptToMap(aidRequest, translateToLocation(locations), translateToSupply(supplies)))
+    ? groupedByCities.map((aidRequest) =>
+        adaptToMap(aidRequest, translateToLocation(Object.values(locationDict)), translateToSupply(Object.values(suppliesDict)))
+      )
     : [];
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
