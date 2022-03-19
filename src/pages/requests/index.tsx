@@ -20,8 +20,8 @@ import { mapAidRequestsToFeatures, adaptToMap } from "../../others/helpers/map-u
 import {
   sortDates,
   filterByCategoryIds,
-  groupByCities,
-  groupByCategories,
+  groupByCityIdWithTotal,
+  groupByCategoryIdWithTotal,
   groupedByCitiesToTableData,
   groupedByCategoriesToTableData,
   translateToLocation,
@@ -35,7 +35,7 @@ export function Requests() {
 
   const filterContext = useFilter();
 
-  const addFilter = filterContext.addFilter;
+  const { addFilter, getActiveFilterItems } = filterContext;
 
   // First create a lookup table for all aid requests grouped by dates and memoise it
   const aidRequestsGroupedByDate = useMemo(() => {
@@ -85,8 +85,9 @@ export function Requests() {
     // }
   }, [suppliesDict, aidRequestsGroupedByDate, addFilter]);
 
-  const activeCategoryFilters = filterContext.getActiveFilterItems("Categories");
-  const activeDateFilter = String(filterContext.getActiveFilterItems("Dates")[0]); // TODO: change to string type, it's always string
+  const activeFilterItems = getActiveFilterItems("Categories");
+  const activeCategoryFilters = activeFilterItems.length ? activeFilterItems : ["*"];
+  const activeDateFilter = getActiveFilterItems("Dates")[0];
 
   // Filter aid requests by given date and by category (and possibly city in the next step)
   const aidRequestsFiltered = useMemo(() => {
@@ -100,29 +101,29 @@ export function Requests() {
 
   // Group aid requests them according to tables' needs
   // TODO: consider moving this step to the table component
-  const { groupedByCities, groupedByCategories } = useMemo(() => {
+  const { groupedByCitiesWithTotal, groupedByCategoriesWithTotal } = useMemo(() => {
     if (!aidRequestsFiltered.length) {
       return {
-        groupedByCities: [],
-        groupedByCategories: [],
+        groupedByCitiesWithTotal: [],
+        groupedByCategoriesWithTotal: [],
       };
     }
 
-    const groupedByCities = groupByCities(aidRequestsFiltered);
-    const groupedByCategories = groupByCategories(aidRequestsFiltered);
+    const groupedByCitiesWithTotal = groupByCityIdWithTotal(aidRequestsFiltered);
+    const groupedByCategoriesWithTotal = groupByCategoryIdWithTotal(aidRequestsFiltered);
 
     return {
-      groupedByCities,
-      groupedByCategories,
+      groupedByCitiesWithTotal,
+      groupedByCategoriesWithTotal,
     };
   }, [aidRequestsFiltered]);
 
   // Map filtered aid requests to data consumable by map component
   // TODO: consider refactoring map so that it consumes raw AidRequest[]
   // NOTE: adaptToMap has been added temporarily
-  const isMapDataAvailable = locationDict && suppliesDict && groupedByCities.length;
+  const isMapDataAvailable = locationDict && suppliesDict && groupedByCitiesWithTotal.length;
   const mapData = isMapDataAvailable
-    ? groupedByCities.map((aidRequest) =>
+    ? groupedByCitiesWithTotal.map((aidRequest) =>
         adaptToMap(aidRequest, translateToLocation(Object.values(locationDict)), translateToSupply(Object.values(suppliesDict)))
       )
     : [];
@@ -131,14 +132,14 @@ export function Requests() {
     features: mapAidRequestsToFeatures(mapData),
   };
 
-  const tableDataByCities = groupedByCities.map(groupedByCitiesToTableData);
-  const tableDataByCategories = groupedByCategories.map(groupedByCategoriesToTableData);
+  const tableDataByCities = groupedByCitiesWithTotal.map(groupedByCitiesToTableData);
+  const tableDataByCategories = groupedByCategoriesWithTotal.map(groupedByCategoriesToTableData);
 
   // TODO: move this logic to map component - it should get filters via context and process them accordingly
   // TODO: fix filter mapping - it should use category_id
   // TODO: add some comments / typing explaining what kind of black the magic is happening here :)
-  const layerFilterCategory = activeCategoryFilters.length
-    ? ["in", ["get", "category"], ["array", ["literal", activeCategoryFilters]]]
+  const layerFilterCategory = activeFilterItems.length
+    ? ["in", ["get", "category"], ["array", ["literal", activeFilterItems]]]
     : ["==", ["get", "category"], "ALL"];
 
   const layerFilterDate = activeDateFilter ? ["==", ["get", "date"], ["string", activeDateFilter]] : ["boolean", true];

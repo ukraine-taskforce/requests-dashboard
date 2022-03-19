@@ -1,4 +1,4 @@
-import { groupByCities, groupByCategories, filterByCategoryIds } from "./aid-request-helpers";
+import { groupByCityIdWithTotal, groupByCategoryIdWithTotal, filterByCategoryIds } from "./aid-request-helpers";
 
 const exampleAggregatedRequests = [
   { date: "2022-03-11", city_id: 1226, category_id: "sanitary_pads", requested_amount: 10 },
@@ -55,8 +55,8 @@ test("filterByCategoryIds returns all aid requests if the array of accepted cate
 });
 
 // TODO: pimp the tests
-test("groupByCities data shape", () => {
-  const firstGroup = groupByCities(exampleAggregatedRequests)[0];
+test("groupByCityIdWithTotal data shape", () => {
+  const firstGroup = groupByCityIdWithTotal(exampleAggregatedRequests)[0];
 
   expect(firstGroup).toEqual({
     city_id: 1,
@@ -103,8 +103,8 @@ test("groupByCities data shape", () => {
 });
 
 // TODO: pimp the tests
-test("groupByCategories  data shape", () => {
-  const firstGroup = groupByCategories(exampleAggregatedRequests)[0];
+test("groupByCategoryIdWithTotal  data shape", () => {
+  const firstGroup = groupByCategoryIdWithTotal(exampleAggregatedRequests)[0];
 
   console.log(firstGroup);
 

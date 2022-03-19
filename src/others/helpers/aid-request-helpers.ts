@@ -22,12 +22,21 @@ export const sortDates = (a: string, b: string) => {
   return new Date(a).getTime() - new Date(b).getTime();
 };
 
-export const filterByCategoryIds = (aidRequests: AidRequest[], categoryIds: (string | "*")[]) => {
+export const filterByCategoryIds = (aidRequests: AidRequest[], categoryIds: (string | "*")[]): AidRequest[] => {
   if (categoryIds.includes("*")) return aidRequests;
   return flatten(categoryIds.map((categoryId) => filter(aidRequests, (req) => eq(categoryId, req.category_id))));
 };
 
-export const groupByCities = (aidRequests: AidRequest[]) => {
+type Total = {
+  total: number;
+};
+
+type GroupedByCities = {
+  city_id: number;
+  aidRequests: AidRequest[];
+};
+
+export const groupByCityIdWithTotal = (aidRequests: AidRequest[]): (GroupedByCities & Total)[] => {
   const groupedByCityId = groupBy(aidRequests, "city_id");
 
   const groupedByCityIdWithTotal = map(groupedByCityId, (reqs, city_id) => {
@@ -37,7 +46,12 @@ export const groupByCities = (aidRequests: AidRequest[]) => {
   return groupedByCityIdWithTotal;
 };
 
-export const groupByCategories = (aidRequests: AidRequest[]) => {
+type GroupedByCategories = {
+  category_id: string;
+  aidRequests: AidRequest[];
+};
+
+export const groupByCategoryIdWithTotal = (aidRequests: AidRequest[]): (GroupedByCategories & Total)[] => {
   const groupedByCategoryId = groupBy(aidRequests, "category_id");
 
   const groupedByCategoryIdWithTotal = map(groupedByCategoryId, (reqs, category_id) => {
@@ -47,21 +61,9 @@ export const groupByCategories = (aidRequests: AidRequest[]) => {
   return groupedByCategoryIdWithTotal;
 };
 
-type GroupedByCities = {
-  city_id: number;
-  total: number;
-  aidRequests: AidRequest[];
-};
-
-type GroupedByCategories = {
-  category_id: string;
-  total: number;
-  aidRequests: AidRequest[];
-};
-
 type TableData = ListItem;
 
-export const groupedByCitiesToTableData = ({ city_id, total, aidRequests }: GroupedByCities): TableData => {
+export const groupedByCitiesToTableData = ({ city_id, total, aidRequests }: GroupedByCities & Total): TableData => {
   return {
     name: city_id,
     value: total,
@@ -74,7 +76,7 @@ export const groupedByCitiesToTableData = ({ city_id, total, aidRequests }: Grou
   };
 };
 
-export const groupedByCategoriesToTableData = ({ category_id, total, aidRequests }: GroupedByCategories): TableData => {
+export const groupedByCategoriesToTableData = ({ category_id, total, aidRequests }: GroupedByCategories & Total): TableData => {
   return {
     name: category_id,
     value: total,
