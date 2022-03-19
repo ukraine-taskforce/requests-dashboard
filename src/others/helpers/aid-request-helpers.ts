@@ -1,4 +1,4 @@
-import { groupBy, map, filter, eq, every } from "lodash";
+import { groupBy, map, filter, eq, flatten } from "lodash";
 import { Location, Supply, AidRequest, ID } from "../contexts/api";
 
 import { ListItem } from "../components/CollapsibleListItem";
@@ -22,8 +22,9 @@ export const sortDates = (a: string, b: string) => {
   return new Date(a).getTime() - new Date(b).getTime();
 };
 
-export const filterByCategoryIds = (aidRequests: AidRequest[], categoryIds: string[]) => {
-  return filter(aidRequests, (req) => every(categoryIds, (id) => eq(id, req.category_id)));
+export const filterByCategoryIds = (aidRequests: AidRequest[], categoryIds: (string | "*")[]) => {
+  if (categoryIds.includes("*")) return aidRequests;
+  return flatten(categoryIds.map((categoryId) => filter(aidRequests, (req) => eq(categoryId, req.category_id))));
 };
 
 export const groupByCities = (aidRequests: AidRequest[]) => {

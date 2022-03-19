@@ -24,30 +24,34 @@ const exampleAggregatedRequests = [
   { date: "2022-03-11", city_id: 1226, category_id: "baby_food", requested_amount: 15 },
 ];
 
-// TODO: pimp the tests
-test("filterByCategoryIds", () => {
-  const filtered = filterByCategoryIds(exampleAggregatedRequests, ["personal_hygiene_kits"]);
+test("filterByCategoryIds returns only aid requests with category_id's specified in the array of accepted category_id's", () => {
+  const acceptedIds = ["personal_hygiene_kits", "baby_food", "baby_products"];
+  const filtered = filterByCategoryIds(exampleAggregatedRequests, acceptedIds);
 
-  expect(filtered).toEqual([
-    {
-      date: "2022-03-12",
-      city_id: 1226,
-      category_id: "personal_hygiene_kits",
-      requested_amount: 4,
-    },
-    {
-      date: "2022-03-10",
-      city_id: 2,
-      category_id: "personal_hygiene_kits",
-      requested_amount: 1,
-    },
-    {
-      date: "2022-03-11",
-      city_id: 1226,
-      category_id: "personal_hygiene_kits",
-      requested_amount: 21,
-    },
-  ]);
+  filtered.forEach((item) => {
+    expect(acceptedIds).toContain(item.category_id);
+  });
+});
+
+test("filterByCategoryIds returns empty array if the array of accepted category_id's is empty", () => {
+  const acceptedIds: string[] = [];
+  const filtered = filterByCategoryIds(exampleAggregatedRequests, acceptedIds);
+
+  expect(filtered).toEqual([]);
+});
+
+test("filterByCategoryIds returns all aid requests if the array of accepted category_id's contains only '*' ", () => {
+  const acceptedIds: string[] = ["*"];
+  const filtered = filterByCategoryIds(exampleAggregatedRequests, acceptedIds);
+
+  expect(filtered).toEqual(exampleAggregatedRequests);
+});
+
+test("filterByCategoryIds returns all aid requests if the array of accepted category_id's contains '*' ", () => {
+  const acceptedIds: string[] = ["personal_hygiene_kits", "*"];
+  const filtered = filterByCategoryIds(exampleAggregatedRequests, acceptedIds);
+
+  expect(filtered).toEqual(exampleAggregatedRequests);
 });
 
 // TODO: pimp the tests
