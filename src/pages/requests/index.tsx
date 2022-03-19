@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Layer, Source } from "react-map-gl";
 import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 
-import { useLocationsQuery, useAidRequestQuery, useSuppliesQuery, ID } from "../../others/contexts/api";
+import { useLocationsQuery, useAidRequestQuery, useSuppliesQuery } from "../../others/contexts/api";
 import { Layout } from "../../others/components/Layout";
 import { Map } from "../../others/components/map/Map";
 import { Header } from "../../others/components/Header";
@@ -24,6 +24,7 @@ export function Requests() {
   const { data: cities } = useLocationsQuery();
   const { data: supplies } = useSuppliesQuery();
   const { data: aidRequests } = useAidRequestQuery();
+
   const filterContext = useFilter();
 
   const addFilter = filterContext.addFilter;
@@ -36,7 +37,7 @@ export function Requests() {
     if (supplies?.length) {
       addFilter({
         filterName: "Categories",
-        filterItems: supplies.map((category): FilterItem => ({ id: category.name as ID, selected: false, text: category.name })),
+        filterItems: supplies.map((category): FilterItem => ({ id: category.id, selected: false, text: category.name })),
         active: false,
         singleValueFilter: true,
       });
@@ -54,8 +55,7 @@ export function Requests() {
           .sort((a, b) => {
             return new Date(a).getTime() - new Date(b).getTime();
           })
-          .map((date, i): FilterItem => ({ id: date, selected: i === dates.size - 1, text: date }))
-         ,
+          .map((date, i): FilterItem => ({ id: date, selected: i === dates.size - 1, text: date })),
         active: false,
         singleValueFilter: true,
       });
@@ -83,7 +83,8 @@ export function Requests() {
 
   const { selectedTabId, setSelectedTabId } = useSidebarContext();
 
-  const activeCategoryFilters = filterContext.getActiveFilterItems("Categories");
+  // Using 'text' field of filter here, because when we form geojson, we assign category name to the category property instead of id
+  const activeCategoryFilters = filterContext.getActiveFilterItems("Categories", "text");
   const activeDateFilter = filterContext.getActiveFilterItems("Dates")[0];
 
   const layerFilterCategory = activeCategoryFilters.length

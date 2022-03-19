@@ -69,12 +69,12 @@ export const decodeAidRequestGroupedByCategoryWithTotal = (dictionary: Dictionar
   };
 };
 
-const decodeLocation = (locations: Location[], cityId: ID): DecodedLocation => {
+export const decodeLocation = (locations: Location[], cityId: ID): DecodedLocation => {
   const location = locations.find((location) => String(location.id) === String(cityId));
   return omit(location, "id");
 };
 
-const decodeCategory = (categories: Supply[], category_id: ID): string => {
+export const decodeCategory = (categories: Supply[], category_id: ID): string => {
   const category = categories.find((category) => String(category.id) === String(category_id));
   if (!category) throw new Error(`Supply category: ${category_id} is not defined`);
 
