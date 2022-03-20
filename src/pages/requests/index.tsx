@@ -128,8 +128,10 @@ export function Requests() {
     features: mapAidRequestsToFeatures(mapData),
   };
 
-  const tableDataByCities = groupedByCitiesWithTotal.map(groupedByCitiesToTableData);
-  const tableDataByCategories = groupedByCategoriesWithTotal.map(groupedByCategoriesToTableData);
+  const tableDataByCities = groupedByCitiesWithTotal.map(groupedByCitiesToTableData).sort((a, b) => Number(a.value) - Number(b.value));
+  const tableDataByCategories = groupedByCategoriesWithTotal
+    .map(groupedByCategoriesToTableData)
+    .sort((a, b) => Number(a.value) - Number(b.value));
 
   // TODO: move this logic to map component - it should get filters via context and process them accordingly
   // TODO: fix filter mapping - it should use category_id
@@ -172,7 +174,6 @@ export function Requests() {
                   }))
                   .sort((a, b) => Number(b.value) - Number(a.value)),
               })}
-              sortRight={sortDesc}
             />
           </Sidebar>
         }
@@ -189,5 +190,3 @@ export function Requests() {
     </Layout>
   );
 }
-
-const sortDesc = (a: number, b: number) => b - a;
