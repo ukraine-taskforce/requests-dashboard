@@ -9,7 +9,7 @@ export const sortDates = (a: string, b: string) => {
 
 export const filterByCategoryIds = (aidRequests: AidRequest[], categoryIds: (string | "*")[]): AidRequest[] => {
   if (categoryIds.includes("*")) return aidRequests;
-  return flatten(categoryIds.map((categoryId) => filter(aidRequests, (req) => eq(categoryId, req.category_id))));
+  return aidRequests.filter((aidRequest) => categoryIds.includes(aidRequest.category_id));
 };
 
 type Total = {

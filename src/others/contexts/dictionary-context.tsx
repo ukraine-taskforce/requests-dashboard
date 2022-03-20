@@ -54,7 +54,7 @@ const useDictionaryState = ({ supplies, locations }: { supplies: Supply[] | unde
   };
 
   const initLocationsDict = (locations: Location[]) => {
-    const locationsDict = Object.fromEntries(Object.entries(locations));
+    const locationsDict = locations.reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {});
     setLocationsDict(locationsDict);
   };
 
