@@ -20,6 +20,8 @@ export type ListItem = {
 export const CollapsibleListItem = ({ name, value, hidden, wrapperProps, ...rest }: ListItem) => {
   const [open, setOpen] = useState(false);
 
+  const hiddenItemsCount = hidden.length;
+
   return (
     <>
       <TableRow className="table-row" sx={{ width: "100%", "& > *": { borderBottom: "unset", paddingY: 1 } }}>
@@ -49,20 +51,24 @@ export const CollapsibleListItem = ({ name, value, hidden, wrapperProps, ...rest
             <Box sx={{ margin: 1 }}>
               <Table size="small" aria-label="tbd">
                 <TableBody>
-                  {hidden.map(({ name, value }, index) => (
-                    <TableRow key={`${name}-${index}`} sx={{ "& > *": { borderBottom: "unset", paddingX: 1 } }}>
-                      <TableCell component="th" scope="row">
-                        <Typography variant="subtitle2" gutterBottom component="div" sx={{ margin: 0 }}>
-                          {name}
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="right">
-                        <Typography variant="subtitle2" gutterBottom component="div" sx={{ margin: 0 }}>
-                          {value}
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {hidden.map(({ name, value }, index) => {
+                    const isLast = hiddenItemsCount - 1 === index;
+
+                    return (
+                      <TableRow key={`${name}-${index}`} sx={{ "& > *": { borderBottom: "unset", paddingX: 1 } }}>
+                        <TableCell component="th" scope="row" sx={{ borderBottom: isLast ? "none" : undefined }}>
+                          <Typography variant="subtitle2" gutterBottom component="div" sx={{ margin: 0 }}>
+                            {name}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="right" sx={{ borderBottom: isLast ? "none" : undefined }}>
+                          <Typography variant="subtitle2" gutterBottom component="div" sx={{ margin: 0 }}>
+                            {value}
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </Box>

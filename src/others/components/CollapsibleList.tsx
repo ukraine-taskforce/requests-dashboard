@@ -51,7 +51,6 @@ export const CollapsibleTable = ({ rows, sortRight, renderRowData, ...tableProps
         <Table aria-label="collapsible table">
           <TableBody sx={{ "& > *": { paddingY: 2 } }} className="collapsible-table-body">
             {sorted.map((row, index) => (
-              // TODO: last item should not have border
               <CollapsibleListItem key={`${row.name}-${index}`} {...renderRowData(row)} wrapperProps={{ paddingY: 2 }} />
             ))}
           </TableBody>
