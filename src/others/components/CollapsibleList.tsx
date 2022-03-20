@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableContainer, { TableContainerProps } from "@mui/material/TableContainer";
@@ -14,24 +14,25 @@ export interface CollapsibleTableProps extends TableContainerProps {
 }
 
 export const CollapsibleTable = ({ rows, sortRight, renderRowData, ...tableProps }: CollapsibleTableProps) => {
-  const offset = 20; // TODO: consider calculate it dynamically
-  const firstBatch = rows.slice(0, offset);
+  const offset = 20;
+  const getGirstBatch = (rows: ListItem[]) => rows.slice(0, offset);
 
-  const [displayedRows, setDisplayedRows] = useState(firstBatch);
+  const [displayedRows, setDisplayedRows] = useState<ListItem[]>([]);
 
   const hasDisplayedAll = displayedRows.length === rows.length;
 
-  const nextRows = rows.slice(displayedRows.length, displayedRows.length + offset);
-
   const addMoreRows = () => {
-    const newRows = displayedRows.concat(nextRows);
-    setDisplayedRows(newRows);
+    const nextRows = rows.slice(displayedRows.length, displayedRows.length + offset);
+    setDisplayedRows([...displayedRows, ...nextRows]);
   };
+
+  useEffect(() => {
+    setDisplayedRows(getGirstBatch(rows));
+  }, [rows]);
 
   // TODO: type it properly - strings can be sorted too
   const sorted = sortRight ? displayedRows.sort((a, b) => sortRight(Number(a.value), Number(b.value))) : displayedRows;
   return (
-    // TODO: add rounded corners
     <InfiniteScroll
       dataLength={displayedRows.length}
       next={() => addMoreRows()}
