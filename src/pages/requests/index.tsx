@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Layer, Source } from "react-map-gl";
 import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
@@ -25,6 +25,9 @@ export function Requests() {
   const { data: cities } = useLocationsQuery();
   const { data: supplies } = useSuppliesQuery();
   const { data: aidRequests } = useAidRequestQuery();
+  const [ regionsData, setRegionsData] = useState<FeatureCollection<Geometry, GeoJsonProperties>>(
+      {type: "FeatureCollection",
+       features: []});
   const filterContext = useFilter();
 
   const addFilter = filterContext.addFilter;
@@ -81,22 +84,63 @@ export function Requests() {
     type: "FeatureCollection",
     features: mapAidRequestsToFeatures(decodedAndGroupedByLocation),
   };
-  const regionsGeo: FeatureCollection<Geometry, GeoJsonProperties> = {
-    type: "FeatureCollection",
-    features: adminRegions,
-  };
-  var i = 0;
-  for (const region of regionsGeo.features) {
-    if (region.properties) {
-      region.properties.index = i;
-    }
-    i = i + 1;
-  }
 
   const { selectedTabId, setSelectedTabId } = useSidebarContext();
 
   const activeCategoryFilters = filterContext.getActiveFilterItems("Categories");
   const activeDateFilter = filterContext.getActiveFilterItems("Dates")[0];
+
+  useEffect(() => {
+    console.log('2', activeDateFilter, activeCategoryFilters);
+    const cityToRegion: {[id: string]: string} = {};
+    if (cities) {
+      for (const city of cities) {
+        cityToRegion[city.id] = city.region_id;
+      }
+    }
+    const adminsWithData: {[id: string]: number} = {};
+    var maxVal = 0;
+	  var x = 0;
+    if (aidRequests) {
+      for (const request of aidRequests) {
+        if (request.date !== activeDateFilter) {
+          continue;
+        }
+        // TODO: support multi category
+        if (request.category_id !== activeCategoryFilters[0]) {
+          continue;
+        }
+	x = x + 1;
+	if (x<25){
+	console.log(x, request.category_id, activeCategoryFilters[0]);
+	}
+        const region_id = cityToRegion[request.city_id];
+        if (!(region_id in adminsWithData)) {
+          adminsWithData[region_id] = 0;
+        }
+        adminsWithData[region_id] = adminsWithData[region_id] + request.requested_amount;
+        maxVal = Math.max(maxVal, adminsWithData[region_id]);
+       }
+    }
+    console.log(adminsWithData['UKR-ADM1-14850775B25539455']);
+    for (const region of adminRegions) {
+      if (region.properties) {
+        if (region.properties.shapeID in adminsWithData) {
+          region.properties.normalized_amount = adminsWithData[region.properties.shapeID] / maxVal;
+        } else {
+          region.properties.normalized_amount = 0;
+        }
+      }
+    }
+
+    const regionsGeo: FeatureCollection<Geometry, GeoJsonProperties> = {
+      type: "FeatureCollection",
+      features: adminRegions,
+    };
+    setRegionsData(regionsGeo);
+  }, [JSON.stringify(activeCategoryFilters), activeDateFilter, JSON.stringify(aidRequests), JSON.stringify(cities)]);
+
+  console.log('im here', activeCategoryFilters, activeDateFilter);
 
   const layerFilterCategory = activeCategoryFilters.length
     ? ["in", ["get", "category"], ["array", ["literal", activeCategoryFilters]]]
@@ -173,7 +217,7 @@ export function Requests() {
               {/* @ts-ignore */}
               <Layer {...layerStyle} filter={layerFilter} />
             </Source>,
-            <Source id="states" type="geojson" data={regionsGeo} key="states">
+            <Source id="state" type="geojson" data={regionsData} key="states">
               <Layer id="state-borders" type="line" layout={{}} paint={{"line-color": "black", 'line-width': 1}} />
               <Layer id="state-fills" type="fill" layout={{}} 
               paint={{
@@ -182,9 +226,9 @@ export function Requests() {
                       ["linear"], 
                       ["zoom"],
                       7,
-                      ["interpolate", ["linear"], ["get", "index"], 0, 'rgba(200, 0, 0, 0)', 200, 'rgb(200,0,0)'],
+                      ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 'rgba(200, 0, 0, 0)', 1, 'rgb(200,0,0)'],
                       8,
-                      ["interpolate", ["linear"], ["get", "index"], 0, 'rgba(255,255,255,0)', 200, 'rgba(255,255,255,0)'],
+                      ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 'rgba(255,255,255,0)', 1, 'rgba(255,255,255,0)'],
                       ],
                       
              }} />
