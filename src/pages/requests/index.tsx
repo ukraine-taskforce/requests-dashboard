@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Layer, Source } from "react-map-gl";
 import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 
-import { useLocationsQuery, useAidRequestQuery, useSuppliesQuery } from "../../others/contexts/api";
+import { useLocationsQuery, useAidRequestQuery, useSuppliesQuery, ID } from "../../others/contexts/api";
 import { Layout } from "../../others/components/Layout";
 import { Map } from "../../others/components/map/Map";
 import { Header } from "../../others/components/Header";
@@ -16,7 +16,6 @@ import { mapAidRequestsToFeatures } from "../../others/helpers/map-utils";
 import { processAidRequests } from "../../others/helpers/process-aid-request";
 import { useSidebarContext } from "../../others/components/sidebar-context";
 import { FilterItem, useFilter } from "../../others/contexts/filter";
-import { adminRegions } from "../../others/fixtures/regionsP3";
 import { DecodedLocation, DecodedAidRequest } from "../../others/helpers/decode-aid-request";
 import { mapLocationsToTableData, mapCategoriesToTableData } from "./map-to-table-data";
 
@@ -28,7 +27,6 @@ export function Requests() {
   const [ regionsData, setRegionsData] = useState<FeatureCollection<Geometry, GeoJsonProperties>>(
       {type: "FeatureCollection",
        features: []});
-
   const filterContext = useFilter();
 
   const addFilter = filterContext.addFilter;
@@ -41,7 +39,7 @@ export function Requests() {
     if (supplies?.length) {
       addFilter({
         filterName: "Categories",
-        filterItems: supplies.map((category): FilterItem => ({ id: category.id, selected: false, text: category.name })),
+        filterItems: supplies.map((category): FilterItem => ({ id: category.id as ID, selected: false, text: category.name })),
         active: false,
         singleValueFilter: true,
       });
@@ -59,7 +57,8 @@ export function Requests() {
           .sort((a, b) => {
             return new Date(a).getTime() - new Date(b).getTime();
           })
-          .map((date, i): FilterItem => ({ id: date, selected: i === dates.size - 1, text: date })),
+          .map((date, i): FilterItem => ({ id: date, selected: i === dates.size - 1, text: date }))
+         ,
         active: false,
         singleValueFilter: true,
       });
@@ -87,61 +86,8 @@ export function Requests() {
 
   const { selectedTabId, setSelectedTabId } = useSidebarContext();
 
-  // Using 'text' field of filter here, because when we form geojson, we assign category name to the category property instead of id
-  const activeCategoryFilters = filterContext.getActiveFilterItems("Categories", "text");
+  const activeCategoryFilters = filterContext.getActiveFilterItems("Categories");
   const activeDateFilter = filterContext.getActiveFilterItems("Dates")[0];
-
-  useEffect(() => {
-    console.log('2', activeDateFilter, activeCategoryFilters);
-    const cityToRegion: {[id: string]: string} = {};
-    if (cities) {
-      for (const city of cities) {
-        cityToRegion[city.id] = city.region_id;
-      }
-    }
-    const adminsWithData: {[id: string]: number} = {};
-    var maxVal = 0;
-	  var x = 0;
-    if (aidRequests) {
-      for (const request of aidRequests) {
-        if (request.date !== activeDateFilter) {
-          continue;
-        }
-        // TODO: support multi category
-        if (request.category_id !== activeCategoryFilters[0]) {
-          continue;
-        }
-	x = x + 1;
-	if (x<25){
-	console.log(x, request.category_id, activeCategoryFilters[0]);
-	}
-        const region_id = cityToRegion[request.city_id];
-        if (!(region_id in adminsWithData)) {
-          adminsWithData[region_id] = 0;
-        }
-        adminsWithData[region_id] = adminsWithData[region_id] + request.requested_amount;
-        maxVal = Math.max(maxVal, adminsWithData[region_id]);
-       }
-    }
-    console.log(adminsWithData['UKR-ADM1-14850775B25539455']);
-    for (const region of adminRegions) {
-      if (region.properties) {
-        if (region.properties.shapeID in adminsWithData) {
-          region.properties.normalized_amount = adminsWithData[region.properties.shapeID] / maxVal;
-        } else {
-          region.properties.normalized_amount = 0;
-        }
-      }
-    }
-
-    const regionsGeo: FeatureCollection<Geometry, GeoJsonProperties> = {
-      type: "FeatureCollection",
-      features: adminRegions,
-    };
-    setRegionsData(regionsGeo);
-  }, [JSON.stringify(activeCategoryFilters), activeDateFilter, JSON.stringify(aidRequests), JSON.stringify(cities)]);
-
-  console.log('im here', activeCategoryFilters, activeDateFilter);
 
   const layerFilterCategory = activeCategoryFilters.length
     ? ["in", ["get", "category"], ["array", ["literal", activeCategoryFilters]]]
@@ -218,22 +164,6 @@ export function Requests() {
               {/* @ts-ignore */}
               <Layer {...layerStyle} filter={layerFilter} />
             </Source>,
-            <Source id="state" type="geojson" data={regionsData} key="states">
-              <Layer id="state-borders" type="line" layout={{}} paint={{"line-color": "black", 'line-width': 1}} />
-              <Layer id="state-fills" type="fill" layout={{}} 
-              paint={{
-                "fill-color": [
-                      "interpolate",
-                      ["linear"], 
-                      ["zoom"],
-                      7,
-                      ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 'rgba(200, 0, 0, 0)', 1, 'rgb(200,0,0)'],
-                      8,
-                      ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 'rgba(255,255,255,0)', 1, 'rgba(255,255,255,0)'],
-                      ],
-                      
-             }} />
-            </Source>
 	  ]}
         />
       </Main>
@@ -263,3 +193,4 @@ type LocationsTableData = {
   location: DecodedLocation;
   decodedAidRequests: DecodedAidRequest[];
 };
+
