@@ -86,18 +86,18 @@ export function Requests() {
   }, [suppliesDict, aidRequestsGroupedByDate, addFilter]);
 
   const activeFilterItems = getActiveFilterItems("Categories") as string[]; // typecasting necessary because filter item is string | boolean
-  const activeCategoryFilters = activeFilterItems.length ? activeFilterItems : ["*"];
   const activeDateFilter = getActiveFilterItems("Dates")[0] as string; // typecasting necessary because filter item is string | boolean
 
   // Filter aid requests by given date and by category (and possibly city in the next step)
   const aidRequestsFiltered = useMemo(() => {
     if (!activeDateFilter || isEmpty(aidRequestsGroupedByDate)) return [];
+    const activeCategoryFilters = activeFilterItems.length ? activeFilterItems : ["*"];
 
     const filteredByDate = aidRequestsGroupedByDate[activeDateFilter];
     const filteredByCategories = filterByCategoryIds(filteredByDate, activeCategoryFilters);
 
     return filteredByCategories;
-  }, [aidRequestsGroupedByDate, activeDateFilter, activeCategoryFilters]);
+  }, [aidRequestsGroupedByDate, activeDateFilter, activeFilterItems]);
 
   // Group aid requests them according to tables' needs
   // TODO: consider moving this step to the table component
