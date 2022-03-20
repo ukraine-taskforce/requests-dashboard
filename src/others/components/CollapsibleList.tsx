@@ -25,10 +25,7 @@ export const CollapsibleTable = ({ rows, sortRight, renderRowData, ...tableProps
 
   const addMoreRows = () => {
     const newRows = displayedRows.concat(nextRows);
-    console.log("newRows", newRows);
-    setTimeout(() => {
-      setDisplayedRows(newRows);
-    }, 100);
+    setDisplayedRows(newRows);
   };
 
   // TODO: type it properly - strings can be sorted too
