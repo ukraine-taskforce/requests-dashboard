@@ -80,11 +80,10 @@ export const RegionsSource = ({aidRequests, mapRef, mapLoaded}: RegionsSourcePro
       (mapRef.current.getSource('state') as GeoJSONSource).setData(regionsGeo);
     }
   }, [mapRef,
-      mapRef.current,
       JSON.stringify(activeCategoryFilters),
       regionsSplitByDate ? activeDateFilter : '',
       JSON.stringify(dates),
-      JSON.stringify(aidRequests),
+      JSON.stringify(aidRequests),  // This looks crazy, is there a better way?
       translateLocation,
       mapLoaded]);
 
