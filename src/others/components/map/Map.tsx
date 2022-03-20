@@ -1,13 +1,9 @@
-import { useEffect } from "react";
 import { Location, AidRequest } from "../../contexts/api";
-import { useFilter } from "../../contexts/filter";
 import { useTranslation } from "react-i18next";
 import MapComponent, { Popup, MapRef, MapLayerMouseEvent, Layer, Source } from "react-map-gl";
-import maplibregl, { GeoJSONSource } from "maplibre-gl";
+import maplibregl from "maplibre-gl";
 import { RegionsSource } from "../map/RegionsSource";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { adminRegions } from "../../fixtures/regionsP3";
-import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import { Box, Typography } from "@mui/material";
 import { ReactNode, useCallback, useState, useRef } from "react";
 
@@ -76,7 +72,6 @@ export const Map = ({ sourceWithLayer, cities, aidRequests }: MapProps) => {
     setPopupInfo(null);
   }, []);
 
-
   return (
     <Box sx={{ height: "100%", width: "100%" }}>
       <MapComponent
@@ -87,13 +82,13 @@ export const Map = ({ sourceWithLayer, cities, aidRequests }: MapProps) => {
         style={{ borderRadius: "24px" }}
         interactiveLayerIds={["ukr_water_needs-point"]}
         cursor={cursor}
-	onLoad={() => {setMapLoaded(true);}}
+        onLoad={() => {setMapLoaded(true);}}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
         {sourceWithLayer}
 
-	{<RegionsSource cities={cities} aidRequests={aidRequests} mapRef={mapRef} mapLoaded={mapLoaded} />}
+        {<RegionsSource cities={cities} aidRequests={aidRequests} mapRef={mapRef} mapLoaded={mapLoaded} />}
 
         {popupInfo && (
           <Popup
