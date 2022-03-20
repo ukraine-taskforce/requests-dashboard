@@ -24,8 +24,6 @@ import {
   groupByCategoryIdWithTotal,
   groupedByCitiesToTableData,
   groupedByCategoriesToTableData,
-  translateToLocation,
-  translateToSupply,
 } from "../../others/helpers/aid-request-helpers";
 
 export function Requests() {
@@ -123,9 +121,7 @@ export function Requests() {
   // NOTE: adaptToMap has been added temporarily
   const isMapDataAvailable = locationDict && suppliesDict && groupedByCitiesWithTotal.length;
   const mapData = isMapDataAvailable
-    ? groupedByCitiesWithTotal.map((aidRequest) =>
-        adaptToMap(aidRequest, translateToLocation(Object.values(locationDict)), translateToSupply(Object.values(suppliesDict)))
-      )
+    ? groupedByCitiesWithTotal.map((aidRequest) => adaptToMap(aidRequest, translateLocation(aidRequest.city_id), translateSupply))
     : [];
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",

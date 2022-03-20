@@ -1,22 +1,7 @@
 import { groupBy, map, filter, eq, flatten } from "lodash";
-import { Location, Supply, AidRequest, ID } from "../contexts/api";
 
+import { AidRequest } from "../contexts/api";
 import { ListItem } from "../components/CollapsibleListItem";
-
-export const translateToLocation =
-  (cities: Location[]) =>
-  (city_id: number): Location => {
-    return cities[city_id - 1];
-  }; // TODO: remove once map consumes DictionaryContext properly
-
-export const translateToSupply =
-  (supplies: Supply[]) =>
-  (category_id: ID): Supply => {
-    const supply = supplies.find((suply) => String(suply.id) === String(category_id));
-    if (!supply) throw new Error(`Supply category: ${category_id} is not defined`);
-
-    return supply;
-  }; // TODO: remove once map consumes DictionaryContext properly
 
 export const sortDates = (a: string, b: string) => {
   return new Date(a).getTime() - new Date(b).getTime();

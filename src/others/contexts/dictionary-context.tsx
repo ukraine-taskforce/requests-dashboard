@@ -58,12 +58,12 @@ const useDictionaryState = ({ supplies, locations }: { supplies: Supply[] | unde
     setLocationsDict(locationsDict);
   };
 
-  const translateLocation = (city_id: number) => {
+  const translateLocation = (city_id: number): Location | undefined => {
     const location = locationDict ? locationDict[city_id] : undefined;
     return location;
   };
 
-  const translateSupply = (category_id: string) => {
+  const translateSupply = (category_id: string): Supply | undefined => {
     const supply = suppliesDict ? suppliesDict[category_id] : undefined;
     return supply;
   };

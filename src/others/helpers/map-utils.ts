@@ -1,7 +1,7 @@
 import { groupBy } from "lodash";
 import omit from "lodash/omit";
-import { AidRequest, ID, Supply } from "../contexts/api";
-import { DecodedAidRequest, DecodedAidRequestGroupedByLocation, DecodedLocation } from "./decode-aid-request";
+import { AidRequest, Supply, Location } from "../contexts/api";
+import { DecodedAidRequest, DecodedAidRequestGroupedByLocation } from "./decode-aid-request";
 import type { Feature, Geometry, GeoJsonProperties } from "geojson";
 
 type GroupedByDate = {
@@ -17,7 +17,7 @@ type GroupedByDateWithTotal = {
 };
 
 type GroupedByLocationAndDateWithTotal = {
-  location: DecodedLocation; // TODO: consider replacing with Location
+  location: Location;
   aidRequestsByDateWithTotal: GroupedByDateWithTotal[];
 };
 
@@ -36,19 +36,26 @@ type GroupedByCityId = {
   aidRequests: AidRequest[];
 };
 
+// TODO: Delete once map relies on AidRequest data model
 export const adaptToMap = (
   aidRequestGroupedByCityId: GroupedByCityId,
-  locationTranslator: (city_id: number) => DecodedLocation, // TODO: consider replacing with Location
-  supplyTranslator: (category_id: ID) => Supply
+  location: Location | undefined,
+  supplyTranslator: (category_id: string) => Supply | undefined
 ): DecodedAidRequestGroupedByLocation => {
+  if (!location) throw new Error(`Location: ${location} is not defined`);
+
   return {
-    location: locationTranslator(aidRequestGroupedByCityId.city_id),
+    location,
     total: aidRequestGroupedByCityId.total,
-    decodedAidRequests: aidRequestGroupedByCityId.aidRequests.map((aidRequest: AidRequest) => ({
-      date: aidRequest.date,
-      name: supplyTranslator(aidRequest.category_id).name,
-      amount: aidRequest.requested_amount,
-    })),
+    decodedAidRequests: aidRequestGroupedByCityId.aidRequests.map((aidRequest: AidRequest) => {
+      const supply = supplyTranslator(aidRequest.category_id);
+      if (!supply) throw new Error(`Supply category: ${supply} is not defined`);
+      return {
+        date: aidRequest.date,
+        name: supply.name,
+        amount: aidRequest.requested_amount,
+      };
+    }),
   };
 };
 
@@ -113,7 +120,7 @@ function addAggregatedFeaturePerLocationAndDate(
 
 function addFeatureForAidRequest(
   aidRequest: Omit<DecodedAidRequest, "date">, // TODO: consider replacing with AidRequest
-  location: DecodedLocation, // TODO: consider replacing with Location
+  location: Location,
   date: string,
   features: Set<Feature<Geometry, GeoJsonProperties>>
 ) {
