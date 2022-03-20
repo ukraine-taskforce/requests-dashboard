@@ -39,11 +39,8 @@ export const CollapsibleTable = ({ rows, sortRight, renderRowData, ...tableProps
       hasMore={!hasDisplayedAll}
       loader={<h4>Loading...</h4>}
       scrollableTarget="scrollableDiv"
-      endMessage={
-        <p style={{ textAlign: "center" }}>
-          <b>Yay! You have seen it all</b>
-        </p>
-      }
+      // TODO: for overflowing tables add a "back to top" button
+      // endMessage={<> </>}
     >
       <TableContainer component={Paper} {...tableProps}>
         <Table aria-label="collapsible table">
