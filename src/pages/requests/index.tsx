@@ -163,6 +163,7 @@ export function Requests() {
               <Layer {...layerStyle} filter={layerFilter} />
             </Source>
           }
+          cities={cities} aidRequests={aidRequests}
         />
       </Main>
     </Layout>
