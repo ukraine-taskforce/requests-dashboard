@@ -9,7 +9,8 @@ import { adminRegions } from "../../fixtures/regionsP3";
 import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import { Box, Typography } from "@mui/material";
 import { ReactNode, useCallback, useState, useRef } from "react";
-
+//import { useSearchParams } from "react-router-native";
+//import queryString from "query-string";
 import { Layer, Source } from "react-map-gl";
 interface MapProps {
   sourceWithLayer?: ReactNode;
@@ -40,10 +41,19 @@ export const Map = ({ sourceWithLayer }: MapProps) => {
   const mapRef = useRef<MapRef>(null);
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
   const [cursor, setCursor] = useState<"auto" | "pointer">("auto");
+  const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const filterContext = useFilter();
   const { Dates: dateFilter, ...otherFilters} = filterContext.filters;
   const dates = dateFilter?.filterItems.map(({text}) => text) || [];
 
+  //const [a, b] = useSearchParams();
+//	console.log(a,b);
+  const searchParams = new URLSearchParams(window.location.search);
+	console.log(searchParams.get('show_aa'), (searchParams.get('show_aa') ? '1': '0'));
+  const showAA = (searchParams.get('show_aa') ? searchParams.get('show_aa') : process.env.REACT_APP_SHOW_AA) === '1';
+  const aaSplitByDate = (searchParams.get('aa_split_by_date') ? searchParams.get('aa_split_by_date') : process.env.REACT_APP_AA_SPLIT_BY_DATE) === '1';
+	
+  console.log(showAA, aaSplitByDate);
   const handleMouseEnter = useCallback(
     (event: MapLayerMouseEvent) => {
       if (mapRef?.current) {
@@ -81,7 +91,7 @@ export const Map = ({ sourceWithLayer }: MapProps) => {
 
   const activeDateFilter = filterContext.getActiveFilterItems("Dates")[0];
 
-  const layerFilterDate = process.env.REACT_APP_AA_SPLIT_BY_DATE == '0' ? ["==", ["get", "date"], ["string", activeDateFilter]] : ["boolean", true];
+  const layerFilterDate = aaSplitByDate ? ["boolean", "true"] : ["==", ["get", "date"], ["string", activeDateFilter]];
 
 
   const map = <MapComponent
@@ -92,13 +102,14 @@ export const Map = ({ sourceWithLayer }: MapProps) => {
         style={{ borderRadius: "24px" }}
         interactiveLayerIds={["ukr_water_needs-point"]}
         cursor={cursor}
-	onLoad={() => {console.log('map loaded');}}
+	onLoad={() => {console.log('map loaded');setMapLoaded(true);}}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+
       >
         {sourceWithLayer}
 
-	{process.env.REACT_APP_SHOW_AA !== '0' ? <Source id="state" type="geojson" key="states" data={{type: "FeatureCollection", features: []}}>
+	{showAA ? <Source id="state" type="geojson" key="states" data={{type: "FeatureCollection", features: []}}>
               <Layer id="state-borders" type="line" layout={{}} paint={{"line-color": "black", 'line-width': 1}} />
               <Layer id="state-fills" type="fill" filter={layerFilterDate} layout={{}} 
               paint={{
@@ -151,16 +162,12 @@ export const Map = ({ sourceWithLayer }: MapProps) => {
 
 
   useEffect(() => {
-	  if (process.env.REACT_APP_SHOW_AA === '0') {return;}
-	  console.log(process.env.REACT_APP_SHOW_AA, process.env.REACT_APP_API_DOMAIN, process.env.REACT_APP_REQUESTS_SOURCE);
-	  console.log(activeCategoryFilters, activeDateFilter);
-	  console.log(mapRef);
-	  if (mapRef){console.log(mapRef.current);}
+	  if (!showAA) {return;}
+	  console.log(mapRef, mapRef.current);
 	  if(mapRef && mapRef.current){
-	  console.log(mapRef.current.getSource('state'));
    const start = new Date().getTime();
 		  
-  console.log('2', activeDateFilter, activeCategoryFilters);
+  console.log('2', activeDateFilter, activeCategoryFilters, mapRef.current.getSource('state'));
   const cityToRegion: {[id: string]: string} = {};
   if (cities) {
     for (const city of cities) {
@@ -169,7 +176,7 @@ export const Map = ({ sourceWithLayer }: MapProps) => {
   }
 		 const adminRegionsWithMeta = [];
   for (const date of dates) {
-	  if (process.env.REACT_APP_AA_SPLIT_BY_DATE === '1' && date !== activeDateFilter) {continue;}
+	  if (aaSplitByDate && date !== activeDateFilter) {continue;}
   const adminsWithData: {[id: string]: number} = {};
   var maxVal = 0;
   if (aidRequests) {
@@ -191,8 +198,7 @@ export const Map = ({ sourceWithLayer }: MapProps) => {
   }
   console.log(date, adminsWithData['UKR-ADM1-14850775B25539455'], maxVal);
   for (const region of adminRegions) {
-    const res = process.env.REACT_APP_AA_SPLIT_BY_DATE === '1' ? region : Object.assign({}, region);
-    //const res = Object.assign({}, region);
+    const res = aaSplitByDate ? region : Object.assign({}, region);
     if (res.properties) {
       res.properties = Object.assign({}, res.properties);
       res.properties.date = date;
@@ -210,17 +216,13 @@ export const Map = ({ sourceWithLayer }: MapProps) => {
     features: adminRegionsWithMeta,
   };
 		  console.log('time ', (new Date().getTime() - start));
+		  if (mapRef.current.getSource('state'))
 		  (mapRef.current.getSource('state') as GeoJSONSource).setData(regionsGeo);
 
 		  console.log('time2 ', (new Date().getTime() - start));
 
-
-   //setRegionsData(regionsGeo);
-  //}, [JSON.stringify(activeCategoryFilters), activeDateFilter, JSON.stringify(aidRequests), JSON.stringify(cities)]);
-
-
 	  }
-  }, [mapRef, JSON.stringify(activeCategoryFilters), process.env.REACT_APP_AA_SPLIT_BY_DATE === '0' ? '' : activeDateFilter, JSON.stringify(dates), JSON.stringify(aidRequests), JSON.stringify(cities)]);
+  }, [mapRef,mapRef.current,mapRef.current?  mapRef.current.getSource('state') : null, JSON.stringify(activeCategoryFilters),  aaSplitByDate ? activeDateFilter : '', JSON.stringify(dates), JSON.stringify(aidRequests), JSON.stringify(cities), mapLoaded]);
 
 
   return (
