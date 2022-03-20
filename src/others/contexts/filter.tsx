@@ -91,16 +91,13 @@ export const FilterContextProvider: React.FunctionComponent = ({ children }) => 
     [setFilters]
   );
 
-  const getActiveFilterItems = (filterName: string, field?: keyof FilterItem) => {
+  const getActiveFilterItems = (filterName: string): string[] => {
     const currentFilter = filters[filterName];
+
     if (currentFilter) {
       return currentFilter.filterItems
         .filter(({ selected }) => selected)
         .map((item) => {
-          if (field) {
-            return item[field];
-          }
-
           return item.id;
         });
     }

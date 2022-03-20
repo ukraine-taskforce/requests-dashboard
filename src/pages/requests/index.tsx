@@ -85,7 +85,7 @@ export function Requests() {
     // }
   }, [suppliesDict, aidRequestsGroupedByDate, addFilter]);
 
-  const activeFilterItems = filterContext.getActiveFilterItems("Categories", "text") as string[]; // typecasting necessary because filter item is string | boolean
+  const activeFilterItems = getActiveFilterItems("Categories") as string[]; // typecasting necessary because filter item is string | boolean
   const activeCategoryFilters = activeFilterItems.length ? activeFilterItems : ["*"];
   const activeDateFilter = getActiveFilterItems("Dates")[0] as string; // typecasting necessary because filter item is string | boolean
 
