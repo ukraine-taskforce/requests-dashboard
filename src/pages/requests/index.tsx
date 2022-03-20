@@ -24,9 +24,6 @@ export function Requests() {
   const { data: cities } = useLocationsQuery();
   const { data: supplies } = useSuppliesQuery();
   const { data: aidRequests } = useAidRequestQuery();
-  const [ regionsData, setRegionsData] = useState<FeatureCollection<Geometry, GeoJsonProperties>>(
-      {type: "FeatureCollection",
-       features: []});
   const filterContext = useFilter();
 
   const addFilter = filterContext.addFilter;

@@ -78,6 +78,12 @@ export const Map = ({ sourceWithLayer }: MapProps) => {
     setPopupInfo(null);
   }, []);
 
+
+  const activeDateFilter = filterContext.getActiveFilterItems("Dates")[0];
+
+  const layerFilterDate = process.env.REACT_APP_AA_SPLIT_BY_DATE == '0' ? ["==", ["get", "date"], ["string", activeDateFilter]] : ["boolean", true];
+
+
   const map = <MapComponent
         ref={mapRef}
         mapLib={maplibregl}
@@ -92,9 +98,9 @@ export const Map = ({ sourceWithLayer }: MapProps) => {
       >
         {sourceWithLayer}
 
-	 <Source id="state" type="geojson" key="states" data={{type: "FeatureCollection", features: []}}>
+	{process.env.REACT_APP_SHOW_AA !== '0' ? <Source id="state" type="geojson" key="states" data={{type: "FeatureCollection", features: []}}>
               <Layer id="state-borders" type="line" layout={{}} paint={{"line-color": "black", 'line-width': 1}} />
-              <Layer id="state-fills" type="fill" layout={{}} 
+              <Layer id="state-fills" type="fill" filter={layerFilterDate} layout={{}} 
               paint={{
                 "fill-color": [
                       "interpolate",
@@ -107,8 +113,7 @@ export const Map = ({ sourceWithLayer }: MapProps) => {
                       ],
                       
              }} />
-            </Source>
-
+            </Source> : ""}
 
         {popupInfo && (
           <Popup
@@ -143,10 +148,11 @@ export const Map = ({ sourceWithLayer }: MapProps) => {
 
   
   const activeCategoryFilters = filterContext.getActiveFilterItems("Categories");
-  const activeDateFilter = filterContext.getActiveFilterItems("Dates")[0];
 
 
   useEffect(() => {
+	  if (process.env.REACT_APP_SHOW_AA === '0') {return;}
+	  console.log(process.env.REACT_APP_SHOW_AA, process.env.REACT_APP_API_DOMAIN, process.env.REACT_APP_REQUESTS_SOURCE);
 	  console.log(activeCategoryFilters, activeDateFilter);
 	  console.log(mapRef);
 	  if (mapRef){console.log(mapRef.current);}
@@ -163,6 +169,7 @@ export const Map = ({ sourceWithLayer }: MapProps) => {
   }
 		 const adminRegionsWithMeta = [];
   for (const date of dates) {
+	  if (process.env.REACT_APP_AA_SPLIT_BY_DATE === '1' && date !== activeDateFilter) {continue;}
   const adminsWithData: {[id: string]: number} = {};
   var maxVal = 0;
   if (aidRequests) {
@@ -184,8 +191,11 @@ export const Map = ({ sourceWithLayer }: MapProps) => {
   }
   console.log(date, adminsWithData['UKR-ADM1-14850775B25539455'], maxVal);
   for (const region of adminRegions) {
-    const res = {...region};
+    const res = process.env.REACT_APP_AA_SPLIT_BY_DATE === '1' ? region : Object.assign({}, region);
+    //const res = Object.assign({}, region);
     if (res.properties) {
+      res.properties = Object.assign({}, res.properties);
+      res.properties.date = date;
       if (res.properties.shapeID in adminsWithData) {
         res.properties.normalized_amount = adminsWithData[res.properties.shapeID] / maxVal;
       } else {
@@ -210,7 +220,7 @@ export const Map = ({ sourceWithLayer }: MapProps) => {
 
 
 	  }
-  }, [mapRef, JSON.stringify(activeCategoryFilters), JSON.stringify(dates), JSON.stringify(aidRequests), JSON.stringify(cities)]);
+  }, [mapRef, JSON.stringify(activeCategoryFilters), process.env.REACT_APP_AA_SPLIT_BY_DATE === '0' ? '' : activeDateFilter, JSON.stringify(dates), JSON.stringify(aidRequests), JSON.stringify(cities)]);
 
 
   return (
