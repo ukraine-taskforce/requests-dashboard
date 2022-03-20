@@ -27,6 +27,7 @@ test("possibleDates", () => {
 
 test("groupLocationGroupByDate", () => {
   const locationGroup: DecodedAidRequestGroupedByLocation = {
+    //@ts-ignore
     location: { name: "Zaliznychne", lat: 47.645, lon: 36.169 },
     total: 159,
     decodedAidRequests: [
@@ -96,6 +97,7 @@ test("assignTotalForDate", () => {
 test("mapAidRequestsToFeatures", () => {
   const decodedAidRequestGroupedByLocation: DecodedAidRequestGroupedByLocation[] = [
     {
+      //@ts-ignore
       location: { name: "Zaliznychne", lon: 36.169, lat: 47.645 },
       total: 17,
       decodedAidRequests: [
@@ -105,6 +107,7 @@ test("mapAidRequestsToFeatures", () => {
       ],
     },
     {
+      //@ts-ignore
       location: { name: "Kyiv", lon: 30.524, lat: 50.45 },
       total: 11,
       decodedAidRequests: [

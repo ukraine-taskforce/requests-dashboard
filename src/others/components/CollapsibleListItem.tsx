@@ -11,13 +11,13 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 export type ListItem = {
-  name: string;
-  total: ReactText;
+  name: ReactText;
+  value: ReactText;
   hidden: Omit<ListItem, "hidden">[];
   wrapperProps?: BoxProps;
 };
 
-export const CollapsibleListItem = ({ name, total, hidden, wrapperProps, ...rest }: ListItem) => {
+export const CollapsibleListItem = ({ name, value, hidden, wrapperProps, ...rest }: ListItem) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -38,7 +38,7 @@ export const CollapsibleListItem = ({ name, total, hidden, wrapperProps, ...rest
 
         <TableCell align="right">
           <Typography variant="subtitle1" gutterBottom component="div" sx={{ margin: 0 }}>
-            {total}
+            {value}
           </Typography>
         </TableCell>
       </TableRow>
@@ -49,8 +49,8 @@ export const CollapsibleListItem = ({ name, total, hidden, wrapperProps, ...rest
             <Box sx={{ margin: 1 }}>
               <Table size="small" aria-label="tbd">
                 <TableBody>
-                  {hidden.map(({ name, total }, index) => (
-                    <TableRow key={name + index} sx={{ "& > *": { borderBottom: "unset", paddingX: 1 } }}>
+                  {hidden.map(({ name, value }, index) => (
+                    <TableRow key={`${name}-${index}`} sx={{ "& > *": { borderBottom: "unset", paddingX: 1 } }}>
                       <TableCell component="th" scope="row">
                         <Typography variant="subtitle2" gutterBottom component="div" sx={{ margin: 0 }}>
                           {name}
@@ -58,7 +58,7 @@ export const CollapsibleListItem = ({ name, total, hidden, wrapperProps, ...rest
                       </TableCell>
                       <TableCell align="right">
                         <Typography variant="subtitle2" gutterBottom component="div" sx={{ margin: 0 }}>
-                          {total}
+                          {value}
                         </Typography>
                       </TableCell>
                     </TableRow>

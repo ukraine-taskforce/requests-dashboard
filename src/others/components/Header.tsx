@@ -12,7 +12,7 @@ import { Box } from "@mui/material";
 import { useFilter } from "../contexts/filter";
 import { useAuth } from "../contexts/auth";
 
-import { useSidebarContext } from "./sidebar-context";
+import { useSidebarContext } from "../contexts/sidebar-context";
 import { TimelineSlider } from "./TimelineSlider";
 import { FileDownloaderMenu } from "./FileDownloaderMenu";
 
