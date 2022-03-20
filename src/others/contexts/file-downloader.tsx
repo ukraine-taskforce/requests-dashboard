@@ -1,6 +1,7 @@
 import { createContext, useState, useContext, FunctionComponent, useEffect } from "react";
-import { decodeCategory, decodeLocation } from "../helpers/decode-aid-request";
+
 import { useAidRequestQuery, useLocationsQuery, useSuppliesQuery } from "./api";
+import { useDictionaryContext } from "./dictionary-context";
 import { useFilter } from "./filter";
 
 type FormattedAidRequests = {
@@ -46,6 +47,7 @@ export function useFileDownloader(): FileDownloaderContextValue {
 export const FileDownloaderContextProvider: FunctionComponent = ({ children }) => {
   const { data: cities, isSuccess: citiesSuccess } = useLocationsQuery();
   const { data: supplies, isSuccess: suppliesSuccess } = useSuppliesQuery();
+  const { translateLocation, translateSupply } = useDictionaryContext();
   const { data: aidRequests, isSuccess: aidRequestsSuccess } = useAidRequestQuery();
   const { getActiveFilterItems } = useFilter();
 
@@ -68,23 +70,28 @@ export const FileDownloaderContextProvider: FunctionComponent = ({ children }) =
 
   const formattedAidRequests = filteredAidRequests?.reduce((result: FormattedAidRequests, request) => {
     if (supplies && cities) {
-      const category = decodeCategory(supplies, request.category_id);
-      const city = decodeLocation(cities, request.city_id).name;
+      const category = translateSupply(request.category_id);
+      const location = translateLocation(request.city_id);
 
-      uniqueCategories.add(category);
+      const categoryName = category?.name;
+      const locationName = location?.name;
 
-      const formattedRequest = {
-        category: category,
-        amount: request.requested_amount,
-      };
+      if (categoryName && locationName) {
+        uniqueCategories.add(categoryName);
 
-      if (result[city]) {
-        result[city].requests.push(formattedRequest);
-      } else {
-        result[city] = {
-          date: request.date,
-          requests: [formattedRequest],
+        const formattedRequest = {
+          category: categoryName,
+          amount: request.requested_amount,
         };
+
+        if (result[locationName]) {
+          result[locationName].requests.push(formattedRequest);
+        } else {
+          result[locationName] = {
+            date: request.date,
+            requests: [formattedRequest],
+          };
+        }
       }
     }
 
