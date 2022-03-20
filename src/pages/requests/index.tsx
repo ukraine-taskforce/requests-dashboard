@@ -184,7 +184,7 @@ export function Requests() {
               <Layer {...layerStyle} filter={layerFilter} />
             </Source>
           }
-          cities={cities} aidRequests={aidRequests}
+          aidRequests={aidRequests}
         />
       </Main>
     </Layout>

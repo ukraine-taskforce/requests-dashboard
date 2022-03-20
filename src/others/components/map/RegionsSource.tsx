@@ -1,100 +1,95 @@
 import { useEffect, RefObject } from "react";
 import { useFilter } from "../../contexts/filter";
 import { GeoJSONSource } from "maplibre-gl";
-import { Location, AidRequest } from "../../contexts/api";
+import { AidRequest } from "../../contexts/api";
 import { adminRegions } from "../../fixtures/regionsP3";
 import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import { Layer, Source, MapRef } from "react-map-gl";
+import { useDictionaryContext } from "../../contexts/dictionary-context";
+
 
 interface RegionsSourceProperties {
-  cities: Location[] | undefined;
   aidRequests: AidRequest[] | undefined;
   mapRef: RefObject<MapRef>;
   mapLoaded: boolean;
 };
 
 
-export const RegionsSource = ({cities, aidRequests, mapRef, mapLoaded}: RegionsSourceProperties) => {
+export const RegionsSource = ({aidRequests, mapRef, mapLoaded}: RegionsSourceProperties) => {
+  const { translateLocation } = useDictionaryContext();
   const filterContext = useFilter();
-  const { Dates: dateFilter, ...otherFilters} = filterContext.filters;
+  const { Dates: dateFilter} = filterContext.filters;
   const dates = dateFilter?.filterItems.map(({text}) => text) || [];
 
   const searchParams = new URLSearchParams(window.location.search);
-	console.log(searchParams.get('show_aa'), (searchParams.get('show_aa') ? '1': '0'));
-  const showAA = (searchParams.get('show_aa') ? searchParams.get('show_aa') : process.env.REACT_APP_SHOW_AA) === '1';
-  const aaSplitByDate = (searchParams.get('aa_split_by_date') ? searchParams.get('aa_split_by_date') : process.env.REACT_APP_AA_SPLIT_BY_DATE) === '1';
+  const showRegions = (searchParams.get('show_regions') ?
+                       searchParams.get('show_regions') :
+                       process.env.REACT_APP_SHOW_REGIONS) === '1';
+  const regionsSplitByDate = (searchParams.get('regions_split_by_date') ?
+                              searchParams.get('regions_split_by_date') :
+                              process.env.REACT_APP_REGIONS_SPLIT_BY_DATE) === '1';
 
   const activeDateFilter = filterContext.getActiveFilterItems("Dates")[0];
-  const layerFilterDate = aaSplitByDate ? ["boolean", "true"] : ["==", ["get", "date"], ["string", activeDateFilter]];
+  const layerFilterDate = (regionsSplitByDate ?
+                           ["boolean", "true"] :
+                           ["==", ["get", "date"], ["string", activeDateFilter]]);
 
   const activeCategoryFilters = filterContext.getActiveFilterItems("Categories");
 
-
   useEffect(() => {
-	  if (!showAA) {return;}
-	  console.log(mapRef, mapRef.current);
-	  if(mapRef && mapRef.current){
-   const start = new Date().getTime();
-		  
-  console.log('2', activeDateFilter, activeCategoryFilters, mapRef.current.getSource('state'));
-  const cityToRegion: {[id: string]: string} = {};
-  if (cities) {
-    for (const city of cities) {
-      cityToRegion[city.id] = city.region_id;
-    }
-  }
-		 const adminRegionsWithMeta = [];
-  for (const date of dates) {
-	  if (aaSplitByDate && date !== activeDateFilter) {continue;}
-  const adminsWithData: {[id: string]: number} = {};
-  var maxVal = 0;
-  if (aidRequests) {
-    for (const request of aidRequests) {
-      if (request.date !== date) {
-        continue;
+    if (!showRegions || !mapRef || !mapRef.current) return;
+    const allRegionsWithMeta = [];
+    for (const date of dates) {
+      if (regionsSplitByDate && date !== activeDateFilter) continue;
+      const regionToCount: {[id: string]: number} = {};
+      var maxVal = 0;
+      if (aidRequests) {
+        for (const request of aidRequests) {
+          if (request.date !== date) continue;
+          // TODO: support multi category
+          if (activeCategoryFilters.length > 0 && request.category_id !== activeCategoryFilters[0]) continue;
+          const city = translateLocation(request.city_id);
+          if (!city) continue;
+          const region_id = city.region_id;
+          if (!(region_id in regionToCount)) {
+            regionToCount[region_id] = 0;
+          }
+          regionToCount[region_id] = regionToCount[region_id] + request.requested_amount;
+          maxVal = Math.max(maxVal, regionToCount[region_id]);
+        }
       }
-      // TODO: support multi category
-      if (activeCategoryFilters.length > 0 && request.category_id !== activeCategoryFilters[0]) {
-        continue;
-      }
-      const region_id = cityToRegion[request.city_id];
-      if (!(region_id in adminsWithData)) {
-        adminsWithData[region_id] = 0;
-      }
-      adminsWithData[region_id] = adminsWithData[region_id] + request.requested_amount;
-      maxVal = Math.max(maxVal, adminsWithData[region_id]);
-     }
-  }
-  console.log(date, adminsWithData['UKR-ADM1-14850775B25539455'], maxVal);
-  for (const region of adminRegions) {
-    const res = aaSplitByDate ? region : Object.assign({}, region);
-    if (res.properties) {
-      res.properties = Object.assign({}, res.properties);
-      res.properties.date = date;
-      if (res.properties.shapeID in adminsWithData) {
-        res.properties.normalized_amount = adminsWithData[res.properties.shapeID] / maxVal;
-      } else {
-        res.properties.normalized_amount = 0;
+      for (const region of adminRegions) {
+        const res = regionsSplitByDate ? region : Object.assign({}, region);
+        if (res.properties) {
+          res.properties = Object.assign({}, res.properties);
+          res.properties.date = date;
+          if (res.properties.shapeID in regionToCount) {
+            res.properties.normalized_amount = regionToCount[res.properties.shapeID] / maxVal;
+          } else {
+            res.properties.normalized_amount = 0;
+          }
+        }
+        allRegionsWithMeta.push(res);
       }
     }
-    adminRegionsWithMeta.push(res);
-  }
-  }
-  const regionsGeo: FeatureCollection<Geometry, GeoJsonProperties> = {
-    type: "FeatureCollection",
-    features: adminRegionsWithMeta,
-  };
-		  console.log('time ', (new Date().getTime() - start));
-		  if (mapRef.current.getSource('state'))
-		  (mapRef.current.getSource('state') as GeoJSONSource).setData(regionsGeo);
+    const regionsGeo: FeatureCollection<Geometry, GeoJsonProperties> = {
+      type: "FeatureCollection",
+      features: allRegionsWithMeta,
+    };
+    if (mapRef.current.getSource('state')) {
+      (mapRef.current.getSource('state') as GeoJSONSource).setData(regionsGeo);
+    }
+  }, [mapRef,
+      mapRef.current,
+      JSON.stringify(activeCategoryFilters),
+      regionsSplitByDate ? activeDateFilter : '',
+      JSON.stringify(dates),
+      JSON.stringify(aidRequests),
+      translateLocation,
+      mapLoaded]);
 
-		  console.log('time2 ', (new Date().getTime() - start));
 
-	  }
-  }, [mapRef,mapRef.current,mapRef.current?  mapRef.current.getSource('state') : null, JSON.stringify(activeCategoryFilters),  aaSplitByDate ? activeDateFilter : '', JSON.stringify(dates), JSON.stringify(aidRequests), JSON.stringify(cities), mapLoaded]);
-
-
-  if (showAA) {
+  if (showRegions) {
    return <Source id="state" type="geojson" key="states" data={{type: "FeatureCollection", features: []}}>
               <Layer id="state-borders" type="line" layout={{}} paint={{"line-color": "black", 'line-width': 1}} />
               <Layer id="state-fills" type="fill" filter={layerFilterDate} layout={{}} 

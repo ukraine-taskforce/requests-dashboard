@@ -1,6 +1,6 @@
-import { Location, AidRequest } from "../../contexts/api";
+import { AidRequest } from "../../contexts/api";
 import { useTranslation } from "react-i18next";
-import MapComponent, { Popup, MapRef, MapLayerMouseEvent, Layer, Source } from "react-map-gl";
+import MapComponent, { Popup, MapRef, MapLayerMouseEvent } from "react-map-gl";
 import maplibregl from "maplibre-gl";
 import { RegionsSource } from "../map/RegionsSource";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -9,7 +9,6 @@ import { ReactNode, useCallback, useState, useRef } from "react";
 
 interface MapProps {
   sourceWithLayer?: ReactNode;
-  cities: Location[] | undefined;
   aidRequests: AidRequest[] | undefined;
 }
 
@@ -31,7 +30,7 @@ const initialUkraineCenterView = {
 
 const MAP_STYLE = process.env.REACT_APP_MAPLIBRE_MAP_STYLE || "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 
-export const Map = ({ sourceWithLayer, cities, aidRequests }: MapProps) => {
+export const Map = ({ sourceWithLayer, aidRequests }: MapProps) => {
   const { t } = useTranslation();
   const mapRef = useRef<MapRef>(null);
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
@@ -88,7 +87,7 @@ export const Map = ({ sourceWithLayer, cities, aidRequests }: MapProps) => {
       >
         {sourceWithLayer}
 
-        {<RegionsSource cities={cities} aidRequests={aidRequests} mapRef={mapRef} mapLoaded={mapLoaded} />}
+        {<RegionsSource aidRequests={aidRequests} mapRef={mapRef} mapLoaded={mapLoaded} />}
 
         {popupInfo && (
           <Popup
