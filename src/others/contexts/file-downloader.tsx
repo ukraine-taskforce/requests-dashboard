@@ -62,7 +62,7 @@ export const FileDownloaderContextProvider: FunctionComponent = ({ children }) =
 
   const filteredAidRequests = aidRequests?.filter(
     (aidRequest) =>
-      (activeCategoryFilters.length === 0 || activeCategoryFilters.includes(aidRequest.category_id as string)) && // typecasting necessary because filter item is string | boolean
+      (activeCategoryFilters.length === 0 || activeCategoryFilters.includes(aidRequest.category_id)) &&
       (activeDateFilters.length === 0 || activeDateFilters.includes(aidRequest.date))
   );
 
