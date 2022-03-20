@@ -8,7 +8,7 @@ interface DictionaryState {
   translateSupply: (category_id: string) => Supply | undefined;
 }
 
-type LocationsDict = { [k: string]: Location };
+type LocationsDict = { [k: number]: Location };
 type SuppliesDict = { [k: string]: Supply };
 
 export const DictionaryContext = createContext<DictionaryState | null>(null);
