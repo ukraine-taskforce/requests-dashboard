@@ -6,6 +6,7 @@ export const layerStyle: LayerProps = {
   minzoom: 2,
   paint: {
     "circle-radius": [
+      // Doc on interpolation https://maplibre.org/maplibre-gl-js-docs/style-spec/expressions/#interpolate                    
       "interpolate",
       ["linear"],
       ["zoom"],
@@ -15,6 +16,7 @@ export const layerStyle: LayerProps = {
       ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 5, 1, 300],
     ],
     "circle-color": [
+      // Doc on interpolation https://maplibre.org/maplibre-gl-js-docs/style-spec/expressions/#interpolate                    
       "interpolate",
       ["linear"],
       ["get", "normalized_amount"],
