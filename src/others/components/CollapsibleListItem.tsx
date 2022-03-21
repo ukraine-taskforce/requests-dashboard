@@ -11,14 +11,16 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 export type ListItem = {
-  name: string;
-  total: ReactText;
+  name: ReactText;
+  value: ReactText;
   hidden: Omit<ListItem, "hidden">[];
   wrapperProps?: BoxProps;
 };
 
-export const CollapsibleListItem = ({ name, total, hidden, wrapperProps, ...rest }: ListItem) => {
+export const CollapsibleListItem = ({ name, value, hidden, wrapperProps, ...rest }: ListItem) => {
   const [open, setOpen] = useState(false);
+
+  const hiddenItemsCount = hidden.length;
 
   return (
     <>
@@ -38,7 +40,7 @@ export const CollapsibleListItem = ({ name, total, hidden, wrapperProps, ...rest
 
         <TableCell align="right">
           <Typography variant="subtitle1" gutterBottom component="div" sx={{ margin: 0 }}>
-            {total}
+            {value}
           </Typography>
         </TableCell>
       </TableRow>
@@ -49,20 +51,24 @@ export const CollapsibleListItem = ({ name, total, hidden, wrapperProps, ...rest
             <Box sx={{ margin: 1 }}>
               <Table size="small" aria-label="tbd">
                 <TableBody>
-                  {hidden.map(({ name, total }, index) => (
-                    <TableRow key={name + index} sx={{ "& > *": { borderBottom: "unset", paddingX: 1 } }}>
-                      <TableCell component="th" scope="row">
-                        <Typography variant="subtitle2" gutterBottom component="div" sx={{ margin: 0 }}>
-                          {name}
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="right">
-                        <Typography variant="subtitle2" gutterBottom component="div" sx={{ margin: 0 }}>
-                          {total}
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {hidden.map(({ name, value }, index) => {
+                    const isLast = hiddenItemsCount - 1 === index;
+
+                    return (
+                      <TableRow key={`${name}-${index}`} sx={{ "& > *": { borderBottom: "unset", paddingX: 1 } }}>
+                        <TableCell component="th" scope="row" sx={{ borderBottom: isLast ? "none" : undefined }}>
+                          <Typography variant="subtitle2" gutterBottom component="div" sx={{ margin: 0 }}>
+                            {name}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="right" sx={{ borderBottom: isLast ? "none" : undefined }}>
+                          <Typography variant="subtitle2" gutterBottom component="div" sx={{ margin: 0 }}>
+                            {value}
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </Box>

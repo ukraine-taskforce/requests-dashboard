@@ -12,8 +12,9 @@ import { Box } from "@mui/material";
 import { useFilter } from "../contexts/filter";
 import { useAuth } from "../contexts/auth";
 
-import { useSidebarContext } from "./sidebar-context";
+import { useSidebarContext } from "../contexts/sidebar-context";
 import { TimelineSlider } from "./TimelineSlider";
+import { FileDownloaderMenu } from "./FileDownloaderMenu";
 
 export interface HeaderProps {
   children?: ReactNode;
@@ -35,10 +36,11 @@ export const Header = ({ children }: HeaderProps) => {
         <IconButton size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }} onClick={toggle}>
           <MenuIcon />
         </IconButton>
+
         <Typography variant="h6" component="div" mr={8}>
           {t("dashboard")}
         </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", marginLeft: "153px" }}>
+        <Box sx={{ display: "flex", flexGrow: "1", alignItems: "center", marginLeft: "153px" }}>
           <FilterDropdownGroup
             filters={Object.values(otherFilters)}
             filterGroupOpenHandler={activateFilter}
@@ -47,6 +49,9 @@ export const Header = ({ children }: HeaderProps) => {
           {dates && <TimelineSlider dates={dates} />}
         </Box>
         {children}
+        <Box sx={{ justifySelf: "flex-end" }}>
+          <FileDownloaderMenu />
+        </Box>
         <OutputIcon onClick={logout} sx={{ width: 30, height: 30, marginLeft: "auto", cursor: "pointer" }} />
       </Toolbar>
     </AppBar>

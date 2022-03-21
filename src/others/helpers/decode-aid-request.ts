@@ -1,15 +1,27 @@
 import omit from "lodash/omit";
 
-import { GroupedByLocationWithTotal, GroupedByCategoryWithTotal } from "./assign-total";
-import { Location, Supply, ID } from "../contexts/api";
+import { Location, Supply, AidRequest } from "../contexts/api";
+
+// TODO: Delete this file once map-utils start using raw AidRequest only
+
+export type GroupedByLocationWithTotal = {
+  total: number;
+  city_id: number;
+  aidRequests: Omit<AidRequest, "city_id">[];
+};
+
+export type GroupedByCategoryWithTotal = {
+  total: number;
+  category_id: string;
+  aidRequests: Omit<AidRequest, "category_id">[];
+};
 
 export type DecodedAidRequestGroupedByLocation = {
-  location: DecodedLocation;
+  location: Location;
   total: number;
   decodedAidRequests: DecodedAidRequest[];
 };
 
-export type DecodedLocation = Pick<Location, "name" | "lat" | "lon">;
 export type DecodedAidRequest = { date: string; name: string; amount: number };
 
 export type Dictionary = {
@@ -45,7 +57,7 @@ export type DecodedAidRequestGroupedByCategory = {
     {
       date: string;
       amount: number;
-      location: DecodedLocation;
+      location: Location;
     },
     "date" | "amount" | "location"
   >[];
@@ -69,12 +81,14 @@ export const decodeAidRequestGroupedByCategoryWithTotal = (dictionary: Dictionar
   };
 };
 
-const decodeLocation = (locations: Location[], cityId: ID): DecodedLocation => {
+export const decodeLocation = (locations: Location[], cityId: number): Location => {
   const location = locations.find((location) => String(location.id) === String(cityId));
-  return omit(location, "id");
+  if (!location) throw new Error(`Location: ${location} is not defined`);
+
+  return location;
 };
 
-const decodeCategory = (categories: Supply[], category_id: ID): string => {
+export const decodeCategory = (categories: Supply[], category_id: string): string => {
   const category = categories.find((category) => String(category.id) === String(category_id));
   if (!category) throw new Error(`Supply category: ${category_id} is not defined`);
 

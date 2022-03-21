@@ -8,7 +8,7 @@ export interface LayoutProps {
 
 export const Layout: React.FunctionComponent<LayoutProps> = ({ header, children }) => {
   return (
-    <Box sx={{ height: "100vh" }}>
+    <Box sx={{ height: "100vh", maxHeight: "100vh", overflowY: "hidden" }}>
       {header}
       <Box sx={{ height: "calc(100vh - 64px)" }}>{children}</Box>
     </Box>

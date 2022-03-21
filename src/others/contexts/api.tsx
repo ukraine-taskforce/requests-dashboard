@@ -16,10 +16,8 @@ export const queryClient = new QueryClient({
 export const API_DOMAIN = process.env.REACT_APP_API_DOMAIN || "http://127.0.0.1";
 export const REQUESTS_SOURCE = process.env.REACT_APP_REQUESTS_SOURCE || "api";
 
-export type ID = string | number;
-
 export interface Location {
-  id: ID;
+  id: number;
   name: string;
   lat: number;
   lon: number;
@@ -30,18 +28,19 @@ function useFetch() {
   const { session } = useAuth();
 
   const query = React.useCallback(
-    (input: RequestInfo, init?: RequestInit) =>{
+    (input: RequestInfo, init?: RequestInit) => {
       return fetch(input, {
         headers: {
           Authorization: session?.accessToken.jwtToken || "",
         },
         ...init,
-      })},
+      });
+    },
     [session]
   );
 
   return {
-    query
+    query,
   };
 }
 
@@ -76,7 +75,7 @@ export function useLocationsQuery() {
 }
 
 export interface Supply {
-  id: ID;
+  id: string;
   name: string;
 }
 
@@ -127,8 +126,8 @@ export function useSuppliesQuery() {
 
 export interface AidRequest {
   date: string;
-  city_id: ID;
-  category_id: ID;
+  city_id: number;
+  category_id: string;
   requested_amount: number;
 }
 

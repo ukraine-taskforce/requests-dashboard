@@ -1,9 +1,0 @@
-.wrapper {
-  display: flex;
-  height: var(--header-height);
-}
-
-.sidebar {
-  width: fit-content;
-  margin-right: 2ch;
-}

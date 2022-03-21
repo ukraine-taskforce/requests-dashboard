@@ -4,7 +4,6 @@ import { FunctionComponent, memo, forwardRef } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 
 import { FilterItem } from "../../contexts/filter";
-import { ID } from "../../contexts/api";
 
 import styles from "./ListWithSearch.module.css";
 
@@ -12,7 +11,7 @@ type ListWithSearchProps = {
   selectedFilterItemCount: number;
   selectedFilterItems: FilterItem[];
   searchableItems: FilterItem[];
-  onSelectItem: (id: ID, selected: boolean) => () => void;
+  onSelectItem: (id: string, selected: boolean) => () => void;
   checkboxListItemIcon: (value: boolean) => React.ReactNode;
   toggleFilterList: () => void;
   clearAllFilters: () => void;
