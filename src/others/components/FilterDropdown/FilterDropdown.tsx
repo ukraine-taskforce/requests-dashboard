@@ -11,7 +11,7 @@ import {
   Typography,
   ClickAwayListener,
 } from "@mui/material";
-import { FunctionComponent, useRef, useState } from "react";
+import { FunctionComponent, useRef, useState, useMemo } from "react";
 import { KeyboardArrowDown as ArrowDown, KeyboardArrowUp as ArrowUp, CheckCircle, CircleOutlined } from "@mui/icons-material";
 import { FilterItem } from "../../contexts/filter";
 import { ID } from "../../contexts/api";
@@ -37,12 +37,18 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
 }) => {
   const { t } = useTranslation();
   const filterRef = useRef<HTMLDivElement | null>(null);
-
   const [filterListVisible, setFilterListVisible] = useState(false);
 
-  const selectedFilterItems = filterItems.filter(({ selected }) => selected);
+  const { selectedFilterItems, unSelectedFilterItems } = useMemo(() => filterItems.reduce((acc, item) => {
+    item.selected === true ? acc.selectedFilterItems.push(item) : acc.unSelectedFilterItems.push(item);
+    return acc;
+  }, {
+    selectedFilterItems: [] as FilterItem[],
+    unSelectedFilterItems: [] as FilterItem[]
+  }), [filterItems])
+
   const selectedFilterItemCount = selectedFilterItems.length;
-  const allFiltersSelected = filterItems.every(({ selected }) => !selected);
+  const allFiltersSelected = selectedFilterItems.length === filterItems.length;
   const isFilterOpen = filterActive !== undefined ? filterActive : filterListVisible;
 
   const clearAllFilters = () => filterItems.forEach(({ id }) => filterItemToggleHandler(id, false));
@@ -94,16 +100,18 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
         </Typography>
         {!singleValueFilter && <Chip size="small" color="primary" label={selectedFilterItemCount} />}
       </Button>
+
       {isFilterOpen && (
         <>
           {filterName === "Cities" ? (
             <ListWithSearch
-              filterItems={filterItems}
+              searchableItems={unSelectedFilterItems}
               selectedFilterItemCount={selectedFilterItemCount}
               selectedFilterItems={selectedFilterItems}
-              clickHandler={clickHandler}
+              onSelectItem={clickHandler}
               checkboxListItemIcon={checkboxListItemIcon}
               toggleFilterList={toggleFilterList}
+              clearAllFilters={clearAllFilters}
             />
           ) : (
             <ClickAwayListener onClickAway={toggleFilterList}>

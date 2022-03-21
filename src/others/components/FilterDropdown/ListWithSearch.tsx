@@ -1,45 +1,61 @@
-import { useTranslation } from "react-i18next";
-import { List, ListItem, ListItemButton, ListItemText, ClickAwayListener, Divider, useAutocomplete } from "@mui/material";
-import { FunctionComponent, useRef, useState } from "react";
-import { KeyboardArrowDown as ArrowDown, KeyboardArrowUp as ArrowUp, CheckCircle, CircleOutlined } from "@mui/icons-material";
+import { FixedSizeList, areEqual } from "react-window";
+import { Button, ListItem, ListItemButton, ListItemText, ClickAwayListener, Divider, useAutocomplete, AutocompleteGroupedOption } from "@mui/material";
+import { FunctionComponent, memo, forwardRef, LegacyRef, ForwardedRef } from "react";
+import SearchIcon from '@mui/icons-material/Search';
 import { FilterItem } from "../../contexts/filter";
 import { ID } from "../../contexts/api";
 
-/**
- * TODOs:
- *
- * 1. Add "Clear" button at top
- * 2. Add search icon to input
- * 3. Fix top button label and category count
- * 4. Move cities as 1st filter dropdown
- * 5. Address any inline TODOs in the code
- */
 
 type FilterDropdownProps = {
   selectedFilterItemCount: number;
   selectedFilterItems: FilterItem[];
-  filterItems: FilterItem[];
-  // TODO finish typings
-  clickHandler: any;
-  checkboxListItemIcon: any;
-  toggleFilterList: any;
+  searchableItems: FilterItem[];
+  onSelectItem: (id: ID, selected: boolean) => () => void;
+  checkboxListItemIcon: (value: boolean) => React.ReactNode;
+  toggleFilterList: () => void;
+  clearAllFilters: () => void;
 };
 
+
+function itemKey(index: number, data: FilterItem[]) {
+  const item = data[index];
+  return `${item.id}-${index}`;
+}
+
 export const ListWithSearch: FunctionComponent<FilterDropdownProps> = ({
-  filterItems,
+  searchableItems,
   selectedFilterItemCount,
   selectedFilterItems,
-  clickHandler,
+  onSelectItem,
   checkboxListItemIcon,
   toggleFilterList,
+  clearAllFilters,
 }) => {
-  const { getRootProps, getInputLabelProps, getInputProps, getListboxProps, getOptionProps, groupedOptions, inputValue } =
+  const { getRootProps, getInputProps, getListboxProps, groupedOptions } =
     useAutocomplete<FilterItem>({
-      id: "use-autocomplete-demo",
-      options: filterItems,
+      id: "search_filters_list",
+      options: searchableItems,
       getOptionLabel: (option) => option.text,
       open: true,
     });
+
+  const Row = memo((props: { data: FilterItem[], index: number, style: object}) => {
+    const { data, index, style } = props;
+    const { id, selected, text} = data[index];
+
+    return (
+      <ListItem key={id} style={style}>
+        <ListItemButton onClick={onSelectItem(id, selected)} sx={{ paddingRight: "8px" }}>
+          <ListItemText>{text}</ListItemText>
+          {checkboxListItemIcon(selected)}
+        </ListItemButton>
+      </ListItem>
+    )
+  }, areEqual);
+
+  const InnerElementType = forwardRef<HTMLUListElement>((props, ref) => {
+    return <ul ref={ref} {...props} {...getListboxProps()} />;
+  });
 
   return (
     <ClickAwayListener onClickAway={toggleFilterList}>
@@ -56,7 +72,10 @@ export const ListWithSearch: FunctionComponent<FilterDropdownProps> = ({
           color: "#000",
         }}
       >
-        <div>
+        <div style={{textAlign: "center", marginTop: "10px"}}>
+          <Button variant="text" size="large" onClick={clearAllFilters}>Clear</Button>
+        </div>
+
           <div {...getRootProps()}>
             <input
               {...getInputProps()}
@@ -66,7 +85,7 @@ export const ListWithSearch: FunctionComponent<FilterDropdownProps> = ({
                 borderRadius: "25px",
                 width: "270px",
                 padding: "20px",
-                margin: "20px 20px 0 20px",
+                margin: "10px 20px 20px 20px",
                 borderWidth: "1px",
               }}
             />
@@ -76,7 +95,7 @@ export const ListWithSearch: FunctionComponent<FilterDropdownProps> = ({
             <>
               {selectedFilterItems.map(({ id, text, selected }, index) => (
                 <ListItem key={`${id}-${index}`}>
-                  <ListItemButton onClick={clickHandler(id, selected)}>
+                  <ListItemButton sx={{ padding: "0 16px" }} onClick={onSelectItem(id, selected)}>
                     <ListItemText>{text}</ListItemText>
                     {checkboxListItemIcon(selected)}
                   </ListItemButton>
@@ -85,26 +104,23 @@ export const ListWithSearch: FunctionComponent<FilterDropdownProps> = ({
               <Divider
                 sx={{
                   borderColor: "#f3f3f3",
+                  marginBottom: "10px",
                 }}
               />
             </>
           ) : null}
 
-          {groupedOptions.length > 0 ? (
-            <List {...getListboxProps()}>
-              {/* TODO fix TS */}
-              {/* @ts-ignore */}
-              {groupedOptions.map(({ id, text, selected }, index) => (
-                <ListItem key={id}>
-                  <ListItemButton onClick={clickHandler(id, selected)}>
-                    <ListItemText>{text}</ListItemText>
-                    {checkboxListItemIcon(selected)}
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-          ) : null}
-        </div>
+          <FixedSizeList
+            innerElementType={InnerElementType}
+            overscanCount={5}
+            height={300}
+            itemCount={groupedOptions.length}
+            itemData={groupedOptions as FilterItem[]}
+            itemSize={55}
+            itemKey={itemKey}
+            width={300}>
+              {Row}
+          </FixedSizeList>
       </div>
     </ClickAwayListener>
   );
