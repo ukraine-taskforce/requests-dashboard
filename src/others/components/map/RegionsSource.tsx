@@ -89,9 +89,8 @@ export const RegionsSource = ({aidRequests, mapRef, mapLoaded}: RegionsSourcePro
 
 
   if (showRegions) {
-   return <Source id="state" type="geojson" key="states" data={{type: "FeatureCollection", features: []}}>
-              <Layer id="state-borders" type="line" layout={{}} paint={{"line-color": "black", 'line-width': 1}} />
-              <Layer id="state-fills" type="fill" filter={layerFilterDate} layout={{}} 
+   return (<><Source id="state" type="geojson" key="states_dynamic" data={{type: "FeatureCollection", features: []}}>
+             <Layer id="state-fills" type="fill" filter={layerFilterDate} layout={{}}
               paint={{
                 "fill-color": [
                       "interpolate",
@@ -101,10 +100,12 @@ export const RegionsSource = ({aidRequests, mapRef, mapLoaded}: RegionsSourcePro
                       ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 'rgba(200, 0, 0, 0)', 1, 'rgb(200,0,0)'],
                       8,
                       ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 'rgba(255,255,255,0)', 1, 'rgba(255,255,255,0)'],
-                      ],
-                      
+                      ],                      
              }} />
-            </Source>;
+            </Source>
+            <Source id="state_constant" type="geojson" key="states_static" data={{type: "FeatureCollection", features: adminRegions}}>
+              <Layer id="state-borders" type="line" layout={{}} paint={{"line-color": "black", 'line-width': 1}} />
+            </Source></>);
   } else {
     return (null);
   }
