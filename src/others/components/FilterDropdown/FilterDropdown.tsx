@@ -9,6 +9,7 @@ import {
   ListItemText,
   Typography,
   ClickAwayListener,
+  Box,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { FunctionComponent, useRef, useState, useMemo } from "react";
@@ -89,15 +90,25 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
   );
 
   const filterButtonLabel = singleValueFilter && selectedFilterItemCount === 1 ? selectedFilterItems[0].text : t("FILTER_" + filterName);
+  const multipleFiltersChipLabel = selectedFilterItemCount === 0 ? t("all") : selectedFilterItemCount;
 
   return (
-    <div
+    <Box
       ref={filterRef}
       className={`filter-dropdown filter-dropdown-${filterName}`}
-      style={{ maxWidth: "300px", position: "relative", marginRight: 8 }}
+      style={{ width: "200px", position: "relative", marginRight: 8 }}
     >
       <Button
-        sx={{ borderRadius: "20px", textTransform: "unset", backgroundColor: "#fff", color: "#000" }}
+        sx={{
+          borderRadius: "20px",
+          textTransform: "unset",
+          backgroundColor: "#fff",
+          color: "#000",
+          width: "100%",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
         size="large"
         variant="contained"
         onClick={toggleFilterList}
@@ -106,7 +117,7 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
         <Typography mr={1} variant="body2" component="p">
           {filterButtonLabel}
         </Typography>
-        {!singleValueFilter && <Chip size="small" color="primary" label={selectedFilterItemCount} />}
+        {!singleValueFilter && <Chip size="small" color="primary" label={multipleFiltersChipLabel} />}
       </Button>
 
       {isFilterOpen && (
@@ -161,6 +172,6 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
           )}
         </>
       )}
-    </div>
+    </Box>
   );
 };

@@ -10,7 +10,7 @@ import Typography from "@mui/material/Typography";
 
 import { useAuth } from "../../others/contexts/auth";
 
-import { ImgBrand } from "../../medias/images/UGT_Asset_Brand";
+import { ImgBrand } from "../../media/images/UGT_Asset_Brand";
 
 enum FormStep {
   Username,

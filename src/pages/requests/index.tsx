@@ -51,7 +51,7 @@ export function Requests() {
         filterName: "Categories",
         filterItems: Object.values(suppliesDict).map((category): FilterItem => ({ id: category.id, selected: false, text: category.name })),
         active: false,
-        singleValueFilter: true,
+        singleValueFilter: false,
       });
     }
 

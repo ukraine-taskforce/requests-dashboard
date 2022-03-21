@@ -56,6 +56,7 @@
   "dashboard": "Фільтри",
   "all": "Всі",
   "no_dates": "Відсутні дати для вибору",
+  "dates_range": "Діапазон дат",
   "clear": "Очистити",
   "FILTER_Categories": "Категорії",
   "FILTER_Cities": "Міста",

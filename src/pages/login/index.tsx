@@ -9,7 +9,7 @@ import Typography from "@mui/material/Typography";
 
 import { AuthStatus, useAuth } from "../../others/contexts/auth";
 
-import { ImgBrand } from "../../medias/images/UGT_Asset_Brand";
+import { ImgBrand } from "../../media/images/UGT_Asset_Brand";
 
 export function Login() {
   const { t } = useTranslation();
