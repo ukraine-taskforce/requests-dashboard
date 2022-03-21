@@ -129,16 +129,6 @@ export function Requests() {
     .map(groupedByCategoriesToTableData)
     .sort((a, b) => Number(b.value) - Number(a.value));
 
-  // TODO: move this logic to map component - it should get filters via context and process them accordingly
-  // TODO: fix filter mapping - it should use category_id
-  // TODO: add some comments / typing explaining what kind of black the magic is happening here :)
-  const layerFilterCategory = activeFilterItems.length
-    ? ["in", ["get", "category"], ["array", ["literal", activeFilterItems]]]
-    : ["==", ["get", "category"], "ALL"];
-
-  const layerFilterDate = activeDateFilter ? ["==", ["get", "date"], ["string", activeDateFilter]] : ["boolean", true];
-  const layerFilter = ["all", layerFilterCategory, layerFilterDate];
-
   const { selectedTabId, setSelectedTabId } = useSidebarContext();
 
   // TODO: implement proper loaders
@@ -177,8 +167,7 @@ export function Requests() {
         <Map
           sourceWithLayer={
             <Source id="ukr_water_needs" type="geojson" data={geojson}>
-              {/* @ts-ignore */}
-              <Layer {...layerStyle} filter={layerFilter} />
+              <Layer {...layerStyle} />
             </Source>
           }
         />
