@@ -80,7 +80,7 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
     <Box
       ref={filterRef}
       className={`filter-dropdown filter-dropdown-${filterName}`}
-      style={{ width: "240px", position: "relative", marginRight: 8 }}
+      style={{ width: "200px", position: "relative", marginRight: 8 }}
     >
       <Button
         sx={{
@@ -90,7 +90,7 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
           color: "#000",
           width: "100%",
           display: "flex",
-          justifyContent: "space-around",
+          justifyContent: "space-between",
           alignItems: "center",
         }}
         size="large"
