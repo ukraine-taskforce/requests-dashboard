@@ -20,6 +20,8 @@ import { mapAidRequestsToFeatures, adaptToMap } from "../../others/helpers/map-u
 import {
   sortDates,
   filterByCategoryIds,
+  filterByCityIds,
+  FilterEnum,
   groupByCityIdWithTotal,
   groupByCategoryIdWithTotal,
   groupedByCitiesToTableData,
@@ -81,17 +83,20 @@ export function Requests() {
 
   const activeFilterItems = getActiveFilterItems("Categories") as string[]; // typecasting necessary because filter item is string | boolean
   const activeDateFilter = getActiveFilterItems("Dates")[0] as string; // typecasting necessary because filter item is string | boolean
+  const activeCityFilter = getActiveFilterItems("Cities") as number[];
 
   // Filter aid requests by given date and by category (and possibly city in the next step)
   const aidRequestsFiltered = useMemo(() => {
     if (!activeDateFilter || isEmpty(aidRequestsGroupedByDate)) return [];
-    const activeCategoryFilters = activeFilterItems.length ? activeFilterItems : ["*"];
+    const activeCategoryFilters = activeFilterItems.length ? activeFilterItems : FilterEnum.All;
+    const activeCityFilters = activeCityFilter.length ? activeCityFilter : FilterEnum.All;
 
     const filteredByDate = aidRequestsGroupedByDate[activeDateFilter];
     const filteredByCategories = filterByCategoryIds(filteredByDate, activeCategoryFilters);
+    const filteredByCities = filterByCityIds(filteredByCategories, activeCityFilters);
 
-    return filteredByCategories;
-  }, [aidRequestsGroupedByDate, activeDateFilter, activeFilterItems]);
+    return filteredByCities;
+  }, [aidRequestsGroupedByDate, activeDateFilter, activeFilterItems, activeCityFilter]);
 
   // Group aid requests them according to tables' needs
   // TODO: consider moving this step to the table component

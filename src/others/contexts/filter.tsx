@@ -21,7 +21,7 @@ export interface FilterContextValue {
   addFilter: (newFilter: Filter) => void;
   activateFilter: (filterName: string) => void;
   toggleFilterItem: (filterName: string, filterItemId: FilterItemId, value?: boolean) => void;
-  getActiveFilterItems: (filterName: string, field?: keyof FilterItem) => (boolean | FilterItemId)[];
+  getActiveFilterItems: (filterName: string, field?: keyof FilterItem) => FilterItemId[];
 }
 
 const initFilterContextValue: FilterContextValue = {
