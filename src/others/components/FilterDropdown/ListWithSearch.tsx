@@ -1,12 +1,14 @@
 import { FixedSizeList, areEqual } from "react-window";
-import { Button, ListItem, ListItemButton, ListItemText, ClickAwayListener, Divider, useAutocomplete, AutocompleteGroupedOption } from "@mui/material";
-import { FunctionComponent, memo, forwardRef, LegacyRef, ForwardedRef } from "react";
+import { Button, ListItem, ListItemButton, ListItemText, ClickAwayListener, Divider, useAutocomplete, Typography } from "@mui/material";
+import { FunctionComponent, memo, forwardRef } from "react";
 import SearchIcon from '@mui/icons-material/Search';
+
 import { FilterItem } from "../../contexts/filter";
 import { ID } from "../../contexts/api";
 
+import styles from "./ListWithSearch.module.css";
 
-type FilterDropdownProps = {
+type ListWithSearchProps = {
   selectedFilterItemCount: number;
   selectedFilterItems: FilterItem[];
   searchableItems: FilterItem[];
@@ -16,13 +18,12 @@ type FilterDropdownProps = {
   clearAllFilters: () => void;
 };
 
-
 function itemKey(index: number, data: FilterItem[]) {
   const item = data[index];
   return `${item.id}-${index}`;
 }
 
-export const ListWithSearch: FunctionComponent<FilterDropdownProps> = ({
+export const ListWithSearch: FunctionComponent<ListWithSearchProps> = ({
   searchableItems,
   selectedFilterItemCount,
   selectedFilterItems,
@@ -59,57 +60,44 @@ export const ListWithSearch: FunctionComponent<FilterDropdownProps> = ({
 
   return (
     <ClickAwayListener onClickAway={toggleFilterList}>
-      <div
-        style={{
-          borderRadius: "24px",
-          backgroundColor: "#fff",
-          marginTop: "16px",
-          maxHeight: "500px",
-          overflow: "auto",
-          position: "absolute",
-          zIndex: 1000,
-          minWidth: "300px",
-          color: "#000",
-        }}
-      >
-        <div style={{textAlign: "center", marginTop: "10px"}}>
+      <div className={styles.listContainer}>
+        <div className={styles.clearButtonContainer}>
           <Button variant="text" size="large" onClick={clearAllFilters}>Clear</Button>
         </div>
 
-          <div {...getRootProps()}>
-            <input
-              {...getInputProps()}
-              placeholder="Search your city"
-              style={{
-                height: "55px",
-                borderRadius: "25px",
-                width: "270px",
-                padding: "20px",
-                margin: "10px 20px 20px 20px",
-                borderWidth: "1px",
+        <div {...getRootProps()} className={styles.searchContainer}>
+          <SearchIcon sx={{ color: "000" }} />
+          <input
+            {...getInputProps()}
+            placeholder="Search your city"
+            className={styles.searchInput}
+          />
+        </div>
+
+        {selectedFilterItemCount > 0 ? (
+          <>
+            {selectedFilterItems.map(({ id, text, selected }, index) => (
+              <ListItem key={`${id}-${index}`}>
+                <ListItemButton sx={{ padding: "0 16px" }} onClick={onSelectItem(id, selected)}>
+                  <ListItemText>{text}</ListItemText>
+                  {checkboxListItemIcon(selected)}
+                </ListItemButton>
+              </ListItem>
+            ))}
+            <Divider
+              sx={{
+                borderColor: "#f3f3f3",
+                marginBottom: "10px",
               }}
             />
-          </div>
+          </>
+        ) : null}
 
-          {selectedFilterItemCount > 0 ? (
-            <>
-              {selectedFilterItems.map(({ id, text, selected }, index) => (
-                <ListItem key={`${id}-${index}`}>
-                  <ListItemButton sx={{ padding: "0 16px" }} onClick={onSelectItem(id, selected)}>
-                    <ListItemText>{text}</ListItemText>
-                    {checkboxListItemIcon(selected)}
-                  </ListItemButton>
-                </ListItem>
-              ))}
-              <Divider
-                sx={{
-                  borderColor: "#f3f3f3",
-                  marginBottom: "10px",
-                }}
-              />
-            </>
-          ) : null}
-
+        {groupedOptions.length === 0 ? (
+          <Typography variant="body2" component="p" align="center" className={styles.noResults}>
+            No matching results
+          </Typography>
+        ): (
           <FixedSizeList
             innerElementType={InnerElementType}
             overscanCount={5}
@@ -119,8 +107,9 @@ export const ListWithSearch: FunctionComponent<FilterDropdownProps> = ({
             itemSize={55}
             itemKey={itemKey}
             width={300}>
-              {Row}
+            {Row}
           </FixedSizeList>
+        )}
       </div>
     </ClickAwayListener>
   );
