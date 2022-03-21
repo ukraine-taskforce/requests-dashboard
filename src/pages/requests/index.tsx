@@ -55,6 +55,16 @@ export function Requests() {
       });
     }
 
+    if (locationDict) {
+      addFilter({
+        filterName: "Cities",
+        filterItems: Object.values(locationDict).map((location): FilterItem => ({ id: location.name.toLowerCase().replace(" ", "-"), selected: false, text: location.name })),
+        active: false,
+        singleValueFilter: false,
+        hasSearch: true,
+      });
+    }
+
     if (!isEmpty(aidRequestsGroupedByDate)) {
       const uniqueDatesSorted = uniq(keys(aidRequestsGroupedByDate)).sort(sortDates);
 
@@ -67,21 +77,7 @@ export function Requests() {
         singleValueFilter: true,
       });
     }
-
-    // TODO: to implement cities
-    // if (decodedAndGroupedByLocation.length) {
-    //   const filterItems: FilterItem[] = decodedAndGroupedByLocation.map(
-    //     (city): FilterItem => ({ id: city.location.name.toLowerCase().replace(" ", "-"), text: city.location.name, selected: false })
-    //   );
-
-    //   addFilter({
-    //     filterName: "Cities",
-    //     filterItems,
-    //     active: false,
-    //     singleValueFilter: true,
-    //   });
-    // }
-  }, [suppliesDict, aidRequestsGroupedByDate, addFilter]);
+  }, [suppliesDict, locationDict, aidRequestsGroupedByDate, addFilter]);
 
   const activeFilterItems = getActiveFilterItems("Categories") as string[]; // typecasting necessary because filter item is string | boolean
   const activeDateFilter = getActiveFilterItems("Dates")[0] as string; // typecasting necessary because filter item is string | boolean

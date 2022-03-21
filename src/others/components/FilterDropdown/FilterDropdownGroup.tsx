@@ -14,7 +14,7 @@ export const FilterDropdownGroup = ({ filters, filterGroupOpenHandler, filterGro
 
   return (
     <div className="filter-dropdown-group" style={{ display: "flex" }}>
-      {filters.map(({ filterName, filterItems, active, singleValueFilter }) => (
+      {filters.map(({ filterName, filterItems, active, singleValueFilter, hasSearch }) => (
         <FilterDropdown
           key={filterName}
           filterName={filterName}
@@ -23,6 +23,7 @@ export const FilterDropdownGroup = ({ filters, filterGroupOpenHandler, filterGro
           singleValueFilter={singleValueFilter}
           filterGroupOpenHandler={filterGroupOpenHandler}
           filterItemToggleHandler={filterItemToggleHandler(filterName)}
+          hasSearch={hasSearch}
         />
       ))}
     </div>

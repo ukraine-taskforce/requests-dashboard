@@ -11,6 +11,7 @@ export type Filter = {
   filterName: string;
   filterItems: FilterItem[];
   singleValueFilter: boolean;
+  hasSearch?: boolean;
 };
 
 export interface FilterContextValue {
