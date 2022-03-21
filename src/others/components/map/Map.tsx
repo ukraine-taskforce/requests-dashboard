@@ -37,6 +37,11 @@ export const Map = ({ sourceWithLayer, aidRequests }: MapProps) => {
   const [cursor, setCursor] = useState<"auto" | "pointer">("auto");
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
 
+  const searchParams = new URLSearchParams(window.location.search);
+  const showRegions = (searchParams.get('show_regions') ?
+                       searchParams.get('show_regions') :
+                       process.env.REACT_APP_SHOW_REGIONS) === '1';
+
   const handleMouseEnter = useCallback(
     (event: MapLayerMouseEvent) => {
       if (mapRef?.current) {
