@@ -1,5 +1,5 @@
 import { FixedSizeList, areEqual } from "react-window";
-import { Button, ListItem, ListItemButton, ListItemText, ClickAwayListener, Divider, useAutocomplete, Typography, TextField } from "@mui/material";
+import { Button, ListItem, ListItemButton, ListItemText, ClickAwayListener, Divider, useAutocomplete, Typography } from "@mui/material";
 import { FunctionComponent, memo, forwardRef } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import { useTranslation } from "react-i18next";
