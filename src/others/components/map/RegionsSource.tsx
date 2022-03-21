@@ -22,9 +22,6 @@ export const RegionsSource = ({aidRequests, mapRef, mapLoaded}: RegionsSourcePro
   const dates = dateFilter?.filterItems.map(({text}) => text) || [];
 
   const searchParams = new URLSearchParams(window.location.search);
-  const showRegions = (searchParams.get('show_regions') ?
-                       searchParams.get('show_regions') :
-                       process.env.REACT_APP_SHOW_REGIONS) === '1';
   const regionsSplitByDate = (searchParams.get('regions_split_by_date') ?
                               searchParams.get('regions_split_by_date') :
                               process.env.REACT_APP_REGIONS_SPLIT_BY_DATE) === '1';
@@ -37,7 +34,7 @@ export const RegionsSource = ({aidRequests, mapRef, mapLoaded}: RegionsSourcePro
   const activeCategoryFilters = filterContext.getActiveFilterItems("Categories");
 
   useEffect(() => {
-    if (!showRegions || !mapRef || !mapRef.current) return;
+    if (!mapRef || !mapRef.current) return;
     const allRegionsWithMeta = [];
     for (const date of dates) {
       if (regionsSplitByDate && date !== activeDateFilter) continue;
@@ -88,25 +85,21 @@ export const RegionsSource = ({aidRequests, mapRef, mapLoaded}: RegionsSourcePro
       mapLoaded]);
 
 
-  if (showRegions) {
-   return (<><Source id="state" type="geojson" key="states_dynamic" data={{type: "FeatureCollection", features: []}}>
-             <Layer id="state-fills" type="fill" filter={layerFilterDate} layout={{}}
-              paint={{
-                "fill-color": [
-                      "interpolate",
-                      ["linear"], 
-                      ["zoom"],
-                      7,
-                      ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 'rgba(200, 0, 0, 0)', 1, 'rgb(200,0,0)'],
-                      8,
-                      ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 'rgba(255,255,255,0)', 1, 'rgba(255,255,255,0)'],
-                      ],                      
-             }} />
-            </Source>
-            <Source id="state_constant" type="geojson" key="states_static" data={{type: "FeatureCollection", features: adminRegions}}>
-              <Layer id="state-borders" type="line" layout={{}} paint={{"line-color": "black", 'line-width': 1}} />
-            </Source></>);
-  } else {
-    return (null);
-  }
+ return (<><Source id="state" type="geojson" key="states_dynamic" data={{type: "FeatureCollection", features: []}}>
+           <Layer id="state-fills" type="fill" filter={layerFilterDate} layout={{}}
+            paint={{
+              "fill-color": [
+                    "interpolate",
+                    ["linear"], 
+                    ["zoom"],
+                    7,
+                    ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 'rgba(200, 0, 0, 0)', 1, 'rgb(200,0,0)'],
+                    8,
+                    ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 'rgba(255,255,255,0)', 1, 'rgba(255,255,255,0)'],
+                    ],                      
+           }} />
+          </Source>
+          <Source id="state_constant" type="geojson" key="states_static" data={{type: "FeatureCollection", features: adminRegions}}>
+            <Layer id="state-borders" type="line" layout={{}} paint={{"line-color": "black", 'line-width': 1}} />
+          </Source></>);
 };

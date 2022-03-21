@@ -92,7 +92,7 @@ export const Map = ({ sourceWithLayer, aidRequests }: MapProps) => {
       >
         {sourceWithLayer}
 
-        {<RegionsSource aidRequests={aidRequests} mapRef={mapRef} mapLoaded={mapLoaded} />}
+        {showRegions && <RegionsSource aidRequests={aidRequests} mapRef={mapRef} mapLoaded={mapLoaded} />}
 
         {popupInfo && (
           <Popup
