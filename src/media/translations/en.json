@@ -54,6 +54,7 @@
   "dashboard": "Dashboard",
   "all": "All",
   "no_dates": "No available date range.",
+  "dates_range": "Dates range",
   "clear": "Clear",
   "FILTER_Categories": "Categories",
   "requests": "requests"
