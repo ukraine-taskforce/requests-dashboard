@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Box, Grid, Slider, Typography } from "@mui/material";
+import { Box, Slider, Typography } from "@mui/material";
 import { useEffect, useState, useRef } from "react";
 import moment from "moment";
 import { useFilter } from "../contexts/filter";
