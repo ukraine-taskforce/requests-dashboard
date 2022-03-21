@@ -84,19 +84,18 @@ export function Requests() {
     // }
   }, [suppliesDict, aidRequestsGroupedByDate, addFilter]);
 
-  const activeFilterItems = getActiveFilterItems("Categories") as string[]; // typecasting necessary because filter item is string | boolean
+  const activeCategoryFilters = getActiveFilterItems("Categories") as string[]; // typecasting necessary because filter item is string | boolean
   const activeDateFilter = getActiveFilterItems("Dates")[0] as string; // typecasting necessary because filter item is string | boolean
 
   // Filter aid requests by given date and by category (and possibly city in the next step)
   const aidRequestsFiltered = useMemo(() => {
     if (!activeDateFilter || isEmpty(aidRequestsGroupedByDate)) return [];
-    const activeCategoryFilters = activeFilterItems.length ? activeFilterItems : ["*"];
 
     const filteredByDate = aidRequestsGroupedByDate[activeDateFilter];
     const filteredByCategories = filterByCategoryIds(filteredByDate, activeCategoryFilters);
 
     return filteredByCategories;
-  }, [aidRequestsGroupedByDate, activeDateFilter, activeFilterItems]);
+  }, [aidRequestsGroupedByDate, activeDateFilter, activeCategoryFilters]);
 
   // Group aid requests them according to tables' needs
   // TODO: consider moving this step to the table component
@@ -137,8 +136,8 @@ export function Requests() {
   // TODO: move this logic to map component - it should get filters via context and process them accordingly
   // TODO: fix filter mapping - it should use category_id
   // TODO: add some comments / typing explaining what kind of black the magic is happening here :)
-  const layerFilterCategory = activeFilterItems.length
-    ? ["in", ["get", "category"], ["array", ["literal", activeFilterItems]]]
+  const layerFilterCategory = activeCategoryFilters.length
+    ? ["in", ["get", "category"], ["array", ["literal", activeCategoryFilters]]]
     : ["==", ["get", "category"], "ALL"];
 
   const layerFilterDate = activeDateFilter ? ["==", ["get", "date"], ["string", activeDateFilter]] : ["boolean", true];
@@ -191,7 +190,7 @@ export function Requests() {
               <Layer {...(showRegions ? layerStyleWithRegions : layerStyle)} filter={layerFilter} />
             </Source>
           }
-          aidRequests={aidRequests}
+          aidRequestsGroupedByDate={aidRequestsGroupedByDate}
         />
       </Main>
     </Layout>

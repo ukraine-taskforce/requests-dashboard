@@ -1,14 +1,14 @@
 import { groupBy, map } from "lodash";
 
-import { AidRequest } from "../contexts/api";
+import { AidRequest, Location } from "../contexts/api";
 import { ListItem } from "../components/CollapsibleListItem";
 
 export const sortDates = (a: string, b: string) => {
   return new Date(a).getTime() - new Date(b).getTime();
 };
 
-export const filterByCategoryIds = (aidRequests: AidRequest[], categoryIds: (string | "*")[]): AidRequest[] => {
-  if (categoryIds.includes("*")) return aidRequests;
+export const filterByCategoryIds = (aidRequests: AidRequest[], categoryIds: string[]): AidRequest[] => {
+  if (categoryIds.length === 0) return aidRequests;
   const categoryIdsSet = new Set(categoryIds);
   return aidRequests.filter((aidRequest) => categoryIdsSet.has(aidRequest.category_id));
 };
@@ -77,3 +77,20 @@ export const groupedByCategoriesToTableData = ({ category_id, total, aidRequests
 
 const totalCalculator = (aidRequests: AidRequest[]): number =>
   aidRequests.reduce((sum, aidRequest) => sum + aidRequest.requested_amount, 0);
+
+export type RegionData = { [id: string]: number };
+
+export const groupByRegions = (aidRequests: AidRequest[], translateLocation: (city_id: number) => Location | undefined): RegionData => {
+  const regionToCount: RegionData = {};
+  aidRequests.forEach((req) => {
+    const city = translateLocation(req.city_id);
+    if (!city) return;
+    const region_id = city.region_id;
+    if (!(region_id in regionToCount)) {
+      regionToCount[region_id] = 0;
+    }
+    regionToCount[region_id] = regionToCount[region_id] + req.requested_amount;
+  });
+  return regionToCount;
+};
+

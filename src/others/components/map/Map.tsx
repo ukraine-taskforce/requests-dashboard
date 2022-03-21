@@ -9,7 +9,7 @@ import { ReactNode, useCallback, useState, useRef } from "react";
 
 interface MapProps {
   sourceWithLayer?: ReactNode;
-  aidRequests: AidRequest[] | undefined;
+  aidRequestsGroupedByDate: { [id: string]: AidRequest[] };
 }
 
 interface PopupInfo {
@@ -30,7 +30,7 @@ const initialUkraineCenterView = {
 
 const MAP_STYLE = process.env.REACT_APP_MAPLIBRE_MAP_STYLE || "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 
-export const Map = ({ sourceWithLayer, aidRequests }: MapProps) => {
+export const Map = ({ sourceWithLayer, aidRequestsGroupedByDate }: MapProps) => {
   const { t } = useTranslation();
   const mapRef = useRef<MapRef>(null);
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
@@ -92,7 +92,7 @@ export const Map = ({ sourceWithLayer, aidRequests }: MapProps) => {
       >
         {sourceWithLayer}
 
-        {showRegions && <RegionsSource aidRequests={aidRequests} mapRef={mapRef} mapLoaded={mapLoaded} />}
+        {showRegions && <RegionsSource aidRequestsGroupedByDate={aidRequestsGroupedByDate} mapRef={mapRef} mapLoaded={mapLoaded} />}
 
         {popupInfo && (
           <Popup

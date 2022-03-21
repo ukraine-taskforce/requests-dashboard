@@ -3,19 +3,20 @@ import { useFilter } from "../../contexts/filter";
 import { GeoJSONSource } from "maplibre-gl";
 import { AidRequest } from "../../contexts/api";
 import { adminRegions } from "../../fixtures/regionsP3";
-import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
+import { Feature, FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import { Layer, Source, MapRef } from "react-map-gl";
 import { useDictionaryContext } from "../../contexts/dictionary-context";
+import { RegionData, filterByCategoryIds, groupByRegions } from "../../helpers/aid-request-helpers";
 
 
 interface RegionsSourceProperties {
-  aidRequests: AidRequest[] | undefined;
+  aidRequestsGroupedByDate: { [id: string]: AidRequest[]};
   mapRef: RefObject<MapRef>;
   mapLoaded: boolean;
 };
 
 
-export const RegionsSource = ({aidRequests, mapRef, mapLoaded}: RegionsSourceProperties) => {
+export const RegionsSource = ({aidRequestsGroupedByDate, mapRef, mapLoaded}: RegionsSourceProperties) => {
   const { translateLocation } = useDictionaryContext();
   const filterContext = useFilter();
   const { Dates: dateFilter} = filterContext.filters;
@@ -31,44 +32,26 @@ export const RegionsSource = ({aidRequests, mapRef, mapLoaded}: RegionsSourcePro
                            ["boolean", "true"] :
                            ["==", ["get", "date"], ["string", activeDateFilter]]);
 
-  const activeCategoryFilters = filterContext.getActiveFilterItems("Categories");
+  const activeCategoryFilters = filterContext.getActiveFilterItems("Categories") as string[];
 
   useEffect(() => {
-    if (!mapRef || !mapRef.current) return;
-    const allRegionsWithMeta = [];
-    for (const date of dates) {
-      if (regionsSplitByDate && date !== activeDateFilter) continue;
-      const regionToCount: {[id: string]: number} = {};
-      var maxVal = 0;
-      if (aidRequests) {
-        for (const request of aidRequests) {
-          if (request.date !== date) continue;
-          // TODO: support multi category
-          if (activeCategoryFilters.length > 0 && request.category_id !== activeCategoryFilters[0]) continue;
-          const city = translateLocation(request.city_id);
-          if (!city) continue;
-          const region_id = city.region_id;
-          if (!(region_id in regionToCount)) {
-            regionToCount[region_id] = 0;
-          }
-          regionToCount[region_id] = regionToCount[region_id] + request.requested_amount;
-          maxVal = Math.max(maxVal, regionToCount[region_id]);
-        }
-      }
-      for (const region of adminRegions) {
+    if (!mapRef || !mapRef.current || !aidRequestsGroupedByDate) return;
+    const allRegionsWithMeta: Feature<Geometry, GeoJsonProperties>[]  = [];
+    dates.forEach((date) => {
+      if (regionsSplitByDate && date !== activeDateFilter) return;
+      const aidRequests = filterByCategoryIds(aidRequestsGroupedByDate[date], activeCategoryFilters);
+      const regionToCount: RegionData = groupByRegions(aidRequests, translateLocation);
+      const maxVal = Object.values(regionToCount).reduce((a, b) => a > b ? a : b, 0);
+      adminRegions.forEach((region) => {
         const res = regionsSplitByDate ? region : Object.assign({}, region);
-        if (res.properties) {
+        if (res.properties && res.properties.shapeID in regionToCount) {
           res.properties = Object.assign({}, res.properties);
           res.properties.date = date;
-          if (res.properties.shapeID in regionToCount) {
-            res.properties.normalized_amount = regionToCount[res.properties.shapeID] / maxVal;
-          } else {
-            res.properties.normalized_amount = 0;
-          }
+          res.properties.normalized_amount = regionToCount[res.properties.shapeID] / maxVal;
+          allRegionsWithMeta.push(res);
         }
-        allRegionsWithMeta.push(res);
-      }
-    }
+      });
+    });
     const regionsGeo: FeatureCollection<Geometry, GeoJsonProperties> = {
       type: "FeatureCollection",
       features: allRegionsWithMeta,
@@ -80,7 +63,7 @@ export const RegionsSource = ({aidRequests, mapRef, mapLoaded}: RegionsSourcePro
       JSON.stringify(activeCategoryFilters),
       regionsSplitByDate ? activeDateFilter : '',
       JSON.stringify(dates),
-      JSON.stringify(aidRequests),  // This looks crazy, is there a better way?
+      aidRequestsGroupedByDate,
       translateLocation,
       mapLoaded]);
 

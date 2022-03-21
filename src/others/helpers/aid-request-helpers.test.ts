@@ -1,4 +1,5 @@
-import { groupByCityIdWithTotal, groupByCategoryIdWithTotal, filterByCategoryIds } from "./aid-request-helpers";
+import { Location } from "../contexts/api";
+import { groupByRegions, groupByCityIdWithTotal, groupByCategoryIdWithTotal, filterByCategoryIds } from "./aid-request-helpers";
 
 const exampleAggregatedRequests = [
   { date: "2022-03-11", city_id: 1226, category_id: "sanitary_pads", requested_amount: 10 },
@@ -33,22 +34,8 @@ test("filterByCategoryIds returns only aid requests with category_id's specified
   });
 });
 
-test("filterByCategoryIds returns empty array if the array of accepted category_id's is empty", () => {
+test("filterByCategoryIds returns all aid requests if the array of accepted category_id's is empty ", () => {
   const acceptedIds: string[] = [];
-  const filtered = filterByCategoryIds(exampleAggregatedRequests, acceptedIds);
-
-  expect(filtered).toEqual([]);
-});
-
-test("filterByCategoryIds returns all aid requests if the array of accepted category_id's contains only '*' ", () => {
-  const acceptedIds: string[] = ["*"];
-  const filtered = filterByCategoryIds(exampleAggregatedRequests, acceptedIds);
-
-  expect(filtered).toEqual(exampleAggregatedRequests);
-});
-
-test("filterByCategoryIds returns all aid requests if the array of accepted category_id's contains '*' ", () => {
-  const acceptedIds: string[] = ["personal_hygiene_kits", "*"];
   const filtered = filterByCategoryIds(exampleAggregatedRequests, acceptedIds);
 
   expect(filtered).toEqual(exampleAggregatedRequests);
@@ -155,5 +142,17 @@ test("groupByCategoryIdWithTotal with exampleAggregatedRequests", () => {
         requested_amount: 2,
       },
     ],
+  });
+});
+
+test("groupByRegions with exampleAggregatedRequests", () => {
+  const translateLocation = (city_id: number): Location => {
+    return {id: city_id, name: "some name", lat: 1, lon: 2, region_id: 'region_' + (city_id % 2)};
+  }
+  const result = groupByRegions(exampleAggregatedRequests, translateLocation);
+
+  expect(result).toEqual({
+    "region_0": 164,
+    "region_1": 18,
   });
 });
