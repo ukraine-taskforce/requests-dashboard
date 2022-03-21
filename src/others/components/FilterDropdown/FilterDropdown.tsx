@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
 import { FunctionComponent, useRef, useState, useMemo } from "react";
 import { KeyboardArrowDown as ArrowDown, KeyboardArrowUp as ArrowUp, CheckCircle, CircleOutlined } from "@mui/icons-material";
 import { FilterItem, FilterItemId } from "../../contexts/filter";
-import { ListWithSearch } from './ListWithSearch';
+import { ListWithSearch } from "./ListWithSearch";
 
 type FilterDropdownProps = {
   hasSearch?: boolean;
@@ -57,7 +57,6 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
   );
 
   const selectedFilterItemCount = selectedFilterItems.length;
-  const allFiltersSelected = selectedFilterItems.length === filterItems.length;
   const isFilterOpen = filterActive !== undefined ? filterActive : filterListVisible;
 
   const clearAllFilters = () => filterItems.forEach(({ id }) => filterItemToggleHandler(id, false));
@@ -153,12 +152,6 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
                     </Button>
                   </ListItem>
                 )}
-                <ListItem>
-                  <ListItemButton divider={true} onClick={clearAllFilters}>
-                    <ListItemText color="#000">{t("all")}</ListItemText>
-                    {checkboxListItemIcon(allFiltersSelected)}
-                  </ListItemButton>
-                </ListItem>
                 {filterItems.map(({ id, text, selected }) => (
                   <ListItem key={id}>
                     <ListItemButton onClick={clickHandler(id, selected)}>
