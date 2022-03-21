@@ -128,10 +128,10 @@ export function Requests() {
     features: mapAidRequestsToFeatures(mapData),
   };
 
-  const tableDataByCities = groupedByCitiesWithTotal.map(groupedByCitiesToTableData).sort((a, b) => Number(a.value) - Number(b.value));
+  const tableDataByCities = groupedByCitiesWithTotal.map(groupedByCitiesToTableData).sort((a, b) => Number(b.value) - Number(a.value));
   const tableDataByCategories = groupedByCategoriesWithTotal
     .map(groupedByCategoriesToTableData)
-    .sort((a, b) => Number(a.value) - Number(b.value));
+    .sort((a, b) => Number(b.value) - Number(a.value));
 
   // TODO: move this logic to map component - it should get filters via context and process them accordingly
   // TODO: fix filter mapping - it should use category_id
