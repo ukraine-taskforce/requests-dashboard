@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { useState } from "react";
+import { FilterItemId } from "../../contexts/filter";
 
 import { FilterDropdown as FilterDropdownComponent } from "./FilterDropdown";
 
@@ -26,7 +27,7 @@ const filterDropdownBasic =
   () => {
     const [filterItems, setFilterItems] = useState(getFilterItems(filterItemCount));
 
-    const filterItemToggleHandler = (filterItemId: string, overrideValue?: boolean) =>
+    const filterItemToggleHandler = (filterItemId: FilterItemId, overrideValue?: boolean) =>
       setFilterItems((currentFilterItems) =>
         currentFilterItems.map((filterItem) => {
           if (filterItem.id === filterItemId) {

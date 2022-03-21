@@ -57,5 +57,8 @@
   "dates_range": "Dates range",
   "clear": "Clear",
   "FILTER_Categories": "Categories",
-  "requests": "requests"
+  "FILTER_Cities": "Cities",
+  "requests": "requests",
+  "no_results": "No matching search results",
+  "search_city_placeholder": "Search for city"
 }
