@@ -39,13 +39,20 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
   const filterRef = useRef<HTMLDivElement | null>(null);
   const [filterListVisible, setFilterListVisible] = useState(false);
 
-  const { selectedFilterItems, unSelectedFilterItems } = useMemo(() => filterItems.reduce((acc, item) => {
-    item.selected === true ? acc.selectedFilterItems.push(item) : acc.unSelectedFilterItems.push(item);
-    return acc;
-  }, {
-    selectedFilterItems: [] as FilterItem[],
-    unSelectedFilterItems: [] as FilterItem[]
-  }), [filterItems])
+  const { selectedFilterItems, unSelectedFilterItems } = useMemo(
+    () =>
+      filterItems.reduce(
+        (acc, item) => {
+          item.selected === true ? acc.selectedFilterItems.push(item) : acc.unSelectedFilterItems.push(item);
+          return acc;
+        },
+        {
+          selectedFilterItems: [] as FilterItem[],
+          unSelectedFilterItems: [] as FilterItem[],
+        }
+      ),
+    [filterItems]
+  );
 
   const selectedFilterItemCount = selectedFilterItems.length;
   const allFiltersSelected = selectedFilterItems.length === filterItems.length;
