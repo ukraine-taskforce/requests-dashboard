@@ -52,7 +52,7 @@ export const adaptToMap = (
       if (!supply) throw new Error(`Supply category: ${supply} is not defined`);
       return {
         date: aidRequest.date,
-        name: supply.name,
+        name: supply.id,
         amount: aidRequest.requested_amount,
       };
     }),
