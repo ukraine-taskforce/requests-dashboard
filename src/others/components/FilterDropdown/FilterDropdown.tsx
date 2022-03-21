@@ -57,7 +57,6 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
   );
 
   const selectedFilterItemCount = selectedFilterItems.length;
-  const allFiltersSelected = selectedFilterItems.length === filterItems.length || filterItems.length === 0;
   const isFilterOpen = filterActive !== undefined ? filterActive : filterListVisible;
 
   const clearAllFilters = () => filterItems.forEach(({ id }) => filterItemToggleHandler(id, false));
