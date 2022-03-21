@@ -81,9 +81,9 @@ export function Requests() {
     }
   }, [suppliesDict, locationDict, aidRequestsGroupedByDate, addFilter]);
 
-  const activeFilterItems = getActiveFilterItems("Categories") as string[]; // typecasting necessary because filter item is string | boolean
-  const activeDateFilter = getActiveFilterItems("Dates")[0] as string; // typecasting necessary because filter item is string | boolean
-  const activeCityFilter = getActiveFilterItems("Cities") as number[];
+  const activeFilterItems = getActiveFilterItems("Categories") as string[]; // typecasting necessary because type FilterItemId = string | number
+  const activeDateFilter = getActiveFilterItems("Dates")[0] as string; // typecasting necessary because type FilterItemId = string | number
+  const activeCityFilter = getActiveFilterItems("Cities") as number[]; // typecasting necessary because type FilterItemId = string | number
 
   // Filter aid requests by given date and by category (and possibly city in the next step)
   const aidRequestsFiltered = useMemo(() => {

@@ -30,7 +30,7 @@ const exampleAggregatedRequests = [
   { date: "2022-03-11", city_id: 1226, category_id: "baby_food", requested_amount: 15 },
 ];
 
-test("filterByCityIds returns only aid requests with city_id's specified in the array of accepted category_id's", () => {
+test("filterByCityIds returns only aid requests with city_id's specified in the array of accepted city_id's", () => {
   const acceptedIds = [1226, 30];
   const filtered = filterByCityIds(exampleAggregatedRequests, acceptedIds);
 
@@ -47,7 +47,7 @@ test("filterByCityIds returns empty array if the array of accepted city_id's is 
 });
 
 test("filterByCityIds returns all aid requests if FilterEnum.All is passed as the 2nd argument", () => {
-  const filtered = filterByCategoryIds(exampleAggregatedRequests, FilterEnum.All);
+  const filtered = filterByCityIds(exampleAggregatedRequests, FilterEnum.All);
 
   expect(filtered).toEqual(exampleAggregatedRequests);
 });
