@@ -4,23 +4,18 @@ import { FunctionComponent, memo, forwardRef } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import { useTranslation } from "react-i18next";
 
-import { FilterItem } from "../../contexts/filter";
+import { FilterItem, FilterItemId } from "../../contexts/filter";
 
 import styles from "./ListWithSearch.module.css";
 
 type ListWithSearchProps = {
   selectedFilterItems: FilterItem[];
   searchableItems: FilterItem[];
-  onSelectItem: (id: string, selected: boolean) => () => void;
+  onSelectItem: (id: FilterItemId, selected: boolean) => () => void;
   checkboxListItemIcon: (value: boolean) => React.ReactNode;
   toggleFilterList: () => void;
   clearAllFilters: () => void;
 };
-
-function itemKey(index: number, data: FilterItem[]) {
-  const item = data[index];
-  return `${item.id}-${index}`;
-}
 
 export const ListWithSearch: FunctionComponent<ListWithSearchProps> = ({
   searchableItems,
@@ -100,7 +95,6 @@ export const ListWithSearch: FunctionComponent<ListWithSearchProps> = ({
             height={300}
             itemCount={groupedOptions.length}
             itemData={groupedOptions as FilterItem[]}
-            itemKey={itemKey}
             itemSize={55}
             width={300}
           >

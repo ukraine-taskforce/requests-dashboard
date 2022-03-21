@@ -1,7 +1,9 @@
 import React, { useCallback, useState } from "react";
 
+export type FilterItemId = string | number;
+
 export type FilterItem = {
-  id: string;
+  id: FilterItemId;
   selected: boolean;
   text: string;
 };
@@ -18,8 +20,8 @@ export interface FilterContextValue {
   filters: { [filterName: string]: Filter };
   addFilter: (newFilter: Filter) => void;
   activateFilter: (filterName: string) => void;
-  toggleFilterItem: (filterName: string, filterItemId: string, value?: boolean) => void;
-  getActiveFilterItems: (filterName: string, field?: keyof FilterItem) => (boolean | string)[];
+  toggleFilterItem: (filterName: string, filterItemId: FilterItemId, value?: boolean) => void;
+  getActiveFilterItems: (filterName: string, field?: keyof FilterItem) => (boolean | FilterItemId)[];
 }
 
 const initFilterContextValue: FilterContextValue = {
@@ -64,7 +66,7 @@ export const FilterContextProvider: React.FunctionComponent = ({ children }) => 
   );
 
   const toggleFilterItem = useCallback(
-    (filterName: string, filterItemId: string, value?: boolean) => {
+    (filterName: string, filterItemId: FilterItemId, value?: boolean) => {
       setFilters((filters) => {
         const currentFilter = filters[filterName];
 
@@ -92,7 +94,7 @@ export const FilterContextProvider: React.FunctionComponent = ({ children }) => 
     [setFilters]
   );
 
-  const getActiveFilterItems = (filterName: string): string[] => {
+  const getActiveFilterItems = (filterName: string): FilterItemId[] => {
     const currentFilter = filters[filterName];
 
     if (currentFilter) {

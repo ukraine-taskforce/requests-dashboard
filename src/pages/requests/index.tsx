@@ -58,7 +58,7 @@ export function Requests() {
     if (locationDict) {
       addFilter({
         filterName: "Cities",
-        filterItems: Object.values(locationDict).map((location): FilterItem => ({ id: location.name.toLowerCase().replace(" ", "-"), selected: false, text: location.name })),
+        filterItems: Object.values(locationDict).map((location): FilterItem => ({ id: location.id, selected: false, text: location.name })),
         active: false,
         singleValueFilter: false,
         hasSearch: true,
