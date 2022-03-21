@@ -10,6 +10,7 @@ import Typography from "@mui/material/Typography";
 import { AuthStatus, useAuth } from "../../others/contexts/auth";
 
 import { ImgBrand } from "../../media/images/UGT_Asset_Brand";
+import { LanguageSelector } from "../../others/components/LanguageSelector";
 
 export function Login() {
   const { t } = useTranslation();
@@ -33,6 +34,10 @@ export function Login() {
   }, [status, navigate]);
 
   return (
+    <>
+    <Box sx={{ marginTop: 5, marginLeft: 5 }}>
+      <LanguageSelector />
+    </Box>
     <Container maxWidth="sm">
       <Box sx={{ my: 20, display: "flex" }}>
         <ImgBrand alt="UGT Logo" />
@@ -74,5 +79,6 @@ export function Login() {
         </Box>
       </form>
     </Container>
+    </>
   );
 }

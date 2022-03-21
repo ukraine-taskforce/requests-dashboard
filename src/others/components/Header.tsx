@@ -15,6 +15,7 @@ import { useAuth } from "../contexts/auth";
 import { useSidebarContext } from "../contexts/sidebar-context";
 import { TimelineSlider } from "./TimelineSlider";
 import { FileDownloaderMenu } from "./FileDownloaderMenu";
+import { LanguageSelector } from "./LanguageSelector";
 
 export interface HeaderProps {
   children?: ReactNode;
@@ -40,7 +41,7 @@ export const Header = ({ children }: HeaderProps) => {
         <Typography variant="h6" component="div" mr={8}>
           {t("dashboard")}
         </Typography>
-        <Box sx={{ display: "flex", flexGrow: "1", alignItems: "center", marginLeft: "153px" }}>
+        <Box sx={{ display: "flex", flexGrow: "1", alignItems: "center", marginLeft: "50px" }}>
           <FilterDropdownGroup
             filters={Object.values(otherFilters)}
             filterGroupOpenHandler={activateFilter}
@@ -49,6 +50,7 @@ export const Header = ({ children }: HeaderProps) => {
           {dates && <TimelineSlider dates={dates} />}
         </Box>
         {children}
+        <LanguageSelector />
         <Box sx={{ justifySelf: "flex-end" }}>
           <FileDownloaderMenu />
         </Box>
