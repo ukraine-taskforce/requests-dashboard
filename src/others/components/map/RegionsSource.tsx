@@ -33,7 +33,9 @@ export const RegionsSource = ({aidRequestsGroupedByDate, mapRef, mapLoaded}: Reg
                            ["==", ["get", "date"], ["string", activeDateFilter]]);
 
   const activeCategoryFilters = filterContext.getActiveFilterItems("Categories") as string[];
-
+  const filterUseEffectDependencies = JSON.stringify([activeCategoryFilters,
+                                                      regionsSplitByDate ? activeDateFilter : '',
+                                                      dates]);
   useEffect(() => {
     if (!mapRef || !mapRef.current || !aidRequestsGroupedByDate) return;
     const allRegionsWithMeta: Feature<Geometry, GeoJsonProperties>[]  = [];
@@ -60,9 +62,7 @@ export const RegionsSource = ({aidRequestsGroupedByDate, mapRef, mapLoaded}: Reg
       (mapRef.current.getSource('state') as GeoJSONSource).setData(regionsGeo);
     }
   }, [mapRef,
-      JSON.stringify(activeCategoryFilters),
-      regionsSplitByDate ? activeDateFilter : '',
-      JSON.stringify(dates),
+      filterUseEffectDependencies,
       aidRequestsGroupedByDate,
       translateLocation,
       mapLoaded]);
