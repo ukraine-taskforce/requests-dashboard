@@ -61,6 +61,7 @@ export function Requests() {
         filterItems: Object.values(locationDict).map((location): FilterItem => ({ id: location.name.toLowerCase().replace(" ", "-"), selected: false, text: location.name })),
         active: false,
         singleValueFilter: false,
+        hasSearch: true,
       });
     }
 

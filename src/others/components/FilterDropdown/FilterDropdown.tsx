@@ -17,6 +17,7 @@ import { FilterItem } from "../../contexts/filter";
 import { ListWithSearch } from './ListWithSearch';
 
 type FilterDropdownProps = {
+  hasSearch?: boolean;
   filterName: string;
   filterItems: FilterItem[];
   /** If filter is a part of FilterDropdownGroup, this prop will be used to determine whether dropdown should be open, it will override internal state */
@@ -29,6 +30,7 @@ type FilterDropdownProps = {
 export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
   filterItems = [],
   filterName,
+  hasSearch,
   filterActive,
   singleValueFilter,
   filterItemToggleHandler,
@@ -109,10 +111,9 @@ export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
 
       {isFilterOpen && (
         <>
-          {filterName === "Cities" ? (
+          {hasSearch ? (
             <ListWithSearch
               searchableItems={unSelectedFilterItems}
-              selectedFilterItemCount={selectedFilterItemCount}
               selectedFilterItems={selectedFilterItems}
               onSelectItem={clickHandler}
               checkboxListItemIcon={checkboxListItemIcon}

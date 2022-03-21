@@ -1,14 +1,14 @@
 import { FixedSizeList, areEqual } from "react-window";
-import { Button, ListItem, ListItemButton, ListItemText, ClickAwayListener, Divider, useAutocomplete, Typography } from "@mui/material";
+import { Button, ListItem, ListItemButton, ListItemText, ClickAwayListener, Divider, useAutocomplete, Typography, TextField } from "@mui/material";
 import { FunctionComponent, memo, forwardRef } from "react";
 import SearchIcon from "@mui/icons-material/Search";
+import { useTranslation } from "react-i18next";
 
 import { FilterItem } from "../../contexts/filter";
 
 import styles from "./ListWithSearch.module.css";
 
 type ListWithSearchProps = {
-  selectedFilterItemCount: number;
   selectedFilterItems: FilterItem[];
   searchableItems: FilterItem[];
   onSelectItem: (id: string, selected: boolean) => () => void;
@@ -24,13 +24,13 @@ function itemKey(index: number, data: FilterItem[]) {
 
 export const ListWithSearch: FunctionComponent<ListWithSearchProps> = ({
   searchableItems,
-  selectedFilterItemCount,
   selectedFilterItems,
   onSelectItem,
   checkboxListItemIcon,
   toggleFilterList,
   clearAllFilters,
 }) => {
+  const { t } = useTranslation();
   const { getRootProps, getInputProps, getListboxProps, groupedOptions } = useAutocomplete<FilterItem>({
     id: "search_filters_list",
     options: searchableItems,
@@ -61,16 +61,16 @@ export const ListWithSearch: FunctionComponent<ListWithSearchProps> = ({
       <div className={styles.listContainer}>
         <div className={styles.clearButtonContainer}>
           <Button variant="text" size="large" onClick={clearAllFilters}>
-            Clear
+            {t("clear")}
           </Button>
         </div>
 
         <div {...getRootProps()} className={styles.searchContainer}>
           <SearchIcon sx={{ color: "000" }} />
-          <input {...getInputProps()} placeholder="Search your city" className={styles.searchInput} />
+          <input {...getInputProps()} placeholder={t("search_city_placeholder")} className={styles.searchInput} />
         </div>
 
-        {selectedFilterItemCount > 0 ? (
+        {selectedFilterItems.length > 0 ? (
           <>
             {selectedFilterItems.map(({ id, text, selected }, index) => (
               <ListItem key={`${id}-${index}`}>
@@ -91,7 +91,7 @@ export const ListWithSearch: FunctionComponent<ListWithSearchProps> = ({
 
         {groupedOptions.length === 0 ? (
           <Typography variant="body2" component="p" align="center" sx={{ marginBottom: "15px" }}>
-            No matching results
+            {t("no_results")}
           </Typography>
         ) : (
           <FixedSizeList
@@ -100,8 +100,8 @@ export const ListWithSearch: FunctionComponent<ListWithSearchProps> = ({
             height={300}
             itemCount={groupedOptions.length}
             itemData={groupedOptions as FilterItem[]}
-            itemSize={55}
             itemKey={itemKey}
+            itemSize={55}
             width={300}
           >
             {Row}
