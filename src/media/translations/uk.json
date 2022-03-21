@@ -60,5 +60,7 @@
   "clear": "Очистити",
   "FILTER_Categories": "Категорії",
   "FILTER_Cities": "Міста",
-  "requests": "запитів"
+  "requests": "запитів",
+  "no_results": "Нічого не знайдено",
+  "search_city_placeholder": "Пошук міста"
 }
