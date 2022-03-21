@@ -90,7 +90,7 @@ export const ListWithSearch: FunctionComponent<ListWithSearchProps> = ({
         ) : null}
 
         {groupedOptions.length === 0 ? (
-          <Typography variant="body2" component="p" align="center" className={styles.noResults}>
+          <Typography variant="body2" component="p" align="center" sx={{ marginBottom: "15px" }}>
             No matching results
           </Typography>
         ) : (
