@@ -16,6 +16,8 @@ import { Sidebar } from "../../others/components/Sidebar";
 import { MultiTab } from "../../others/components/MultiTab";
 import { CollapsibleTable } from "../../others/components/CollapsibleList";
 import { layerStyle } from "../../others/components/map/CircleLayerStyle";
+import { layerStyleWithRegions } from "../../others/components/map/CircleLayerStyleWithRegions";
+import { RegionsSourceWithLayers } from "../../others/components/map/RegionsSourceWithLayers";
 import { mapAidRequestsToFeatures, adaptToMap } from "../../others/helpers/map-utils";
 import {
   sortDates,
@@ -143,6 +145,10 @@ export function Requests() {
 
   const loadingMessage = "";
   const byCities = selectedTabId === 0;
+
+  const searchParams = new URLSearchParams(window.location.search);
+  const showRegions = (searchParams.get('show_regions') ||
+                       process.env.REACT_APP_SHOW_REGIONS) === 'true';
   return (
     <Layout header={<Header />}>
       <Main
@@ -170,11 +176,12 @@ export function Requests() {
         }
       >
         <Map
-          sourceWithLayer={
+          sourceWithLayer={<>
             <Source id="ukr_water_needs" type="geojson" data={geojson}>
-              <Layer {...layerStyle} />
+              <Layer {...(showRegions ? layerStyleWithRegions : layerStyle)} />
             </Source>
-          }
+            {showRegions && <RegionsSourceWithLayers aidRequests={aidRequestsFiltered ? aidRequestsFiltered : []} />}
+	  </>}
         />
       </Main>
     </Layout>

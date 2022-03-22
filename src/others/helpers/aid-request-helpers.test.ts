@@ -1,6 +1,8 @@
+import { Location } from "../contexts/api";
 import {
   groupByCityIdWithTotal,
   groupByCategoryIdWithTotal,
+  mapRegionIdsToAidRequestCount,    
   filterByCategoryIds,
   filterByCityIds,
   FilterEnum,
@@ -175,5 +177,17 @@ test("groupByCategoryIdWithTotal with exampleAggregatedRequests", () => {
         requested_amount: 2,
       },
     ],
+  });
+});
+
+test("mapRegionIdsToAidRequestCount with exampleAggregatedRequests", () => {
+  const translateLocation = (city_id: number): Location => {
+    return {id: city_id, name: "some name", lat: 1, lon: 2, region_id: 'region_' + (city_id % 2)};
+  }
+  const result = mapRegionIdsToAidRequestCount(exampleAggregatedRequests, translateLocation);
+
+  expect(result).toEqual({
+    "region_0": 164,
+    "region_1": 18,
   });
 });
