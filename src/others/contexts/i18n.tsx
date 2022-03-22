@@ -11,11 +11,34 @@ const resources = {
 
 export type AvailableLang = "en" | "uk";
 
+const languagePriority: AvailableLang[] = ["uk", "en"];
+
 export const availableLangs = Object.keys(resources).sort();
 
-function getInitLang() {
-  const browserLang = navigator.language.split("-")[0].toLowerCase();
-  return availableLangs.includes(browserLang) ? browserLang : "en";
+function getInitLang(): AvailableLang {
+  let choice: AvailableLang = "uk";
+  const prevSession = localStorage.getItem("languageSetting");
+  if (prevSession != null && availableLangs.includes(prevSession)) {
+    // use language from previous session
+    choice = prevSession as AvailableLang;
+  } else {
+    const browserLangs = navigator.languages.map((lang) => lang.split("-")[0].toLowerCase());
+    // Pick first language from `languagePriority` occurring in browser settings.
+    // This is done because the majority of users is ukrainian and there seem to
+    // be users with their browser settings pointing to en while preferring uk.
+    for (let lang of languagePriority) {
+      if (browserLangs.includes(lang)) {
+        choice = lang;
+        break;
+      }
+    }
+  }
+  storeLanguage(choice);
+  return choice;
+}
+
+export function storeLanguage(language: AvailableLang) {
+  localStorage.setItem("languageSetting", language);
 }
 
 i18n

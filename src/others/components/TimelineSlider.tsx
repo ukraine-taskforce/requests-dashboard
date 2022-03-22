@@ -47,8 +47,8 @@ export const TimelineSlider = ({ dates }: TimelineSliderProps) => {
           m: 2,
           padding: 1,
           borderRadius: "20px",
-          backgroundColor: "#000",
-          color: "#fff",
+          backgroundColor: "#fff",
+          color: "#000",
         }}
       >
         <Typography sx={{ fontSize: 16, textAlign: "center" }}>{t("no_dates")}</Typography>
