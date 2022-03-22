@@ -7,10 +7,20 @@ export const sortDates = (a: string, b: string) => {
   return new Date(a).getTime() - new Date(b).getTime();
 };
 
-export const filterByCategoryIds = (aidRequests: AidRequest[], categoryIds: string[]): AidRequest[] => {
-  if (categoryIds.length === 0) return aidRequests;
+export enum FilterEnum {
+  All = "*",
+}
+
+export const filterByCategoryIds = (aidRequests: AidRequest[], categoryIds: string[] | FilterEnum.All): AidRequest[] => {
+  if (categoryIds === FilterEnum.All) return aidRequests;
   const categoryIdsSet = new Set(categoryIds);
   return aidRequests.filter((aidRequest) => categoryIdsSet.has(aidRequest.category_id));
+};
+
+export const filterByCityIds = (aidRequests: AidRequest[], cityIds: number[] | FilterEnum.All): AidRequest[] => {
+  if (cityIds === FilterEnum.All) return aidRequests;
+  const cityIdsSet = new Set(cityIds);
+  return aidRequests.filter((aidRequest) => cityIdsSet.has(aidRequest.city_id));
 };
 
 type Total = {

@@ -1,31 +1,10 @@
 .flagIcon {
   height: 12px;
-  padding-inline-end: 8px;
-  display: inline-block;
+  margin-right: 5px;
 }
 
 .dropdownIcon {
   height: 8px;
   vertical-align: middle;
-  padding-inline-start: 8px;
-  display: inline-block;
-}
-
-.selector {
-  position: relative;
-}
-
-.dropdown {
-  position: absolute;
-  top: calc(100% + 5px);
-  left: 0;
-  z-index: 1;
-}
-
-.dropdownItem {
-  position: relative;
-}
-
-.dropdownItem:not(:last-child) {
-  padding-block-end: 10px;
+  margin-left: 5px;
 }

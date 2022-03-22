@@ -21,6 +21,8 @@ import { mapAidRequestsToFeatures, adaptToMap } from "../../others/helpers/map-u
 import {
   sortDates,
   filterByCategoryIds,
+  filterByCityIds,
+  FilterEnum,
   groupByCityIdWithTotal,
   groupByCategoryIdWithTotal,
   groupedByCitiesToTableData,
@@ -56,6 +58,16 @@ export function Requests() {
       });
     }
 
+    if (locationDict) {
+      addFilter({
+        filterName: "Cities",
+        filterItems: Object.values(locationDict).map((location): FilterItem => ({ id: location.id, selected: false, text: location.name })),
+        active: false,
+        singleValueFilter: false,
+        hasSearch: true,
+      });
+    }
+
     if (!isEmpty(aidRequestsGroupedByDate)) {
       const uniqueDatesSorted = uniq(keys(aidRequestsGroupedByDate)).sort(sortDates);
 
@@ -68,24 +80,11 @@ export function Requests() {
         singleValueFilter: true,
       });
     }
+  }, [suppliesDict, locationDict, aidRequestsGroupedByDate, addFilter]);
 
-    // TODO: to implement cities
-    // if (decodedAndGroupedByLocation.length) {
-    //   const filterItems: FilterItem[] = decodedAndGroupedByLocation.map(
-    //     (city): FilterItem => ({ id: city.location.name.toLowerCase().replace(" ", "-"), text: city.location.name, selected: false })
-    //   );
-
-    //   addFilter({
-    //     filterName: "Cities",
-    //     filterItems,
-    //     active: false,
-    //     singleValueFilter: true,
-    //   });
-    // }
-  }, [suppliesDict, aidRequestsGroupedByDate, addFilter]);
-
-  const activeCategoryFilters = getActiveFilterItems("Categories") as string[]; // typecasting necessary because filter item is string | boolean
-  const activeDateFilter = getActiveFilterItems("Dates")[0] as string; // typecasting necessary because filter item is string | boolean
+  const activeFilterItems = getActiveFilterItems("Categories") as string[]; // typecasting necessary because type FilterItemId = string | number
+  const activeDateFilter = getActiveFilterItems("Dates")[0] as string; // typecasting necessary because type FilterItemId = string | number
+  const activeCityFilter = getActiveFilterItems("Cities") as number[]; // typecasting necessary because type FilterItemId = string | number
 
   // Filter aid requests by given date and by category (and possibly city in the next step)
   const aidRequestsFiltered = useMemo(() => {
@@ -93,9 +92,10 @@ export function Requests() {
 
     const filteredByDate = aidRequestsGroupedByDate[activeDateFilter];
     const filteredByCategories = filterByCategoryIds(filteredByDate, activeCategoryFilters);
+    const filteredByCities = filterByCityIds(filteredByCategories, activeCityFilters);
 
-    return filteredByCategories;
-  }, [aidRequestsGroupedByDate, activeDateFilter, activeCategoryFilters]);
+    return filteredByCities;
+  }, [aidRequestsGroupedByDate, activeDateFilter, activeFilterItems, activeCityFilter]);
 
   // Group aid requests them according to tables' needs
   // TODO: consider moving this step to the table component
@@ -132,16 +132,6 @@ export function Requests() {
   const tableDataByCategories = groupedByCategoriesWithTotal
     .map(groupedByCategoriesToTableData)
     .sort((a, b) => Number(b.value) - Number(a.value));
-
-  // TODO: move this logic to map component - it should get filters via context and process them accordingly
-  // TODO: fix filter mapping - it should use category_id
-  // TODO: add some comments / typing explaining what kind of black the magic is happening here :)
-  const layerFilterCategory = activeCategoryFilters.length
-    ? ["in", ["get", "category"], ["array", ["literal", activeCategoryFilters]]]
-    : ["==", ["get", "category"], "ALL"];
-
-  const layerFilterDate = activeDateFilter ? ["==", ["get", "date"], ["string", activeDateFilter]] : ["boolean", true];
-  const layerFilter = ["all", layerFilterCategory, layerFilterDate];
 
   const { selectedTabId, setSelectedTabId } = useSidebarContext();
 
@@ -186,8 +176,7 @@ export function Requests() {
         <Map
           sourceWithLayer={
             <Source id="ukr_water_needs" type="geojson" data={geojson}>
-              {/* @ts-ignore */}
-              <Layer {...(showRegions ? layerStyleWithRegions : layerStyle)} filter={layerFilter} />
+              <Layer {...(showRegions ? layerStyleWithRegions : layerStyle)} />
             </Source>
           }
           aidRequestsGroupedByDate={aidRequestsGroupedByDate}

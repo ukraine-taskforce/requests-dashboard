@@ -59,5 +59,8 @@
   "dates_range": "Діапазон дат",
   "clear": "Очистити",
   "FILTER_Categories": "Категорії",
-  "requests": "запитів"
+  "FILTER_Cities": "Міста",
+  "requests": "запитів",
+  "no_results": "Нічого не знайдено",
+  "search_city_placeholder": "Пошук міста"
 }

@@ -1,5 +1,12 @@
 import { Location } from "../contexts/api";
-import { groupByRegions, groupByCityIdWithTotal, groupByCategoryIdWithTotal, filterByCategoryIds } from "./aid-request-helpers";
+import {
+  groupByCityIdWithTotal,
+  groupByCategoryIdWithTotal,
+  groupByRegions,    
+  filterByCategoryIds,
+  filterByCityIds,
+  FilterEnum,
+} from "./aid-request-helpers";
 
 const exampleAggregatedRequests = [
   { date: "2022-03-11", city_id: 1226, category_id: "sanitary_pads", requested_amount: 10 },
@@ -24,6 +31,28 @@ const exampleAggregatedRequests = [
   { date: "2022-03-12", city_id: 1226, category_id: "baby_products", requested_amount: 4 },
   { date: "2022-03-11", city_id: 1226, category_id: "baby_food", requested_amount: 15 },
 ];
+
+test("filterByCityIds returns only aid requests with city_id's specified in the array of accepted city_id's", () => {
+  const acceptedIds = [1226, 30];
+  const filtered = filterByCityIds(exampleAggregatedRequests, acceptedIds);
+
+  filtered.forEach((item) => {
+    expect(acceptedIds).toContain(item.city_id);
+  });
+});
+
+test("filterByCityIds returns empty array if the array of accepted city_id's is empty", () => {
+  const acceptedIds: number[] = [];
+  const filtered = filterByCityIds(exampleAggregatedRequests, acceptedIds);
+
+  expect(filtered).toEqual([]);
+});
+
+test("filterByCityIds returns all aid requests if FilterEnum.All is passed as the 2nd argument", () => {
+  const filtered = filterByCityIds(exampleAggregatedRequests, FilterEnum.All);
+
+  expect(filtered).toEqual(exampleAggregatedRequests);
+});
 
 test("filterByCategoryIds returns only aid requests with category_id's specified in the array of accepted category_id's", () => {
   const acceptedIds = ["personal_hygiene_kits", "baby_food", "baby_products"];
