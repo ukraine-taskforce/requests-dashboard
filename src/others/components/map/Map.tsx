@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import MapComponent, { Popup, MapRef, MapLayerMouseEvent } from "react-map-gl";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+
 import { Box, Typography } from "@mui/material";
 import { ReactNode, useCallback, useState, useRef } from "react";
 

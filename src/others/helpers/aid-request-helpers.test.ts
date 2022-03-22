@@ -63,7 +63,7 @@ test("filterByCategoryIds returns only aid requests with category_id's specified
   });
 });
 
-test("filterByCategoryIds returns empty array if the array of accepted category_id's is empty ", () => {
+test("filterByCategoryIds returns empty array if the array of accepted category_id's is empty", () => {
   const acceptedIds: string[] = [];
   const filtered = filterByCategoryIds(exampleAggregatedRequests, acceptedIds);
 
