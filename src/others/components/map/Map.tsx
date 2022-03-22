@@ -1,15 +1,12 @@
-import { AidRequest } from "../../contexts/api";
 import { useTranslation } from "react-i18next";
 import MapComponent, { Popup, MapRef, MapLayerMouseEvent } from "react-map-gl";
 import maplibregl from "maplibre-gl";
-import { RegionsSource } from "../map/RegionsSource";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Box, Typography } from "@mui/material";
 import { ReactNode, useCallback, useState, useRef } from "react";
 
 interface MapProps {
   sourceWithLayer?: ReactNode;
-  aidRequestsGroupedByDate: { [id: string]: AidRequest[] };
 }
 
 interface PopupInfo {
@@ -30,17 +27,11 @@ const initialUkraineCenterView = {
 
 const MAP_STYLE = process.env.REACT_APP_MAPLIBRE_MAP_STYLE || "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 
-export const Map = ({ sourceWithLayer, aidRequestsGroupedByDate }: MapProps) => {
+export const Map = ({ sourceWithLayer }: MapProps) => {
   const { t } = useTranslation();
   const mapRef = useRef<MapRef>(null);
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
   const [cursor, setCursor] = useState<"auto" | "pointer">("auto");
-  const [mapLoaded, setMapLoaded] = useState<boolean>(false);
-
-  const searchParams = new URLSearchParams(window.location.search);
-  const showRegions = (searchParams.get('show_regions') ?
-                       searchParams.get('show_regions') :
-                       process.env.REACT_APP_SHOW_REGIONS) === '1';
 
   const handleMouseEnter = useCallback(
     (event: MapLayerMouseEvent) => {
@@ -86,13 +77,10 @@ export const Map = ({ sourceWithLayer, aidRequestsGroupedByDate }: MapProps) => 
         style={{ borderRadius: "24px" }}
         interactiveLayerIds={["ukr_water_needs-point"]}
         cursor={cursor}
-        onLoad={() => {setMapLoaded(true);}}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
         {sourceWithLayer}
-
-        {showRegions && <RegionsSource aidRequestsGroupedByDate={aidRequestsGroupedByDate} mapRef={mapRef} mapLoaded={mapLoaded} />}
 
         {popupInfo && (
           <Popup

@@ -17,6 +17,7 @@ import { MultiTab } from "../../others/components/MultiTab";
 import { CollapsibleTable } from "../../others/components/CollapsibleList";
 import { layerStyle } from "../../others/components/map/CircleLayerStyle";
 import { layerStyle as layerStyleWithRegions } from "../../others/components/map/CircleLayerStyleWithRegions";
+import { RegionsSource } from "../../others/components/map/RegionsSource";
 import { mapAidRequestsToFeatures, adaptToMap } from "../../others/helpers/map-utils";
 import {
   sortDates,
@@ -89,6 +90,8 @@ export function Requests() {
   // Filter aid requests by given date and by category (and possibly city in the next step)
   const aidRequestsFiltered = useMemo(() => {
     if (!activeDateFilter || isEmpty(aidRequestsGroupedByDate)) return [];
+    const activeCategoryFilters = activeFilterItems.length ? activeFilterItems : FilterEnum.All;
+    const activeCityFilters = activeCityFilter.length ? activeCityFilter : FilterEnum.All;
 
     const filteredByDate = aidRequestsGroupedByDate[activeDateFilter];
     const filteredByCategories = filterByCategoryIds(filteredByDate, activeCategoryFilters);
@@ -174,12 +177,12 @@ export function Requests() {
         }
       >
         <Map
-          sourceWithLayer={
+          sourceWithLayer={<>
             <Source id="ukr_water_needs" type="geojson" data={geojson}>
               <Layer {...(showRegions ? layerStyleWithRegions : layerStyle)} />
             </Source>
-          }
-          aidRequestsGroupedByDate={aidRequestsGroupedByDate}
+            {showRegions && <RegionsSource aidRequests={aidRequestsFiltered ? aidRequestsFiltered : []} />}
+	  </>}
         />
       </Main>
     </Layout>
