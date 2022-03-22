@@ -63,9 +63,15 @@ test("filterByCategoryIds returns only aid requests with category_id's specified
   });
 });
 
-test("filterByCategoryIds returns all aid requests if the array of accepted category_id's is empty ", () => {
+test("filterByCategoryIds returns empty array if the array of accepted category_id's is empty ", () => {
   const acceptedIds: string[] = [];
   const filtered = filterByCategoryIds(exampleAggregatedRequests, acceptedIds);
+
+  expect(filtered).toEqual([]);
+});
+
+test("filterByCategoryIds returns all aid requests if FilterEnum.All is passed as the 2nd argument", () => {
+  const filtered = filterByCategoryIds(exampleAggregatedRequests, FilterEnum.All);
 
   expect(filtered).toEqual(exampleAggregatedRequests);
 });
