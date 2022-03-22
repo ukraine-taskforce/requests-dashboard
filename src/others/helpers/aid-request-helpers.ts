@@ -88,10 +88,10 @@ export const groupedByCategoriesToTableData = ({ category_id, total, aidRequests
 const totalCalculator = (aidRequests: AidRequest[]): number =>
   aidRequests.reduce((sum, aidRequest) => sum + aidRequest.requested_amount, 0);
 
-export type RegionData = { [id: string]: number };
+export type AidRequestCountForRegion = { [id: string]: number };
 
-export const groupByRegions = (aidRequests: AidRequest[], translateLocation: (city_id: number) => Location | undefined): RegionData => {
-  const regionToCount: RegionData = {};
+export const mapRegionIdsToAidRequestCount = (aidRequests: AidRequest[], translateLocation: (city_id: number) => Location | undefined): AidRequestCountForRegion => {
+  const regionToCount: AidRequestCountForRegion = {};
   aidRequests.forEach((req) => {
     const city = translateLocation(req.city_id);
     if (!city) return;

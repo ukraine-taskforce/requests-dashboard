@@ -3,18 +3,16 @@ import { adminRegions } from "../../fixtures/regionsP3";
 import { Feature, FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import { Layer, Source } from "react-map-gl";
 import { useDictionaryContext } from "../../contexts/dictionary-context";
-import { RegionData, groupByRegions } from "../../helpers/aid-request-helpers";
+import { mapRegionIdsToAidRequestCount } from "../../helpers/aid-request-helpers";
 
-
-interface RegionsSourceProperties {
+interface RegionsSourceWithLayersProperties {
   aidRequests: AidRequest[];
 };
 
-
-export const RegionsSource = ({aidRequests}: RegionsSourceProperties) => {
+export const RegionsSourceWithLayers = ({aidRequests}: RegionsSourceWithLayersProperties) => {
   const { translateLocation } = useDictionaryContext();
   const allRegionsWithMeta: Feature<Geometry, GeoJsonProperties>[]  = [];
-  const regionToCount: RegionData = groupByRegions(aidRequests, translateLocation);
+  const regionToCount = mapRegionIdsToAidRequestCount(aidRequests, translateLocation);
   const maxVal = Object.values(regionToCount).reduce((a, b) => a > b ? a : b, 0);
   adminRegions.forEach((region) => {
     if (region.properties && region.properties.shapeID in regionToCount) {

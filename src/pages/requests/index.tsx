@@ -16,8 +16,8 @@ import { Sidebar } from "../../others/components/Sidebar";
 import { MultiTab } from "../../others/components/MultiTab";
 import { CollapsibleTable } from "../../others/components/CollapsibleList";
 import { layerStyle } from "../../others/components/map/CircleLayerStyle";
-import { layerStyle as layerStyleWithRegions } from "../../others/components/map/CircleLayerStyleWithRegions";
-import { RegionsSource } from "../../others/components/map/RegionsSource";
+import { layerStyleWithRegions } from "../../others/components/map/CircleLayerStyleWithRegions";
+import { RegionsSourceWithLayers } from "../../others/components/map/RegionsSourceWithLayers";
 import { mapAidRequestsToFeatures, adaptToMap } from "../../others/helpers/map-utils";
 import {
   sortDates,
@@ -147,9 +147,8 @@ export function Requests() {
   const byCities = selectedTabId === 0;
 
   const searchParams = new URLSearchParams(window.location.search);
-  const showRegions = (searchParams.get('show_regions') ?
-                       searchParams.get('show_regions') :
-                       process.env.REACT_APP_SHOW_REGIONS) === '1';
+  const showRegions = (searchParams.get('show_regions') ||
+                       process.env.REACT_APP_SHOW_REGIONS) === 'true';
   return (
     <Layout header={<Header />}>
       <Main
@@ -181,7 +180,7 @@ export function Requests() {
             <Source id="ukr_water_needs" type="geojson" data={geojson}>
               <Layer {...(showRegions ? layerStyleWithRegions : layerStyle)} />
             </Source>
-            {showRegions && <RegionsSource aidRequests={aidRequestsFiltered ? aidRequestsFiltered : []} />}
+            {showRegions && <RegionsSourceWithLayers aidRequests={aidRequestsFiltered ? aidRequestsFiltered : []} />}
 	  </>}
         />
       </Main>

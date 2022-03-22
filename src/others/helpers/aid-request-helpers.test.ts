@@ -2,7 +2,7 @@ import { Location } from "../contexts/api";
 import {
   groupByCityIdWithTotal,
   groupByCategoryIdWithTotal,
-  groupByRegions,    
+  mapRegionIdsToAidRequestCount,    
   filterByCategoryIds,
   filterByCityIds,
   FilterEnum,
@@ -180,11 +180,11 @@ test("groupByCategoryIdWithTotal with exampleAggregatedRequests", () => {
   });
 });
 
-test("groupByRegions with exampleAggregatedRequests", () => {
+test("mapRegionIdsToAidRequestCount with exampleAggregatedRequests", () => {
   const translateLocation = (city_id: number): Location => {
     return {id: city_id, name: "some name", lat: 1, lon: 2, region_id: 'region_' + (city_id % 2)};
   }
-  const result = groupByRegions(exampleAggregatedRequests, translateLocation);
+  const result = mapRegionIdsToAidRequestCount(exampleAggregatedRequests, translateLocation);
 
   expect(result).toEqual({
     "region_0": 164,
