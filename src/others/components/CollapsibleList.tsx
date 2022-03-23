@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useMap } from "react-map-gl";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableContainer, { TableContainerProps } from "@mui/material/TableContainer";
@@ -6,17 +7,24 @@ import Paper from "@mui/material/Paper";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 import { CollapsibleListItem, ListItem } from "../components/CollapsibleListItem";
-
 export interface CollapsibleTableProps extends TableContainerProps {
   rows: ListItem[];
   renderRowData: (row: ListItem) => ListItem;
+  canZoomToCity: boolean;
 }
 
-export const CollapsibleTable = ({ rows, renderRowData, ...tableProps }: CollapsibleTableProps) => {
+export interface Coordinates {
+  latitude: number;
+  longitude: number;
+}
+
+export const CollapsibleTable = ({ rows, renderRowData, canZoomToCity, ...tableProps }: CollapsibleTableProps) => {
   const offset = 20;
   const getGirstBatch = (rows: ListItem[]) => rows.slice(0, offset);
 
   const [displayedRows, setDisplayedRows] = useState<ListItem[]>([]);
+  const [selectedCity, setSelectedCity] = useState<Coordinates | undefined>(undefined);
+  const map = useMap();
 
   const hasDisplayedAll = displayedRows.length === rows.length;
 
@@ -25,9 +33,28 @@ export const CollapsibleTable = ({ rows, renderRowData, ...tableProps }: Collaps
     setDisplayedRows([...displayedRows, ...nextRows]);
   };
 
+  const toggleZoomCity = (coordinates: Coordinates) => {
+    const { latitude, longitude } = coordinates;
+    if (selectedCity?.latitude === latitude && selectedCity?.longitude === longitude) {
+      setSelectedCity(undefined);
+    } else {
+      setSelectedCity(coordinates);
+    }
+  };
+
   useEffect(() => {
     setDisplayedRows(getGirstBatch(rows));
   }, [rows]);
+
+  useEffect(() => {
+    if (selectedCity) {
+      const { latitude, longitude } = selectedCity;
+      map.default.flyTo({ center: [longitude, latitude], duration: 2000, zoom: 10 });
+    } else {
+      // Reset to initial map view
+      map.default.flyTo({ center: [30.5240501, 48.4501071], duration: 2000, zoom: 5 });
+    }
+  }, [selectedCity, map]);
 
   return (
     <InfiniteScroll
@@ -43,7 +70,14 @@ export const CollapsibleTable = ({ rows, renderRowData, ...tableProps }: Collaps
         <Table aria-label="collapsible table">
           <TableBody sx={{ "& > *": { paddingY: 2 } }} className="collapsible-table-body">
             {displayedRows.map((row, index) => (
-              <CollapsibleListItem key={`${row.name}-${index}`} {...renderRowData(row)} wrapperProps={{ paddingY: 2 }} />
+              <CollapsibleListItem
+                key={`${row.name}-${index}`}
+                {...renderRowData(row)}
+                wrapperProps={{ paddingY: 2 }}
+                selectedCity={selectedCity}
+                toggleZoomCity={toggleZoomCity}
+                canZoomToCity={canZoomToCity}
+              />
             ))}
           </TableBody>
         </Table>
