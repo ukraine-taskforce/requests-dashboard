@@ -44,10 +44,11 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
         });
 
         if (features && features.length > 0) {
-          const preferredLayer = features[0].layer.id === 'state-fills' && features.length === 2 ? 1 : 0;
-          const requestData = features[preferredLayer].properties;
+          // We'd like to give preference to a more granular information, thus 'state-fills' is less desirable.
+          const preferredLayerIndex = features[0].layer.id === 'state-fills' && features.length === 2 ? 1 : 0;
+          const requestData = features[preferredLayerIndex].properties;
           if (!requestData) return;
-          const isRegionPopup = features[preferredLayer].layer.id === 'state-fills';
+          const isRegionPopup = features[preferredLayerIndex].layer.id === 'state-fills';
           const popupId = isRegionPopup ? `region:${requestData.shapeID}` : `city:${requestData.city}`;
           if (popupInfo && popupInfo.data.id === popupId) return;
 
