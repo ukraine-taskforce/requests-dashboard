@@ -21,7 +21,8 @@ export const aggregateCategories = (
   const description = sortedAidRequests.reduce((d, aidRequest) => {
     const supply = supplyTranslator(aidRequest.category_id);
     if (!supply) throw new Error(`Supply category: ${supply} is not defined`);
-    return d + supply.name + ": " + aidRequest.requested_amount + "\n"
+    // TODO: Consider moving the formatting to the component that does the rendering.
+    return d + supply.name + ": " + aidRequest.requested_amount + "\n";
   }, "");
   return {
     city_id: aidRequestsGroupedByCityId.city_id,

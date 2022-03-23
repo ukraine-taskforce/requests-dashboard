@@ -7,11 +7,11 @@ test("aggregateCategories", () => {
     { date: "2022-03-10", city_id: 1, category_id: "water", requested_amount: 20 },
     { date: "2022-03-10", city_id: 1, category_id: "food", requested_amount: 14 },
   ];
-  function supplyTranslator(category_id: string) {
+  function mockSupplyTranslator(category_id: string) {
     return {id: category_id, name: `Name#${category_id}`};
   }
 
-  expect(aggregateCategories({city_id: 1, total: 17, aidRequests: requests}, supplyTranslator)).toEqual({
+  expect(aggregateCategories({city_id: 1, total: 17, aidRequests: requests}, mockSupplyTranslator)).toEqual({
     amount: 17,
     city_id: 1,
     description: "Name#water: 20\nName#personal_hygiene_kits: 14\nName#food: 14\n",
@@ -31,10 +31,10 @@ test("mapAidRequestsToFeatures", () => {
       description: "description#2",
     }
   ];
-  function locationTranslator(city_id: number) {
+  function mockLocationTranslator(city_id: number) {
     return {id: city_id, name: `name#${city_id}`, lat: city_id, lon: city_id, region_id: `region:${city_id}`};
   }
-  expect(mapAidRequestsToFeatures(mapData, locationTranslator)).toEqual([
+  expect(mapAidRequestsToFeatures(mapData, mockLocationTranslator)).toEqual([
     {
       type: "Feature",
       properties: {
