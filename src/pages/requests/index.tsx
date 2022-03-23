@@ -176,8 +176,9 @@ export function Requests() {
         }
       >
         <Map
+          interactiveLayerIds={showRegions ? ["circles", "state-fills"] : ["circles"]}
           sourceWithLayer={<>
-            <Source id="ukr_water_needs" type="geojson" data={geojson}>
+            <Source id="circles-source" type="geojson" data={geojson}>
               <Layer {...(showRegions ? layerStyleWithRegions : layerStyle)} />
             </Source>
             {showRegions && <RegionsSourceWithLayers aidRequests={aidRequestsFiltered ? aidRequestsFiltered : []} />}
