@@ -2,6 +2,7 @@ import { groupBy, map } from "lodash";
 
 import { AidRequest, Location } from "../contexts/api";
 import { ListItem } from "../components/CollapsibleListItem";
+import { RequestMapDataPoint } from "./map-utils";
 
 export const sortDates = (a: string, b: string) => {
   return new Date(a).getTime() - new Date(b).getTime();
@@ -95,14 +96,14 @@ type RegionRequestData = {
   requested_amount: number;
 };
 
-export const mapRegionIdsToAidRequestCount = (aidRequests: AidRequest[], translateLocation: (city_id: number) => Location | undefined): AidRequestMetadataForRegion => {
-  const regionAidRequests: RegionRequestData[] = aidRequests.map((req) => {
+export const mapRegionIdsToAidRequestMetadata = (requestMapDataPoints: RequestMapDataPoint[], translateLocation: (city_id: number) => Location | undefined): AidRequestMetadataForRegion => {
+  const regionAidRequests: RegionRequestData[] = requestMapDataPoints.map((req) => {
     const city = translateLocation(req.city_id);
     if (!city) throw new Error(`Loccation ${req.city_id} is not found`);
     return {
       region_id: city.region_id,
       city_name: city.name,
-      requested_amount: req.requested_amount,
+      requested_amount: req.amount,
     };
   });
   const groupedRegionAidRequests = Object.entries(groupBy(regionAidRequests, "region_id"));

@@ -1,18 +1,18 @@
-import { AidRequest } from "../../contexts/api";
 import { adminRegions } from "../../fixtures/regionsP3";
 import { Feature, FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import { Layer, Source } from "react-map-gl";
 import { useDictionaryContext } from "../../contexts/dictionary-context";
-import { mapRegionIdsToAidRequestCount } from "../../helpers/aid-request-helpers";
+import { mapRegionIdsToAidRequestMetadata } from "../../helpers/aid-request-helpers";
+import { RequestMapDataPoint } from "../../helpers/map-utils";
 
 interface RegionsSourceWithLayersProperties {
-  aidRequests: AidRequest[];
+  requestMapDataPoints: RequestMapDataPoint[];
 };
 
-export const RegionsSourceWithLayers = ({aidRequests}: RegionsSourceWithLayersProperties) => {
+export const RegionsSourceWithLayers = ({requestMapDataPoints}: RegionsSourceWithLayersProperties) => {
   const { translateLocation } = useDictionaryContext();
   const allRegionsWithMeta: Feature<Geometry, GeoJsonProperties>[]  = [];
-  const regionToMetadata = mapRegionIdsToAidRequestCount(aidRequests, translateLocation);
+  const regionToMetadata = mapRegionIdsToAidRequestMetadata(requestMapDataPoints, translateLocation);
   const maxVal = Object.values(regionToMetadata).map((d) => d.amount).reduce((a, b) => a > b ? a : b, 0);
   adminRegions.forEach((region) => {
     if (region.properties && region.properties.shapeID in regionToMetadata) {
