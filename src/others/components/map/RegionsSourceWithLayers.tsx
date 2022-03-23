@@ -12,13 +12,16 @@ interface RegionsSourceWithLayersProperties {
 export const RegionsSourceWithLayers = ({aidRequests}: RegionsSourceWithLayersProperties) => {
   const { translateLocation } = useDictionaryContext();
   const allRegionsWithMeta: Feature<Geometry, GeoJsonProperties>[]  = [];
-  const regionToCount = mapRegionIdsToAidRequestCount(aidRequests, translateLocation);
-  const maxVal = Object.values(regionToCount).reduce((a, b) => a > b ? a : b, 0);
+  const regionToMetadata = mapRegionIdsToAidRequestCount(aidRequests, translateLocation);
+  const maxVal = Object.values(regionToMetadata).map((d) => d.amount).reduce((a, b) => a > b ? a : b, 0);
   adminRegions.forEach((region) => {
-    if (region.properties && region.properties.shapeID in regionToCount) {
+    if (region.properties && region.properties.shapeID in regionToMetadata) {
       const res = Object.assign({}, region);
       res.properties = Object.assign({}, res.properties);
-      res.properties.normalized_amount = regionToCount[res.properties.shapeID] / maxVal;
+      const regionMetadata = regionToMetadata[res.properties.shapeID];
+      res.properties.amount = regionMetadata.amount;
+      res.properties.normalized_amount = regionMetadata.amount / maxVal;
+      res.properties.description = regionMetadata.description;
       allRegionsWithMeta.push(res);
     }
   });

@@ -181,10 +181,10 @@ test("groupByCategoryIdWithTotal with exampleAggregatedRequests", () => {
 });
 
 test("mapRegionIdsToAidRequestCount with exampleAggregatedRequests", () => {
-  const translateLocation = (city_id: number): Location => {
-    return {id: city_id, name: "some name", lat: 1, lon: 2, region_id: 'region_' + (city_id % 2)};
+  const mockTranslateLocation = (city_id: number): Location => {
+    return {id: city_id, name: `name#${city_id}`, lat: 1, lon: 2, region_id: 'region_' + (city_id % 2)};
   }
-  const result = mapRegionIdsToAidRequestCount(exampleAggregatedRequests, translateLocation);
+  const result = mapRegionIdsToAidRequestCount(exampleAggregatedRequests, mockTranslateLocation);
 
   expect(result).toEqual({
     "region_0": 164,

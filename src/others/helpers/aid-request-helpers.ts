@@ -88,19 +88,34 @@ export const groupedByCategoriesToTableData = ({ category_id, total, aidRequests
 const totalCalculator = (aidRequests: AidRequest[]): number =>
   aidRequests.reduce((sum, aidRequest) => sum + aidRequest.requested_amount, 0);
 
-export type AidRequestCountForRegion = { [id: string]: number };
+export type AidRequestMetadataForRegion = { [id: string]: {amount: number, description: string } };
+type RegionRequestData = {
+  region_id: string;
+  city_name: string;
+  requested_amount: number;
+};
 
-export const mapRegionIdsToAidRequestCount = (aidRequests: AidRequest[], translateLocation: (city_id: number) => Location | undefined): AidRequestCountForRegion => {
-  const regionToCount: AidRequestCountForRegion = {};
-  aidRequests.forEach((req) => {
+export const mapRegionIdsToAidRequestCount = (aidRequests: AidRequest[], translateLocation: (city_id: number) => Location | undefined): AidRequestMetadataForRegion => {
+  const regionAidRequests: RegionRequestData[] = aidRequests.map((req) => {
     const city = translateLocation(req.city_id);
-    if (!city) return;
-    const region_id = city.region_id;
-    if (!(region_id in regionToCount)) {
-      regionToCount[region_id] = 0;
-    }
-    regionToCount[region_id] = regionToCount[region_id] + req.requested_amount;
+    if (!city) throw new Error(`Loccation ${req.city_id} is not found`);
+    return {
+      region_id: city.region_id,
+      city_name: city.name,
+      requested_amount: req.requested_amount,
+    };
   });
-  return regionToCount;
+  const groupedRegionAidRequests = Object.entries(groupBy(regionAidRequests, "region_id"));
+  const regionToMetadata: AidRequestMetadataForRegion = {};
+  groupedRegionAidRequests.forEach(([region_id, requests]) => {
+    const totalAmount = requests.reduce((sum, request) => sum + request.requested_amount, 0);
+    const sortedRequests = requests.sort((a, b) => b.requested_amount - a.requested_amount);
+    const description = sortedRequests.reduce((d, request) => d + request.city_name + ': ' + request.requested_amount + '\n', '');
+    regionToMetadata[region_id] = {
+      amount: totalAmount,
+      description: description,
+    };
+  });
+  return regionToMetadata;
 };
 
