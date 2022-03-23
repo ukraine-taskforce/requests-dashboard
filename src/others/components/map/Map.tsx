@@ -36,7 +36,7 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
   const [cursor, setCursor] = useState<"auto" | "pointer">("auto");
 
-  const handleMouseEnter = useCallback(
+  const handleMouseMove = useCallback(
     (event: MapLayerMouseEvent) => {
       if (mapRef?.current) {
         const features = mapRef.current.queryRenderedFeatures(event.point, {
@@ -61,7 +61,7 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
               city: isRegionPopup ? requestData.shapeName : requestData.city,
               description: requestData.description,
               totalItems: requestData.amount,
-	    },
+            },
           });
         }
       }
@@ -84,8 +84,7 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
         style={{ borderRadius: "24px" }}
         interactiveLayerIds={interactiveLayerIds}
         cursor={cursor}
-	onMouseMove={handleMouseEnter}
-        onMouseEnter={handleMouseEnter}
+	onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
         {sourceWithLayer}
