@@ -18,7 +18,7 @@ import { CollapsibleTable } from "../../others/components/CollapsibleList";
 import { layerStyle } from "../../others/components/map/CircleLayerStyle";
 import { layerStyleWithRegions } from "../../others/components/map/CircleLayerStyleWithRegions";
 import { RegionsSourceWithLayers } from "../../others/components/map/RegionsSourceWithLayers";
-import { mapAidRequestsToFeatures, adaptToMap } from "../../others/helpers/map-utils";
+import { aggregateCategories, mapAidRequestsToFeatures } from "../../others/helpers/map-utils";
 import {
   sortDates,
   filterByCategoryIds,
@@ -124,11 +124,11 @@ export function Requests() {
   // NOTE: adaptToMap has been added temporarily
   const isMapDataAvailable = locationDict && suppliesDict && groupedByCitiesWithTotal.length;
   const mapData = isMapDataAvailable
-    ? groupedByCitiesWithTotal.map((aidRequest) => adaptToMap(aidRequest, translateLocation(aidRequest.city_id), translateSupply))
+    ? groupedByCitiesWithTotal.map((aidRequest) => aggregateCategories(aidRequest, translateSupply))
     : [];
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
-    features: mapAidRequestsToFeatures(mapData),
+    features: mapAidRequestsToFeatures(mapData, translateLocation)
   };
 
   const tableDataByCities = groupedByCitiesWithTotal.map(groupedByCitiesToTableData).sort((a, b) => Number(b.value) - Number(a.value));
