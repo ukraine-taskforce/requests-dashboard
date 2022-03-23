@@ -84,7 +84,7 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
         style={{ borderRadius: "24px" }}
         interactiveLayerIds={interactiveLayerIds}
         cursor={cursor}
-	onMouseMove={handleMouseMove}
+        onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
         {sourceWithLayer}
