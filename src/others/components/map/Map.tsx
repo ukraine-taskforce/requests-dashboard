@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import MapComponent, { Popup, MapRef, MapLayerMouseEvent } from "react-map-gl";
-import maplibregl from "maplibre-gl";
+import maplibregl, { Properties } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 import { Box, Typography } from "@mui/material";
@@ -32,6 +32,7 @@ export const Map = ({ sourceWithLayer }: MapProps) => {
   const { t } = useTranslation();
   const mapRef = useRef<MapRef>(null);
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
+  const [hoveredRegionId, setHoveredRegionId] = useState<string | number | undefined>(undefined);
   const [cursor, setCursor] = useState<"auto" | "pointer">("auto");
 
   const handleMouseEnter = useCallback(
@@ -58,6 +59,24 @@ export const Map = ({ sourceWithLayer }: MapProps) => {
               : undefined,
           });
         }
+
+        const regionFeatures = mapRef.current.queryRenderedFeatures(event.point, {
+          layers: ["state-fills"],
+        });
+
+        if (regionFeatures && regionFeatures.length > 0) {
+          if (hoveredRegionId) {
+            mapRef.current.setFeatureState(
+              { source: 'state', id: hoveredRegionId },
+              { hover: false }
+            );
+          }
+          setHoveredRegionId(regionFeatures[0].id);
+          mapRef.current.setFeatureState(
+            { source: 'state', id: hoveredRegionId },
+            { hover: true }
+          );
+        }
       }
     },
     [mapRef]
@@ -76,7 +95,7 @@ export const Map = ({ sourceWithLayer }: MapProps) => {
         initialViewState={initialUkraineCenterView}
         mapStyle={MAP_STYLE}
         style={{ borderRadius: "24px" }}
-        interactiveLayerIds={["ukr_water_needs-point"]}
+        interactiveLayerIds={["ukr_water_needs-point", "state-fills"]}
         cursor={cursor}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}

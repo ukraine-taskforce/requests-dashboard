@@ -39,7 +39,13 @@ export const RegionsSourceWithLayers = ({aidRequests}: RegionsSourceWithLayersPr
                     ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 'rgba(200, 0, 0, 0)', 1, 'rgb(200,0,0)'],
                     8,
                     ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 'rgba(255,255,255,0)', 1, 'rgba(255,255,255,0)'],
-                    ],                      
+                    ],  
+              "fill-opacity": [
+                    "case",
+                    ["boolean", ["feature-state", "hover"], false],
+                    1,
+                    0.5,
+                    ],              
            }} />
           </Source>
           <Source id="state_constant" type="geojson" key="states_static" data={{type: "FeatureCollection", features: adminRegions}}>
