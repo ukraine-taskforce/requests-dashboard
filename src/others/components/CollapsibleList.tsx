@@ -49,10 +49,10 @@ export const CollapsibleTable = ({ rows, renderRowData, canZoomToCity, ...tableP
   useEffect(() => {
     if (selectedCity) {
       const { latitude, longitude } = selectedCity;
-      map.default.flyTo({ center: [longitude, latitude], duration: 2000, zoom: 10 });
+      map.default?.flyTo({ center: [longitude, latitude], duration: 2000, zoom: 10 });
     } else {
       // Reset to initial map view
-      map.default.flyTo({ center: [30.5240501, 48.4501071], duration: 2000, zoom: 5 });
+      map.default?.flyTo({ center: [30.5240501, 48.4501071], duration: 2000, zoom: 5 });
     }
   }, [selectedCity, map]);
 
