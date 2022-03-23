@@ -7,7 +7,7 @@ type GroupedByCityId = {
   aidRequests: AidRequest[];
 };
 
-type MapData = {
+type RequestMapDataPoint = {
   city_id: number;
   amount: number;
   description: string;
@@ -16,7 +16,7 @@ type MapData = {
 export const aggregateCategories = (
   aidRequestsGroupedByCityId: GroupedByCityId,
   supplyTranslator: (category_id: string) => Supply | undefined
-): MapData => {
+): RequestMapDataPoint => {
   const sortedAidRequests = aidRequestsGroupedByCityId.aidRequests.sort((a, b) => b.requested_amount - a.requested_amount);
   const description = sortedAidRequests.reduce((d, aidRequest) => {
     const supply = supplyTranslator(aidRequest.category_id);
@@ -30,7 +30,7 @@ export const aggregateCategories = (
   };
 };
 
-export const mapAidRequestsToFeatures = (mapData: MapData[], locationTranslator: (city_id: number) => Location | undefined): Feature<Geometry, GeoJsonProperties>[] => {
+export const mapAidRequestsToFeatures = (mapData: RequestMapDataPoint[], locationTranslator: (city_id: number) => Location | undefined): Feature<Geometry, GeoJsonProperties>[] => {
   const maxAmount = mapData.reduce((max, dataPoint) => Math.max(max, dataPoint.amount), 0);
   return mapData.map((dataPoint) => {
     const location = locationTranslator(dataPoint.city_id);
