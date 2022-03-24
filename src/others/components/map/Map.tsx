@@ -80,7 +80,7 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
         }
       }
     },
-    [mapRef, popupInfo, interactiveLayerIds]
+    [mapRef, popupInfo, interactiveLayerIds, closePopup]
   );
 
   return (
