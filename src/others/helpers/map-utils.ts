@@ -7,7 +7,7 @@ type GroupedByCityId = {
   aidRequests: AidRequest[];
 };
 
-type RequestMapDataPoint = {
+export type RequestMapDataPoint = {
   city_id: number;
   amount: number;
   description: string;

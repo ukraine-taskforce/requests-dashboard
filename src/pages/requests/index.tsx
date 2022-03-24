@@ -180,7 +180,7 @@ export function Requests() {
             <Source id="ukr_water_needs" type="geojson" data={geojson}>
               <Layer {...(showRegions ? layerStyleWithRegions : layerStyle)} />
             </Source>
-            {showRegions && <RegionsSourceWithLayers aidRequests={aidRequestsFiltered ? aidRequestsFiltered : []} />}
+            {showRegions && <RegionsSourceWithLayers requestMapDataPoints={mapData} />}
 	  </>}
         />
       </Main>
