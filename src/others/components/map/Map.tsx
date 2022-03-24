@@ -41,7 +41,7 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
     (event: MapLayerMouseEvent) => {
       if (mapRef?.current) {
         const features = mapRef.current.queryRenderedFeatures(event.point, {
-          layers: interactiveLayerIds
+          layers: interactiveLayerIds,
         });
 
         if (features && features.length > 0) {
