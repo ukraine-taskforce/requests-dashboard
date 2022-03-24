@@ -9,6 +9,8 @@ interface RegionsSourceWithLayersProperties {
   requestMapDataPoints: RequestMapDataPoint[];
 };
 
+export const MaxRegionVisibleZoomLevel = 8;
+
 export const RegionsSourceWithLayers = ({requestMapDataPoints}: RegionsSourceWithLayersProperties) => {
   const { translateLocation } = useDictionaryContext();
   const allRegionsWithMeta: Feature<Geometry, GeoJsonProperties>[]  = [];
@@ -40,7 +42,7 @@ export const RegionsSourceWithLayers = ({requestMapDataPoints}: RegionsSourceWit
                     ["zoom"],
                     7,
                     ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 'rgba(200, 0, 0, 0)', 1, 'rgb(200,0,0)'],
-                    8,
+                    MaxRegionVisibleZoomLevel,
                     ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 'rgba(255,255,255,0)', 1, 'rgba(255,255,255,0)'],
                     ],                      
            }} />

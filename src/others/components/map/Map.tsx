@@ -5,6 +5,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 
 import { Box, Typography } from "@mui/material";
 import { ReactNode, useCallback, useState, useRef } from "react";
+import { MaxRegionVisibleZoomLevel } from "./RegionsSourceWithLayers";
 
 interface MapProps {
   sourceWithLayer?: ReactNode;
@@ -36,6 +37,11 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
   const [cursor, setCursor] = useState<"auto" | "pointer">("auto");
 
+  const closePopup = useCallback(() => {
+    setCursor("auto");
+    setPopupInfo(null);
+  }, []);
+
   const handleMouseMove = useCallback(
     (event: MapLayerMouseEvent) => {
       if (mapRef?.current) {
@@ -49,6 +55,13 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
           const requestData = features[preferredLayerIndex].properties;
           if (!requestData) return;
           const isRegionPopup = features[preferredLayerIndex].layer.id === 'state-fills';
+          // We don't show region popup when zoomed-in too much.
+          if (isRegionPopup && event.target.getZoom() >= MaxRegionVisibleZoomLevel) {
+            if (popupInfo) {
+              closePopup();
+            }
+            return;
+          }
           const popupId = isRegionPopup ? `region:${requestData.shapeID}` : `city:${requestData.city}`;
           if (popupInfo && popupInfo.data.id === popupId) return;
 
@@ -67,13 +80,8 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
         }
       }
     },
-    [mapRef, popupInfo, interactiveLayerIds]
+    [mapRef, popupInfo, interactiveLayerIds, closePopup]
   );
-
-  const handleMouseLeave = useCallback(() => {
-    setCursor("auto");
-    setPopupInfo(null);
-  }, []);
 
   return (
     <Box sx={{ height: "100%", width: "100%" }}>
@@ -86,7 +94,7 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
         interactiveLayerIds={interactiveLayerIds}
         cursor={cursor}
         onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
+        onMouseLeave={closePopup}
       >
         {sourceWithLayer}
 
