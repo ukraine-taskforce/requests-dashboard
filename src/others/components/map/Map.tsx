@@ -5,6 +5,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 
 import { Box, Typography } from "@mui/material";
 import { ReactNode, useCallback, useState, useRef } from "react";
+import { MaxRegionVisibleZoomLevel } from "./RegionsSourceWithLayers";
 
 interface MapProps {
   sourceWithLayer?: ReactNode;
@@ -40,7 +41,7 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
     (event: MapLayerMouseEvent) => {
       if (mapRef?.current) {
         const features = mapRef.current.queryRenderedFeatures(event.point, {
-          layers: interactiveLayerIds,
+          layers: interactiveLayerIds
         });
 
         if (features && features.length > 0) {
@@ -49,6 +50,14 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
           const requestData = features[preferredLayerIndex].properties;
           if (!requestData) return;
           const isRegionPopup = features[preferredLayerIndex].layer.id === 'state-fills';
+          // We don't show region popup when zoomed-in too much.
+          if (isRegionPopup && event.target.getZoom() >= MaxRegionVisibleZoomLevel) {
+            if (popupInfo) {
+              setCursor("auto");
+              setPopupInfo(null);
+            }
+            return;
+          }
           const popupId = isRegionPopup ? `region:${requestData.shapeID}` : `city:${requestData.city}`;
           if (popupInfo && popupInfo.data.id === popupId) return;
 
