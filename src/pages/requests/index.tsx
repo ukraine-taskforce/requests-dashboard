@@ -142,30 +142,49 @@ export function Requests() {
   // }
 
   const loadingMessage = "";
-  const byCities = selectedTabId === 0;
+  const showByCities = selectedTabId === 0;
+
+  const tableByCities = (
+    <CollapsibleTable
+      rows={tableDataByCities}
+      renderRowData={(row) => ({
+        name: translateLocation(Number(row.name))?.name || loadingMessage,
+        value: row.value,
+        hidden: row.hidden
+          .map(({ name, value }) => ({
+            name: translateSupply(String(name))?.name || loadingMessage,
+            value: value,
+          }))
+          .sort((a, b) => Number(b.value) - Number(a.value)),
+      })}
+    />
+  );
+
+  const tableByCategories = (
+    <CollapsibleTable
+      rows={tableDataByCategories}
+      renderRowData={(row) => ({
+        name: translateSupply(String(row.name))?.name || loadingMessage,
+        value: row.value,
+        hidden: row.hidden
+          .map(({ name, value }) => ({
+            name: translateLocation(Number(name))?.name || loadingMessage,
+            value: value,
+          }))
+          .sort((a, b) => Number(b.value) - Number(a.value)),
+      })}
+    />
+  );
+
+  const table = showByCities ? tableByCities : tableByCategories;
+
   return (
     <Layout header={<Header />}>
       <Main
         aside={
           <Sidebar className="requests-sidebar">
             <MultiTab selectedId={selectedTabId} onChange={setSelectedTabId} labels={[t("by_cities"), t("by_items")]} marginBottom={4} />
-            <CollapsibleTable
-              rows={byCities ? tableDataByCities : tableDataByCategories}
-              renderRowData={(row) => ({
-                name: byCities
-                  ? translateLocation(Number(row.name))?.name || loadingMessage
-                  : translateSupply(String(row.name))?.name || loadingMessage,
-                value: row.value,
-                hidden: row.hidden
-                  .map(({ name, value }) => ({
-                    name: byCities
-                      ? translateSupply(String(name))?.name || loadingMessage
-                      : translateLocation(Number(name))?.name || loadingMessage,
-                    value: value,
-                  }))
-                  .sort((a, b) => Number(b.value) - Number(a.value)),
-              })}
-            />
+            {table}
           </Sidebar>
         }
       >

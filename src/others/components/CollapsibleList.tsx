@@ -42,9 +42,10 @@ export const CollapsibleTable = ({ rows, renderRowData, ...tableProps }: Collaps
       <TableContainer component={Paper} {...tableProps}>
         <Table aria-label="collapsible table">
           <TableBody sx={{ "& > *": { paddingY: 2 } }} className="collapsible-table-body">
-            {displayedRows.map((row, index) => (
-              <CollapsibleListItem key={`${row.name}-${index}`} {...renderRowData(row)} wrapperProps={{ paddingY: 2 }} />
-            ))}
+            {displayedRows.map((row, index) => {
+              const id = `${row.name}-${index}`;
+              return <CollapsibleListItem id={id} key={id} {...renderRowData(row)} wrapperProps={{ paddingY: 2 }} />;
+            })}
           </TableBody>
         </Table>
       </TableContainer>
