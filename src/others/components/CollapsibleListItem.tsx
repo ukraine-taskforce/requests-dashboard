@@ -29,7 +29,6 @@ export type ListItem = {
 interface CollapsibleListItemProps extends ListItem {
   open: boolean;
   handleClick: () => void;
-  canZoomToCity: boolean;
   selectedCity?: Coordinates;
   toggleZoomCity: (coordinates: Coordinates) => void;
 }
@@ -44,7 +43,6 @@ export const CollapsibleListItem = ({
   coordinates,
   selectedCity,
   toggleZoomCity,
-  canZoomToCity,
   ...rest
 }: CollapsibleListItemProps) => {
   const [showZoomIcon, setShowZoomIcon] = useState(false);
@@ -68,7 +66,7 @@ export const CollapsibleListItem = ({
   }, [hidden]);
 
   const onTableRowMouseEnter = () => {
-    if (canZoomToCity && coordinates) {
+    if (coordinates) {
       const { latitude, longitude } = coordinates;
 
       setShowZoomIcon(true);

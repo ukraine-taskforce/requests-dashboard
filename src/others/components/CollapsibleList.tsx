@@ -10,7 +10,6 @@ import { CollapsibleListItem, ListItem } from "../components/CollapsibleListItem
 export interface CollapsibleTableProps extends TableContainerProps {
   rows: ListItem[];
   renderRowData: (row: ListItem) => ListItem;
-  canZoomToCity: boolean;
 }
 
 export interface Coordinates {
@@ -18,7 +17,7 @@ export interface Coordinates {
   longitude: number;
 }
 
-export const CollapsibleTable = ({ rows, renderRowData, canZoomToCity, ...tableProps }: CollapsibleTableProps) => {
+export const CollapsibleTable = ({ rows, renderRowData, ...tableProps }: CollapsibleTableProps) => {
   const offset = 20;
   const getGirstBatch = (rows: ListItem[]) => rows.slice(0, offset);
 
@@ -85,7 +84,6 @@ export const CollapsibleTable = ({ rows, renderRowData, canZoomToCity, ...tableP
                   wrapperProps={{ paddingY: 2 }}
                   selectedCity={selectedCity}
                   toggleZoomCity={toggleZoomCity}
-                  canZoomToCity={canZoomToCity}
                   open={openItemsIds.includes(id)}
                   handleClick={() => handleOpenItem(id)}
                 />

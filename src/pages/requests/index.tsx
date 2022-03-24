@@ -142,10 +142,66 @@ export function Requests() {
   // }
 
   const loadingMessage = "";
-  const byCities = selectedTabId === 0;
+  const showbyCities = selectedTabId === 0;
 
   const searchParams = new URLSearchParams(window.location.search);
   const showRegions = (searchParams.get("show_regions") || process.env.REACT_APP_SHOW_REGIONS) === "true";
+
+  const tableByCities = (
+    <CollapsibleTable
+      rows={tableDataByCities}
+      renderRowData={(row) => {
+        const location = translateLocation(Number(row.name));
+        return {
+          name: location?.name || loadingMessage,
+          value: row.value,
+          coordinates: location
+            ? {
+                latitude: location.lat,
+                longitude: location.lon,
+              }
+            : undefined,
+          hidden: row.hidden
+            .map(({ name, value }) => ({
+              name: translateSupply(String(name))?.name || loadingMessage,
+              value: value,
+            }))
+            .sort((a, b) => Number(b.value) - Number(a.value)),
+        };
+      }}
+    />
+  );
+
+  const tableByItems = (
+    <CollapsibleTable
+      rows={tableDataByCategories}
+      renderRowData={(row) => {
+        const location = translateLocation(Number(row.name));
+        return {
+          name: translateSupply(String(row.name))?.name || loadingMessage,
+          value: row.value,
+          hidden: row.hidden
+            .map(({ name, value }) => {
+              const location = translateLocation(Number(name));
+              return {
+                name: location?.name || loadingMessage,
+                value: value,
+                coordinates: location
+                  ? {
+                      latitude: location.lat,
+                      longitude: location.lon,
+                    }
+                  : undefined,
+              };
+            })
+            .sort((a, b) => Number(b.value) - Number(a.value)),
+        };
+      }}
+    />
+  );
+
+  const table = showbyCities ? tableByCities : tableByItems;
+
   return (
     <Layout header={<Header />}>
       <MapProvider>
@@ -153,31 +209,7 @@ export function Requests() {
           aside={
             <Sidebar className="requests-sidebar">
               <MultiTab selectedId={selectedTabId} onChange={setSelectedTabId} labels={[t("by_cities"), t("by_items")]} marginBottom={4} />
-              <CollapsibleTable
-                canZoomToCity={byCities}
-                rows={byCities ? tableDataByCities : tableDataByCategories}
-                renderRowData={(row) => {
-                  const location = translateLocation(Number(row.name));
-                  return {
-                    name: byCities ? location?.name || loadingMessage : translateSupply(String(row.name))?.name || loadingMessage,
-                    value: row.value,
-                    coordinates: location
-                      ? {
-                          latitude: location.lat,
-                          longitude: location.lon,
-                        }
-                      : undefined,
-                    hidden: row.hidden
-                      .map(({ name, value }) => ({
-                        name: byCities
-                          ? translateSupply(String(name))?.name || loadingMessage
-                          : translateLocation(Number(name))?.name || loadingMessage,
-                        value: value,
-                      }))
-                      .sort((a, b) => Number(b.value) - Number(a.value)),
-                  };
-                }}
-              />
+              {table}
             </Sidebar>
           }
         >
