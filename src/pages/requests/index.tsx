@@ -142,7 +142,7 @@ export function Requests() {
   // }
 
   const loadingMessage = "";
-  const showbyCities = selectedTabId === 0;
+  const showByCities = selectedTabId === 0;
 
   const searchParams = new URLSearchParams(window.location.search);
   const showRegions = (searchParams.get("show_regions") || process.env.REACT_APP_SHOW_REGIONS) === "true";
@@ -200,7 +200,7 @@ export function Requests() {
     />
   );
 
-  const table = showbyCities ? tableByCities : tableByItems;
+  const table = showByCities ? tableByCities : tableByItems;
 
   return (
     <Layout header={<Header />}>
