@@ -38,14 +38,14 @@ export const mapAidRequestsToFeatures = (mapData: RequestMapDataPoint[], locatio
     if (!location) throw new Error(`Location: ${dataPoint.city_id} is not found`);
 
     return {
-        type: "Feature",
-        properties: {
-          amount: dataPoint.amount,
-	  city: location.name,
-	  normalized_amount: dataPoint.amount / maxAmount,
-          description: dataPoint.description,
-        },
-        geometry: { type: "Point", coordinates: [location.lon, location.lat] },
+      type: "Feature",
+      properties: {
+        amount: dataPoint.amount,
+        city: location.name,
+        normalized_amount: dataPoint.amount / maxAmount,
+        description: dataPoint.description,
+      },
+      geometry: { type: "Point", coordinates: [location.lon, location.lat] },
     };
   });
 };

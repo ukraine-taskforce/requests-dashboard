@@ -38,9 +38,18 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
   const [hoveredRegionId, setHoveredRegionId] = useState<string | number | undefined>(undefined);
   const [cursor, setCursor] = useState<"auto" | "pointer">("auto");
 
-  const closePopup = useCallback(() => {
+  const handleMouseLeave = useCallback(() => {
     setCursor("auto");
     setPopupInfo(null);
+    if (mapRef?.current) {
+      if (hoveredRegionId) {
+        mapRef.current.setFeatureState(
+          { source: 'states', id: hoveredRegionId },
+          { hover: false }
+        );
+      }
+      setHoveredRegionId(undefined);
+    };
   }, []);
 
   const handleMouseMove = useCallback(
@@ -59,11 +68,11 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
           // We don't show region popup when zoomed-in too much.
           if (isRegionPopup && event.target.getZoom() >= MaxRegionVisibleZoomLevel) {
             if (popupInfo) {
-              closePopup();
+              handleMouseLeave();
             }
             return;
           }
-          const popupId = isRegionPopup ? `region:${requestData.shapeID}` : `city:${requestData.city}`;
+          const popupId = isRegionPopup ? `region:${features[preferredLayerIndex].id}` : `city:${requestData.city}`;
           if (popupInfo && popupInfo.data.id === popupId) return;
 
           setCursor("pointer");
@@ -78,20 +87,14 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
               totalItems: requestData.amount,
             },
           });
-        }
 
-        const regionFeatures = mapRef.current.queryRenderedFeatures(event.point, {
-          layers: ["state-fills"],
-        });
-
-        if (regionFeatures && regionFeatures.length > 0) {
           if (hoveredRegionId) {
             mapRef.current.setFeatureState(
               { source: 'state', id: hoveredRegionId },
               { hover: false }
             );
           }
-          setHoveredRegionId(regionFeatures[0].id);
+          setHoveredRegionId(features[preferredLayerIndex].id);
           mapRef.current.setFeatureState(
             { source: 'state', id: hoveredRegionId },
             { hover: true }
@@ -99,7 +102,7 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
         }
       }
     },
-    [mapRef, popupInfo, interactiveLayerIds, closePopup]
+    [mapRef, popupInfo, interactiveLayerIds, handleMouseLeave]
   );
 
   return (
@@ -113,7 +116,7 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
         interactiveLayerIds={interactiveLayerIds}
         cursor={cursor}
         onMouseMove={handleMouseMove}
-        onMouseLeave={closePopup}
+        onMouseLeave={handleMouseLeave}
       >
         {sourceWithLayer}
 
