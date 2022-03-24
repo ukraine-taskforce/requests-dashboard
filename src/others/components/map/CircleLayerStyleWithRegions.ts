@@ -1,7 +1,7 @@
 import { LayerProps } from "react-map-gl";
 
 export const layerStyleWithRegions: LayerProps = {
-  id: "ukr_water_needs-point",
+  id: "circles",
   type: "circle",
   minzoom: 2,
   paint: {
