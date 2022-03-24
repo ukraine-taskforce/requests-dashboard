@@ -1,6 +1,7 @@
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Layer, Source, MapProvider } from "react-map-gl";
+import { useLocation } from "react-router-dom";
 import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import { groupBy, isEmpty, uniq, keys } from "lodash";
 
@@ -30,14 +31,19 @@ import {
   groupedByCategoriesToTableData,
 } from "../../others/helpers/aid-request-helpers";
 
+// TODO move this to a helper file?
+const useQuery = () => {
+  const { search } = useLocation();
+  return useMemo(() => new URLSearchParams(search), [search]);
+}
+
 export function Requests() {
   const { t } = useTranslation();
   const { data: aidRequests } = useAidRequestQuery();
   const { locationDict, suppliesDict, translateLocation, translateSupply } = useDictionaryContext();
-
-  const filterContext = useFilter();
-
-  const { addFilter, getActiveFilterItems } = filterContext;
+  const query = useQuery();
+  const { addFilter, getActiveFilterItems, toggleFilterItem, filters } = useFilter();
+  const [filtersIntialized, setFiltersInitialized] = useState(false);
 
   // First create a lookup table for all aid requests grouped by dates and memoise it
   const aidRequestsGroupedByDate = useMemo(() => {
@@ -81,7 +87,48 @@ export function Requests() {
         singleValueFilter: true,
       });
     }
+
+    setFiltersInitialized(true);
   }, [suppliesDict, locationDict, aidRequestsGroupedByDate, addFilter]);
+
+  // TODO move this outside of index.tsx?
+  useEffect(() => {
+    if (filtersIntialized) {
+      setFiltersInitialized(false);
+
+      if (filters?.Categories?.filterItems.length) {
+        const category = query.get('category');
+        if (category) {
+          const categoryList = category.split(',')
+          categoryList.forEach((category: string) => {
+            toggleFilterItem('Categories', category, true);
+          })
+        }
+      }
+
+      if (filters?.Cities?.filterItems.length) {
+        const city = query.get('city');
+
+        if (city) {
+          const cityList = city.split(',')
+          cityList.forEach((city: string) => {
+            toggleFilterItem('Cities', Number(city), true);
+          })
+        }
+      }
+
+      if (filters?.Dates?.filterItems.length) {
+        const date = query.get('date');
+
+        if (date) {
+          // TODO Slider isn't updating as expected yet,
+          // as TimelineSlider.tsx uses local state to persist the date value
+          toggleFilterItem('Dates', date, true);
+        }
+      }
+    }
+
+  }, [query, toggleFilterItem, filters, filtersIntialized, setFiltersInitialized])
 
   const activeFilterItems = getActiveFilterItems("Categories") as string[]; // typecasting necessary because type FilterItemId = string | number
   const activeDateFilter = getActiveFilterItems("Dates")[0] as string; // typecasting necessary because type FilterItemId = string | number
