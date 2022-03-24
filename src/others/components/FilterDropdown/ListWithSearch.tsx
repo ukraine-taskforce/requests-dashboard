@@ -1,5 +1,6 @@
 import { FixedSizeList, areEqual } from "react-window";
 import { Button, ListItem, ListItemButton, ListItemText, ClickAwayListener, Divider, useAutocomplete, Typography } from "@mui/material";
+import { blue } from '@mui/material/colors';
 import { FunctionComponent, memo, forwardRef } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import { useTranslation } from "react-i18next";
@@ -77,7 +78,7 @@ export const ListWithSearch: FunctionComponent<ListWithSearchProps> = ({
             ))}
             <Divider
               sx={{
-                borderColor: "#f3f3f3",
+                borderColor: blue[500],
                 marginBottom: "10px",
               }}
             />

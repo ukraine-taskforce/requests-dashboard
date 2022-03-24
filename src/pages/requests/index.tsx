@@ -1,6 +1,6 @@
 import { useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Layer, Source } from "react-map-gl";
+import { Layer, Source, MapProvider } from "react-map-gl";
 import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import { groupBy, isEmpty, uniq, keys } from "lodash";
 
@@ -16,7 +16,9 @@ import { Sidebar } from "../../others/components/Sidebar";
 import { MultiTab } from "../../others/components/MultiTab";
 import { CollapsibleTable } from "../../others/components/CollapsibleList";
 import { layerStyle } from "../../others/components/map/CircleLayerStyle";
-import { mapAidRequestsToFeatures, adaptToMap } from "../../others/helpers/map-utils";
+import { layerStyleWithRegions } from "../../others/components/map/CircleLayerStyleWithRegions";
+import { RegionsSourceWithLayers } from "../../others/components/map/RegionsSourceWithLayers";
+import { aggregateCategories, mapAidRequestsToFeatures } from "../../others/helpers/map-utils";
 import {
   sortDates,
   filterByCategoryIds,
@@ -85,7 +87,7 @@ export function Requests() {
   const activeDateFilter = getActiveFilterItems("Dates")[0] as string; // typecasting necessary because type FilterItemId = string | number
   const activeCityFilter = getActiveFilterItems("Cities") as number[]; // typecasting necessary because type FilterItemId = string | number
 
-  // Filter aid requests by given date and by category (and possibly city in the next step)
+  // Filter aid requests by given date, category, and city
   const aidRequestsFiltered = useMemo(() => {
     if (!activeDateFilter || isEmpty(aidRequestsGroupedByDate)) return [];
     const activeCategoryFilters = activeFilterItems.length ? activeFilterItems : FilterEnum.All;
@@ -121,12 +123,10 @@ export function Requests() {
   // TODO: consider refactoring map so that it consumes raw AidRequest[]
   // NOTE: adaptToMap has been added temporarily
   const isMapDataAvailable = locationDict && suppliesDict && groupedByCitiesWithTotal.length;
-  const mapData = isMapDataAvailable
-    ? groupedByCitiesWithTotal.map((aidRequest) => adaptToMap(aidRequest, translateLocation(aidRequest.city_id), translateSupply))
-    : [];
+  const mapData = isMapDataAvailable ? groupedByCitiesWithTotal.map((aidRequest) => aggregateCategories(aidRequest, translateSupply)) : [];
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
-    features: mapAidRequestsToFeatures(mapData),
+    features: mapAidRequestsToFeatures(mapData, translateLocation),
   };
 
   const tableDataByCities = groupedByCitiesWithTotal.map(groupedByCitiesToTableData).sort((a, b) => Number(b.value) - Number(a.value));
@@ -142,60 +142,58 @@ export function Requests() {
   // }
 
   const loadingMessage = "";
-  const showByCities = selectedTabId === 0;
+  const byCities = selectedTabId === 0;
 
-  const tableByCities = (
-    <CollapsibleTable
-      rows={tableDataByCities}
-      renderRowData={(row) => ({
-        name: translateLocation(Number(row.name))?.name || loadingMessage,
-        value: row.value,
-        hidden: row.hidden
-          .map(({ name, value }) => ({
-            name: translateSupply(String(name))?.name || loadingMessage,
-            value: value,
-          }))
-          .sort((a, b) => Number(b.value) - Number(a.value)),
-      })}
-    />
-  );
-
-  const tableByCategories = (
-    <CollapsibleTable
-      rows={tableDataByCategories}
-      renderRowData={(row) => ({
-        name: translateSupply(String(row.name))?.name || loadingMessage,
-        value: row.value,
-        hidden: row.hidden
-          .map(({ name, value }) => ({
-            name: translateLocation(Number(name))?.name || loadingMessage,
-            value: value,
-          }))
-          .sort((a, b) => Number(b.value) - Number(a.value)),
-      })}
-    />
-  );
-
-  const table = showByCities ? tableByCities : tableByCategories;
-
+  const searchParams = new URLSearchParams(window.location.search);
+  const showRegions = (searchParams.get("show_regions") || process.env.REACT_APP_SHOW_REGIONS) === "true";
   return (
     <Layout header={<Header />}>
-      <Main
-        aside={
-          <Sidebar className="requests-sidebar">
-            <MultiTab selectedId={selectedTabId} onChange={setSelectedTabId} labels={[t("by_cities"), t("by_items")]} marginBottom={4} />
-            {table}
-          </Sidebar>
-        }
-      >
-        <Map
-          sourceWithLayer={
-            <Source id="ukr_water_needs" type="geojson" data={geojson}>
-              <Layer {...layerStyle} />
-            </Source>
+      <MapProvider>
+        <Main
+          aside={
+            <Sidebar className="requests-sidebar">
+              <MultiTab selectedId={selectedTabId} onChange={setSelectedTabId} labels={[t("by_cities"), t("by_items")]} marginBottom={4} />
+              <CollapsibleTable
+                canZoomToCity={byCities}
+                rows={byCities ? tableDataByCities : tableDataByCategories}
+                renderRowData={(row) => {
+                  const location = translateLocation(Number(row.name));
+                  return {
+                    name: byCities ? location?.name || loadingMessage : translateSupply(String(row.name))?.name || loadingMessage,
+                    value: row.value,
+                    coordinates: location
+                      ? {
+                          latitude: location.lat,
+                          longitude: location.lon,
+                        }
+                      : undefined,
+                    hidden: row.hidden
+                      .map(({ name, value }) => ({
+                        name: byCities
+                          ? translateSupply(String(name))?.name || loadingMessage
+                          : translateLocation(Number(name))?.name || loadingMessage,
+                        value: value,
+                      }))
+                      .sort((a, b) => Number(b.value) - Number(a.value)),
+                  };
+                }}
+              />
+            </Sidebar>
           }
-        />
-      </Main>
+        >
+          <Map
+            interactiveLayerIds={showRegions ? ["circles", "state-fills"] : ["circles"]}
+            sourceWithLayer={
+              <>
+                <Source id="circles-source" type="geojson" data={geojson}>
+                  <Layer {...(showRegions ? layerStyleWithRegions : layerStyle)} />
+                </Source>
+                {showRegions && <RegionsSourceWithLayers requestMapDataPoints={mapData} />}
+              </>
+            }
+          />
+        </Main>
+      </MapProvider>
     </Layout>
   );
 }

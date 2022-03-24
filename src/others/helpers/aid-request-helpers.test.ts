@@ -1,10 +1,13 @@
+import { Location } from "../contexts/api";
 import {
   groupByCityIdWithTotal,
   groupByCategoryIdWithTotal,
+  mapRegionIdsToAidRequestMetadata,
   filterByCategoryIds,
   filterByCityIds,
   FilterEnum,
 } from "./aid-request-helpers";
+import { RequestMapDataPoint } from "./map-utils";
 
 const exampleAggregatedRequests = [
   { date: "2022-03-11", city_id: 1226, category_id: "sanitary_pads", requested_amount: 10 },
@@ -175,5 +178,40 @@ test("groupByCategoryIdWithTotal with exampleAggregatedRequests", () => {
         requested_amount: 2,
       },
     ],
+  });
+});
+
+test("mapRegionIdsToAidRequestMetadata with exampleAggregatedRequests", () => {
+  const mockTranslateLocation = (city_id: number): Location => {
+    return {id: city_id, name: `name#${city_id}`, lat: 1, lon: 2, region_id: 'region_' + (city_id % 2)};
+  }
+  const exampleMapDataPoints: RequestMapDataPoint[] = [
+    {
+      city_id: 1,
+      amount: 10,
+      description: "",
+    },
+    {
+      city_id: 2,
+      amount: 20,
+      description: "",
+    },
+    {
+      city_id: 3,
+      amount: 50,
+      description: "",
+    }     
+  ];
+  const result = mapRegionIdsToAidRequestMetadata(exampleMapDataPoints, mockTranslateLocation);
+
+  expect(result).toEqual({
+    "region_0": {
+      amount: 20,
+      description: "name#2: 20\n",
+    },
+    "region_1": {
+      amount: 60,
+      description: "name#3: 50\nname#1: 10\n",
+    },
   });
 });
