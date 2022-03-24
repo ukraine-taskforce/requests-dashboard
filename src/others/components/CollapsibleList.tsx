@@ -17,6 +17,7 @@ export const CollapsibleTable = ({ rows, renderRowData, ...tableProps }: Collaps
   const getGirstBatch = (rows: ListItem[]) => rows.slice(0, offset);
 
   const [displayedRows, setDisplayedRows] = useState<ListItem[]>([]);
+  const [openItemsIds, setOpenItemsIds] = useState<string[]>([]);
 
   const hasDisplayedAll = displayedRows.length === rows.length;
 
@@ -28,6 +29,12 @@ export const CollapsibleTable = ({ rows, renderRowData, ...tableProps }: Collaps
   useEffect(() => {
     setDisplayedRows(getGirstBatch(rows));
   }, [rows]);
+
+  const handleOpenItem = (id: string) => {
+    const idsWithoutId = openItemsIds.filter((id) => ![id].includes(id));
+    const idsWithId = [...openItemsIds, id];
+    setOpenItemsIds(openItemsIds.includes(id) ? idsWithoutId : idsWithId);
+  };
 
   return (
     <InfiniteScroll
@@ -44,7 +51,16 @@ export const CollapsibleTable = ({ rows, renderRowData, ...tableProps }: Collaps
           <TableBody sx={{ "& > *": { paddingY: 2 } }} className="collapsible-table-body">
             {displayedRows.map((row, index) => {
               const id = `${row.name}-${index}`;
-              return <CollapsibleListItem id={id} key={id} {...renderRowData(row)} wrapperProps={{ paddingY: 2 }} />;
+              return (
+                <CollapsibleListItem
+                  id={id}
+                  key={id}
+                  {...renderRowData(row)}
+                  wrapperProps={{ paddingY: 2 }}
+                  open={openItemsIds.includes(id)}
+                  handleClick={() => handleOpenItem(id)}
+                />
+              );
             })}
           </TableBody>
         </Table>

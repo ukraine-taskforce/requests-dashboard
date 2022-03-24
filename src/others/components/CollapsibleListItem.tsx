@@ -20,11 +20,11 @@ export type ListItem = {
 
 interface CollapsibleListItemProps extends ListItem {
   id: string;
+  open: boolean;
+  handleClick: () => void;
 }
 
-export const CollapsibleListItem = ({ id, name, value, hidden, wrapperProps, ...rest }: CollapsibleListItemProps) => {
-  const [open, setOpen] = useState(false);
-
+export const CollapsibleListItem = ({ id, name, value, hidden, open, handleClick, wrapperProps, ...rest }: CollapsibleListItemProps) => {
   const hiddenItemsCount = hidden.length;
 
   const offset = 20;
@@ -47,7 +47,7 @@ export const CollapsibleListItem = ({ id, name, value, hidden, wrapperProps, ...
     <>
       <TableRow className="table-row" sx={{ width: "100%", "& > *": { borderBottom: "unset", paddingY: 1 } }}>
         <TableCell className="arrow-icon" sx={{ padding: 0, width: 6 }}>
-          <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+          <IconButton aria-label="expand row" size="small" onClick={handleClick}>
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
