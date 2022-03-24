@@ -15,10 +15,11 @@ export const RegionsSourceWithLayers = ({aidRequests}: RegionsSourceWithLayersPr
   const regionToCount = mapRegionIdsToAidRequestCount(aidRequests, translateLocation);
   const maxVal = Object.values(regionToCount).reduce((a, b) => a > b ? a : b, 0);
   adminRegions.forEach((region) => {
-    if (region.properties && region.properties.shapeID in regionToCount) {
+    if (region.properties && region.id  && region.id in regionToCount) {
       const res = Object.assign({}, region);
       res.properties = Object.assign({}, res.properties);
-      res.properties.normalized_amount = regionToCount[res.properties.shapeID] / maxVal;
+      res.id = Object.assign({}, res.id)
+      res.properties.normalized_amount = regionToCount[res.id] / maxVal;
       allRegionsWithMeta.push(res);
     }
   });
