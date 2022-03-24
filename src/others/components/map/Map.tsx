@@ -37,6 +37,11 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
   const [cursor, setCursor] = useState<"auto" | "pointer">("auto");
 
+  const closePopup = useCallback(() => {
+    setCursor("auto");
+    setPopupInfo(null);
+  }, []);
+
   const handleMouseMove = useCallback(
     (event: MapLayerMouseEvent) => {
       if (mapRef?.current) {
@@ -53,8 +58,7 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
           // We don't show region popup when zoomed-in too much.
           if (isRegionPopup && event.target.getZoom() >= MaxRegionVisibleZoomLevel) {
             if (popupInfo) {
-              setCursor("auto");
-              setPopupInfo(null);
+              closePopup();
             }
             return;
           }
@@ -79,11 +83,6 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
     [mapRef, popupInfo, interactiveLayerIds]
   );
 
-  const handleMouseLeave = useCallback(() => {
-    setCursor("auto");
-    setPopupInfo(null);
-  }, []);
-
   return (
     <Box sx={{ height: "100%", width: "100%" }}>
       <MapComponent
@@ -95,7 +94,7 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
         interactiveLayerIds={interactiveLayerIds}
         cursor={cursor}
         onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
+        onMouseLeave={closePopup}
       >
         {sourceWithLayer}
 
