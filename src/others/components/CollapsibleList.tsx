@@ -83,7 +83,8 @@ export const CollapsibleTable = ({ rows, renderRowData, ...tableProps }: Collaps
         <Table aria-label="collapsible table">
           <TableBody sx={{ "& > *": { paddingY: 2 } }} className="collapsible-table-body">
             {displayedRows.map((row, index) => {
-              const id = `${row.name}-${index}`;
+              // TODO: Propagate proprer id here.
+              const id = `${row.name}`;
               return (
                 <CollapsibleListItem
                   key={id}
