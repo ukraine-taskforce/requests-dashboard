@@ -149,7 +149,7 @@ export function Requests() {
   const searchParams = new URLSearchParams(window.location.search);
   const showRegions = (searchParams.get("show_regions") || process.env.REACT_APP_SHOW_REGIONS) === "true";
   return (
-    <Layout header={<Header />}>
+    <Layout header={<Header aidRequests={aidRequestsFiltered} />}>
       <MapProvider>
         <Main
           aside={

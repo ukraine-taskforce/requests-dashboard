@@ -1,8 +1,7 @@
-import { createContext, useState, useContext, FunctionComponent, useEffect } from "react";
+import { createContext, useContext, FunctionComponent } from "react";
 
-import { useAidRequestQuery, useLocationsQuery, useSuppliesQuery } from "./api";
+import { AidRequest } from "./api";
 import { useDictionaryContext } from "./dictionary-context";
-import { useFilter } from "./filter";
 
 type FormattedAidRequests = {
   [city: string]: {
@@ -17,15 +16,13 @@ type FormattedAidRequests = {
 };
 
 export interface FileDownloaderContextValue {
-  isButtonDisabled: boolean;
-  downloadAsJSON: () => void;
-  downloadAsCSV: () => void;
+  downloadAsJSON: (aidRequests: AidRequest[]) => void;
+  downloadAsCSV: (aidRequests: AidRequest[]) => void;
 }
 
 const initFileDownloaderContextValue: FileDownloaderContextValue = {
-  isButtonDisabled: true,
-  downloadAsCSV: () => {},
-  downloadAsJSON: () => {},
+  downloadAsCSV: (aidRequests) => {},
+  downloadAsJSON: (aidRequests) => {},
 };
 
 const FileDownloaderContext = createContext<FileDownloaderContextValue>(initFileDownloaderContextValue);
@@ -45,31 +42,12 @@ export function useFileDownloader(): FileDownloaderContextValue {
 }
 
 export const FileDownloaderContextProvider: FunctionComponent = ({ children }) => {
-  const { data: cities, isSuccess: citiesSuccess } = useLocationsQuery();
-  const { data: supplies, isSuccess: suppliesSuccess } = useSuppliesQuery();
   const { translateLocation, translateSupply } = useDictionaryContext();
-  const { data: aidRequests, isSuccess: aidRequestsSuccess } = useAidRequestQuery();
-  const { getActiveFilterItems } = useFilter();
 
-  const [isButtonDisabled, setButtonDisabled] = useState<boolean>(true);
+  const formatAidRequests = (aidRequests: AidRequest[]): [FormattedAidRequests, Set<string>] => {
+    const uniqueCategories: Set<string> = new Set();
 
-  const activeCategoryFilters = getActiveFilterItems("Categories");
-  const activeDateFilters = getActiveFilterItems("Dates");
-
-  useEffect(() => {
-    setButtonDisabled(!citiesSuccess && !suppliesSuccess && !aidRequestsSuccess);
-  }, [citiesSuccess, suppliesSuccess, aidRequestsSuccess]);
-
-  const filteredAidRequests = aidRequests?.filter(
-    (aidRequest) =>
-      (activeCategoryFilters.length === 0 || activeCategoryFilters.includes(aidRequest.category_id)) &&
-      (activeDateFilters.length === 0 || activeDateFilters.includes(aidRequest.date))
-  );
-
-  const uniqueCategories: Set<string> = new Set();
-
-  const formattedAidRequests = filteredAidRequests?.reduce((result: FormattedAidRequests, request) => {
-    if (supplies && cities) {
+    const formattedAidRequests = aidRequests?.reduce((result: FormattedAidRequests, request) => {
       const category = translateSupply(request.category_id);
       const location = translateLocation(request.city_id);
 
@@ -84,6 +62,7 @@ export const FileDownloaderContextProvider: FunctionComponent = ({ children }) =
           amount: request.requested_amount,
         };
 
+        // NOTE: the code in this file only works if a single date is present in the data
         if (result[locationName]) {
           result[locationName].requests.push(formattedRequest);
         } else {
@@ -93,19 +72,21 @@ export const FileDownloaderContextProvider: FunctionComponent = ({ children }) =
           };
         }
       }
-    }
+      return result;
+    }, {} as FormattedAidRequests);
+    return [ formattedAidRequests, uniqueCategories ];
+  };
 
-    return result;
-  }, {} as FormattedAidRequests);
-
-  const downloadAsJSON = () => {
+  const downloadAsJSON = (aidRequests: AidRequest[]) => {
+    const [ formattedAidRequests, ] = formatAidRequests(aidRequests);
     const blob = new Blob([JSON.stringify(formattedAidRequests, null, 4)], {
       type: "application/json",
     });
 
     triggerFileDownload(blob, "json");
   };
-  const downloadAsCSV = () => {
+  const downloadAsCSV = (aidRequests: AidRequest[]) => {
+    const [ formattedAidRequests, uniqueCategories ] = formatAidRequests(aidRequests);
     const csvRows = [];
     const csvHeaders = ["City", "Date"].concat(Array.from(uniqueCategories));
 
@@ -134,7 +115,6 @@ export const FileDownloaderContextProvider: FunctionComponent = ({ children }) =
   return (
     <FileDownloaderContext.Provider
       value={{
-        isButtonDisabled,
         downloadAsCSV,
         downloadAsJSON,
       }}

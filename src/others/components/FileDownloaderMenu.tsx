@@ -3,9 +3,14 @@ import { useState } from "react";
 import DownloadIcon from "@mui/icons-material/Download";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 import { useFileDownloader } from "../contexts/file-downloader";
+import { AidRequest } from "../contexts/api";
 
-export const FileDownloaderMenu = () => {
-  const { isButtonDisabled, downloadAsJSON, downloadAsCSV } = useFileDownloader();
+export interface FileDownloaderMenuProps {
+  aidRequests: AidRequest[];
+}
+
+export const FileDownloaderMenu = ({ aidRequests }: FileDownloaderMenuProps) => {
+  const { downloadAsJSON, downloadAsCSV } = useFileDownloader();
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -18,12 +23,12 @@ export const FileDownloaderMenu = () => {
   };
 
   const jsonDownloadHandler = () => {
-    downloadAsJSON();
+    downloadAsJSON(aidRequests);
     handleClose();
   };
 
   const csvDownloadHandler = () => {
-    downloadAsCSV();
+    downloadAsCSV(aidRequests);
     handleClose();
   };
 
@@ -35,7 +40,6 @@ export const FileDownloaderMenu = () => {
         color="inherit"
         aria-label="menu"
         sx={{ mr: 2 }}
-        disabled={isButtonDisabled}
         onClick={handleClick}
       >
         <DownloadIcon />
