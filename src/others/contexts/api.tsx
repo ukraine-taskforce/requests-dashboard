@@ -25,7 +25,7 @@ export interface Location {
 }
 
 function useFetch() {
-  const { session } = useAuth();
+  const { forceSessionRefresh, session } = useAuth();
 
   const query = React.useCallback(
     (input: RequestInfo, init?: RequestInit) => {
@@ -34,9 +34,15 @@ function useFetch() {
           Authorization: session?.accessToken.jwtToken || "",
         },
         ...init,
+      }).then((res) => {
+        if (res.status === 401) {
+          forceSessionRefresh();
+        }
+
+        return res;
       });
     },
-    [session]
+    [forceSessionRefresh, session]
   );
 
   return {
