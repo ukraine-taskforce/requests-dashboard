@@ -50,7 +50,7 @@ export const CollapsibleTable = ({ rows, renderRowData, ...tableProps }: Collaps
   }, [rows]);
 
   const handleOpenItem = (id: string) => {
-    const idsWithoutId = openItemsIds.filter((openId) => ![openId].includes(id));
+    const idsWithoutId = openItemsIds.filter((openId) => openId !== id);
     const idsWithId = [...openItemsIds, id];
     setOpenItemsIds(openItemsIds.includes(id) ? idsWithoutId : idsWithId);
   };
