@@ -11,6 +11,7 @@ import { Box } from "@mui/material";
 
 import { useFilter } from "../contexts/filter";
 import { useAuth } from "../contexts/auth";
+import { AidRequest } from "../contexts/api";
 
 import { useSidebarContext } from "../contexts/sidebar-context";
 import { TimelineSlider } from "./TimelineSlider";
@@ -18,10 +19,11 @@ import { FileDownloaderMenu } from "./FileDownloaderMenu";
 import { LanguageSelector } from "./LanguageSelector";
 
 export interface HeaderProps {
+  aidRequests: AidRequest[];
   children?: ReactNode;
 }
 
-export const Header = ({ children }: HeaderProps) => {
+export const Header = ({ aidRequests, children }: HeaderProps) => {
   const { t } = useTranslation();
   const { toggle } = useSidebarContext();
   const { logout } = useAuth();
@@ -52,7 +54,7 @@ export const Header = ({ children }: HeaderProps) => {
         {children}
         <LanguageSelector />
         <Box sx={{ justifySelf: "flex-end" }}>
-          <FileDownloaderMenu />
+          <FileDownloaderMenu aidRequests={aidRequests} />
         </Box>
         <OutputIcon onClick={logout} sx={{ width: 30, height: 30, marginLeft: "auto", cursor: "pointer" }} />
       </Toolbar>
