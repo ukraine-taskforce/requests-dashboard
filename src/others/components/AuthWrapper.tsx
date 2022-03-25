@@ -2,6 +2,7 @@ import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 import { AuthStatus, useAuth } from "../contexts/auth";
+import { FileDownloaderContextProvider } from "../contexts/file-downloader";
 
 export interface AuthWrapperProps {}
 
@@ -17,5 +18,9 @@ export const AuthWrapper: React.FunctionComponent<AuthWrapperProps> = () => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  return <Outlet />;
+  return (
+    <FileDownloaderContextProvider>
+      <Outlet />
+    </FileDownloaderContextProvider>
+  );
 };
