@@ -8,7 +8,7 @@ import { groupBy, isEmpty, uniq, keys } from "lodash";
 import { useAidRequestQuery } from "../../others/contexts/api";
 import { useDictionaryContext } from "../../others/contexts/dictionary-context";
 import { useSidebarContext } from "../../others/contexts/sidebar-context";
-import { FilterItem, useFilter } from "../../others/contexts/filter";
+import { FilterItem, useFilter, FilterName } from "../../others/contexts/filter";
 import { Layout } from "../../others/components/Layout";
 import { Map } from "../../others/components/map/Map";
 import { Header } from "../../others/components/Header";
@@ -30,19 +30,15 @@ import {
   groupedByCitiesToTableData,
   groupedByCategoriesToTableData,
 } from "../../others/helpers/aid-request-helpers";
-
-// TODO move this to a helper file?
-const useQuery = () => {
-  const { search } = useLocation();
-  return useMemo(() => new URLSearchParams(search), [search]);
-}
+import { useQuery } from "../../others/helpers/query-util";
 
 export function Requests() {
   const { t } = useTranslation();
   const { data: aidRequests } = useAidRequestQuery();
   const { locationDict, suppliesDict, translateLocation, translateSupply } = useDictionaryContext();
-  const query = useQuery();
   const { addFilter, getActiveFilterItems, toggleFilterItem, filters } = useFilter();
+  const { search } = useLocation();
+  const { setFilterFromQuery, setQuery } = useQuery(search, toggleFilterItem);
   const [filtersInitialized, setFiltersInitialized] = useState(false);
 
   // First create a lookup table for all aid requests grouped by dates and memoise it
@@ -91,42 +87,17 @@ export function Requests() {
     setFiltersInitialized(true);
   }, [suppliesDict, locationDict, aidRequestsGroupedByDate, addFilter]);
 
-  // TODO move this outside of index.tsx?
   useEffect(() => {
     if (filtersInitialized) {
       setFiltersInitialized(false);
 
-      if (filters?.Categories?.filterItems.length) {
-        const category = query.get('category');
-        if (category) {
-          const categoryList = category.split(',')
-          categoryList.forEach((category: string) => {
-            toggleFilterItem('Categories', category, true);
-          })
-        }
-      }
+      const filterNames = Object.keys(filters) as FilterName[];
 
-      if (filters?.Cities?.filterItems.length) {
-        const city = query.get('city');
-
-        if (city) {
-          const cityList = city.split(',')
-          cityList.forEach((city: string) => {
-            toggleFilterItem('Cities', Number(city), true);
-          })
-        }
-      }
-
-      if (filters?.Dates?.filterItems.length) {
-        const date = query.get('date');
-
-        if (date) {
-          toggleFilterItem('Dates', date, true);
-        }
-      }
+      filterNames.forEach((filterName: FilterName) => {
+        setFilterFromQuery(filterName);
+      });
     }
-
-  }, [query, toggleFilterItem, filters, filtersInitialized, setFiltersInitialized])
+  }, [setFilterFromQuery, toggleFilterItem, filters, filtersInitialized, setFiltersInitialized]);
 
   const activeFilterItems = getActiveFilterItems("Categories") as string[]; // typecasting necessary because type FilterItemId = string | number
   const activeDateFilter = getActiveFilterItems("Dates")[0] as string; // typecasting necessary because type FilterItemId = string | number
@@ -134,21 +105,17 @@ export function Requests() {
 
   useEffect(() => {
     if (activeCityFilter.length > 0) {
-      query.set('city', activeCityFilter.join(','));
+      setQuery("city", activeCityFilter.join(","));
     }
 
     if (activeFilterItems.length > 0) {
-      query.set('category', activeFilterItems.join(','));
+      setQuery("category", activeFilterItems.join(","));
     }
 
     if (activeDateFilter) {
-      query.set('date', activeDateFilter);
+      setQuery("date", activeDateFilter);
     }
-
-    let url = new URL(window.location.href);
-    url.search = query.toString();
-    window.history.pushState({}, '', url);
-  }, [activeFilterItems, activeDateFilter, activeCityFilter, query])
+  }, [activeFilterItems, activeDateFilter, activeCityFilter, setQuery]);
 
   // Filter aid requests by given date, category, and city
   const aidRequestsFiltered = useMemo(() => {
@@ -186,12 +153,10 @@ export function Requests() {
   // TODO: consider refactoring map so that it consumes raw AidRequest[]
   // NOTE: adaptToMap has been added temporarily
   const isMapDataAvailable = locationDict && suppliesDict && groupedByCitiesWithTotal.length;
-  const mapData = isMapDataAvailable
-    ? groupedByCitiesWithTotal.map((aidRequest) => aggregateCategories(aidRequest, translateSupply))
-    : [];
+  const mapData = isMapDataAvailable ? groupedByCitiesWithTotal.map((aidRequest) => aggregateCategories(aidRequest, translateSupply)) : [];
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
-    features: mapAidRequestsToFeatures(mapData, translateLocation)
+    features: mapAidRequestsToFeatures(mapData, translateLocation),
   };
 
   const tableDataByCities = groupedByCitiesWithTotal.map(groupedByCitiesToTableData).sort((a, b) => Number(b.value) - Number(a.value));
@@ -248,12 +213,14 @@ export function Requests() {
         >
           <Map
             interactiveLayerIds={showRegions ? ["circles", "state-fills"] : ["circles"]}
-            sourceWithLayer={<>
-              <Source id="circles-source" type="geojson" data={geojson}>
-                <Layer {...(showRegions ? layerStyleWithRegions : layerStyle)} />
-              </Source>
-              {showRegions && <RegionsSourceWithLayers requestMapDataPoints={mapData} />}
-	          </>}
+            sourceWithLayer={
+              <>
+                <Source id="circles-source" type="geojson" data={geojson}>
+                  <Layer {...(showRegions ? layerStyleWithRegions : layerStyle)} />
+                </Source>
+                {showRegions && <RegionsSourceWithLayers requestMapDataPoints={mapData} />}
+              </>
+            }
           />
         </Main>
       </MapProvider>

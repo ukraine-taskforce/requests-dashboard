@@ -1,5 +1,7 @@
 import React, { useCallback, useState } from "react";
 
+export type FilterName = 'Cities' | 'Dates' | 'Categories';
+
 export type FilterItemId = string | number;
 
 export type FilterItem = {
@@ -10,7 +12,7 @@ export type FilterItem = {
 
 export type Filter = {
   active: boolean;
-  filterName: string;
+  filterName: FilterName;
   filterItems: FilterItem[];
   singleValueFilter: boolean;
   hasSearch?: boolean;
@@ -19,9 +21,9 @@ export type Filter = {
 export interface FilterContextValue {
   filters: { [filterName: string]: Filter };
   addFilter: (newFilter: Filter) => void;
-  activateFilter: (filterName: string) => void;
-  toggleFilterItem: (filterName: string, filterItemId: FilterItemId, value?: boolean) => void;
-  getActiveFilterItems: (filterName: string, field?: keyof FilterItem) => FilterItemId[];
+  activateFilter: (filterName: FilterName) => void;
+  toggleFilterItem: (filterName: FilterName, filterItemId: FilterItemId, value?: boolean) => void;
+  getActiveFilterItems: (filterName: FilterName, field?: keyof FilterItem) => FilterItemId[];
 }
 
 const initFilterContextValue: FilterContextValue = {
