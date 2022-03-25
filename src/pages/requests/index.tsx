@@ -43,7 +43,7 @@ export function Requests() {
   const { locationDict, suppliesDict, translateLocation, translateSupply } = useDictionaryContext();
   const query = useQuery();
   const { addFilter, getActiveFilterItems, toggleFilterItem, filters } = useFilter();
-  const [filtersIntialized, setFiltersInitialized] = useState(false);
+  const [filtersInitialized, setFiltersInitialized] = useState(false);
 
   // First create a lookup table for all aid requests grouped by dates and memoise it
   const aidRequestsGroupedByDate = useMemo(() => {
@@ -93,7 +93,7 @@ export function Requests() {
 
   // TODO move this outside of index.tsx?
   useEffect(() => {
-    if (filtersIntialized) {
+    if (filtersInitialized) {
       setFiltersInitialized(false);
 
       if (filters?.Categories?.filterItems.length) {
@@ -121,18 +121,34 @@ export function Requests() {
         const date = query.get('date');
 
         if (date) {
-          // TODO Slider isn't updating as expected yet,
-          // as TimelineSlider.tsx uses local state to persist the date value
           toggleFilterItem('Dates', date, true);
         }
       }
     }
 
-  }, [query, toggleFilterItem, filters, filtersIntialized, setFiltersInitialized])
+  }, [query, toggleFilterItem, filters, filtersInitialized, setFiltersInitialized])
 
   const activeFilterItems = getActiveFilterItems("Categories") as string[]; // typecasting necessary because type FilterItemId = string | number
   const activeDateFilter = getActiveFilterItems("Dates")[0] as string; // typecasting necessary because type FilterItemId = string | number
   const activeCityFilter = getActiveFilterItems("Cities") as number[]; // typecasting necessary because type FilterItemId = string | number
+
+  useEffect(() => {
+    if (activeCityFilter.length > 0) {
+      query.set('city', activeCityFilter.join(','));
+    }
+
+    if (activeFilterItems.length > 0) {
+      query.set('category', activeFilterItems.join(','));
+    }
+
+    if (activeDateFilter) {
+      query.set('date', activeDateFilter);
+    }
+
+    let url = new URL(window.location.href);
+    url.search = query.toString();
+    window.history.pushState({}, '', url);
+  }, [activeFilterItems, activeDateFilter, activeCityFilter, query])
 
   // Filter aid requests by given date, category, and city
   const aidRequestsFiltered = useMemo(() => {

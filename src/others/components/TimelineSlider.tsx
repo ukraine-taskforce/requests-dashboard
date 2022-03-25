@@ -7,15 +7,8 @@ import { useFilter } from "../contexts/filter";
 const dateDisplayFormat = "DD.MM";
 const inputDateFormat = "YYYY-MM-DD";
 
-function usePreviousDates(value: string[]) {
-  const ref = useRef<string[]>();
-  useEffect(() => {
-    ref.current = value;
-  }, [value]);
-  return ref.current;
-}
 export interface TimelineSliderProps {
-  // Timeline slider assums that dates are sorted and distinct,
+  // Timeline slider assumes that dates are sorted and distinct,
   // passed as a strings in format DD-MM-YYYY.
   dates: string[];
 }
@@ -23,9 +16,10 @@ export const TimelineSlider = ({ dates }: TimelineSliderProps) => {
   const { t } = useTranslation();
   const [endDate, setEndDate] = useState<moment.Moment>(moment());
   const [startDate, setStartDate] = useState<moment.Moment>(moment());
-  const [selectedDate, setDate] = useState<Date | undefined>(undefined);
-  const { toggleFilterItem } = useFilter();
-  const prevDates = usePreviousDates(dates);
+  const { toggleFilterItem, getActiveFilterItems } = useFilter();
+
+  const selectedDate = getActiveFilterItems('Dates')[0]; // There can only be one date selected
+  const selectedDateIndex = dates.indexOf(selectedDate as string);
 
   useEffect(() => {
     const endDate = moment(dates[dates.length - 1], inputDateFormat);
@@ -33,11 +27,7 @@ export const TimelineSlider = ({ dates }: TimelineSliderProps) => {
       setStartDate(moment(dates[0], inputDateFormat));
       setEndDate(endDate);
     }
-
-    if (prevDates && prevDates.length !== dates.length) {
-      setDate(endDate.toDate());
-    }
-  }, [prevDates, dates]);
+  }, [dates]);
 
   if (dates.length <= 1) {
     return (
@@ -58,8 +48,6 @@ export const TimelineSlider = ({ dates }: TimelineSliderProps) => {
     const handleSliderChange = (_event: Event, newValue: number | number[]) => {
       if (typeof newValue === "number") {
         const newDate = dates[newValue - 1];
-
-        setDate(moment(newDate, inputDateFormat).toDate());
         toggleFilterItem("Dates", newDate);
       }
     };
@@ -86,7 +74,7 @@ export const TimelineSlider = ({ dates }: TimelineSliderProps) => {
 
         <Slider
           aria-label="Timeline"
-          defaultValue={dates.length}
+          value={selectedDateIndex + 1}
           onChange={handleSliderChange}
           track={false}
           step={1}
