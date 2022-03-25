@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useMap } from "react-map-gl";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableContainer, { TableContainerProps } from "@mui/material/TableContainer";
 import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 import { CollapsibleListItem, ListItem } from "../components/CollapsibleListItem";
@@ -18,6 +20,7 @@ export interface Coordinates {
 }
 
 export const CollapsibleTable = ({ rows, renderRowData, ...tableProps }: CollapsibleTableProps) => {
+  const { t } = useTranslation();
   const offset = 20;
   const getGirstBatch = (rows: ListItem[]) => rows.slice(0, offset);
 
@@ -47,7 +50,7 @@ export const CollapsibleTable = ({ rows, renderRowData, ...tableProps }: Collaps
   }, [rows]);
 
   const handleOpenItem = (id: string) => {
-    const idsWithoutId = openItemsIds.filter((id) => ![id].includes(id));
+    const idsWithoutId = openItemsIds.filter((openId) => ![openId].includes(id));
     const idsWithId = [...openItemsIds, id];
     setOpenItemsIds(openItemsIds.includes(id) ? idsWithoutId : idsWithId);
   };
@@ -67,7 +70,11 @@ export const CollapsibleTable = ({ rows, renderRowData, ...tableProps }: Collaps
       dataLength={displayedRows.length}
       next={() => addMoreRows()}
       hasMore={!hasDisplayedAll}
-      loader={<h4>Loading...</h4>}
+      loader={
+        <Typography variant="body2" noWrap>
+          {t("loading")}...
+        </Typography>
+      }
       scrollableTarget="scrollableDiv"
       // TODO: for overflowing tables add a "back to top" button
       // endMessage={<> </>}

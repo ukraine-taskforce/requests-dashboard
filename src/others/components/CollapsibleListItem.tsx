@@ -1,4 +1,5 @@
 import { useState, useEffect, ReactText } from "react";
+import { useTranslation } from "react-i18next";
 import Box, { BoxProps } from "@mui/material/Box";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
@@ -45,6 +46,7 @@ export const CollapsibleListItem = ({
   toggleZoomCity,
   ...rest
 }: CollapsibleListItemProps) => {
+  const { t } = useTranslation();
   const [showZoomIcon, setShowZoomIcon] = useState(false);
   const [zoomIcon, setZoomIcon] = useState<"zoomIn" | "zoomOut">("zoomIn");
   const hiddenItemsCount = hidden.length;
@@ -128,7 +130,7 @@ export const CollapsibleListItem = ({
                 dataLength={displayedRows.length}
                 next={() => addMoreRows()}
                 hasMore={!hasDisplayedAll}
-                loader={<h4>Loading...</h4>}
+                loader={<Typography variant="body2">{t("loading")}...</Typography>}
                 scrollableTarget="scrollableDiv"
                 // TODO: for overflowing tables add a "back to top" button
                 // endMessage={<> </>}
