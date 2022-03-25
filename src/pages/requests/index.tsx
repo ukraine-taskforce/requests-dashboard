@@ -176,7 +176,6 @@ export function Requests() {
     <CollapsibleTable
       rows={tableDataByCategories}
       renderRowData={(row) => {
-        const location = translateLocation(Number(row.name));
         return {
           name: translateSupply(String(row.name))?.name || loadingMessage,
           value: row.value,
