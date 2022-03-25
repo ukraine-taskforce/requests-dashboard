@@ -1,4 +1,4 @@
-import { AuthenticationDetails, CognitoUser, CognitoUserPool } from "amazon-cognito-identity-js";
+import { AuthenticationDetails, CognitoUser, CognitoUserPool, CognitoUserSession } from "amazon-cognito-identity-js";
 import React from "react";
 
 const userPoolId = process.env.REACT_APP_USERPOOL_ID || "";
@@ -12,13 +12,14 @@ export enum AuthStatus {
   Loading = "Loading",
 }
 
-interface Session {
+interface Session extends CognitoUserSession {
   accessToken: { jwtToken: string };
 }
 
 export interface AuthContextValue {
   status: AuthStatus;
   user: CognitoUser | null;
+  forceSessionRefresh: () => Promise<void>
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   sendCode: (username: string) => Promise<void>;
@@ -34,6 +35,7 @@ const AuthContext = React.createContext<AuthContextValue>({
   logout: () => Promise.resolve(),
   sendCode: () => Promise.resolve(),
   confirmPassword: () => Promise.resolve(),
+  forceSessionRefresh: () => Promise.resolve(),
 });
 
 export function useAuth() {
@@ -93,8 +95,16 @@ export const AuthProvider: React.FunctionComponent = ({ children }) => {
   React.useEffect(() => {
     const getCurrentSession = async () => {
       try {
-        const session = await getUserSession();
-        setSession(session);
+        const nextSession = await getUserSession();
+
+        // In case we are in the initial loading of the page, we try to refresh the session
+        if (status === AuthStatus.Loading && nextSession) {
+          userPool.getCurrentUser()?.refreshSession(nextSession.getRefreshToken(), (err) => {
+            if (err) console.error("Error refreshing session", err);
+          });
+        }
+
+        setSession(nextSession);
         setStatus(AuthStatus.SignedIn);
       } catch (err) {
         setSession(null);
@@ -169,9 +179,14 @@ export const AuthProvider: React.FunctionComponent = ({ children }) => {
     }
   }, []);
 
+  const forceSessionRefresh = React.useCallback(async () => {
+    setStatus(AuthStatus.Loading);
+  }, [setStatus]);
+
   return (
     <AuthContext.Provider
       value={{
+        forceSessionRefresh,
         login,
         logout,
         sendCode,
