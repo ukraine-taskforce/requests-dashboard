@@ -30,16 +30,16 @@ import {
   groupedByCitiesToTableData,
   groupedByCategoriesToTableData,
 } from "../../others/helpers/aid-request-helpers";
-import { useQuery } from "../../others/helpers/query-util";
+import { useQuery } from "../../others/helpers/use_query";
 
 export function Requests() {
   const { t } = useTranslation();
-  const { data: aidRequests } = useAidRequestQuery();
-  const { locationDict, suppliesDict, translateLocation, translateSupply } = useDictionaryContext();
+  const { data: aidRequests, isSuccess: isAidRequestsLoaded } = useAidRequestQuery();
+  const { locationDict, suppliesDict, translateLocation, translateSupply, isSuppliesLoaded, isLocationsLoaded } = useDictionaryContext();
   const { addFilter, getActiveFilterItems, toggleFilterItem, filters } = useFilter();
   const { search } = useLocation();
   const { setFilterFromQuery, setQuery } = useQuery(search, toggleFilterItem);
-  const [filtersInitialized, setFiltersInitialized] = useState(false);
+  const [canApplyQuery, setCanApplyQuery] = useState<boolean>(false);
 
   // First create a lookup table for all aid requests grouped by dates and memoise it
   const aidRequestsGroupedByDate = useMemo(() => {
@@ -52,6 +52,7 @@ export function Requests() {
   // TODO: consider moving this to a component higher up in the render tree
   // TODO: consider simplifying filterContext API
   useEffect(() => {
+    if (isAidRequestsLoaded && isSuppliesLoaded && isLocationsLoaded) {
     if (suppliesDict) {
       addFilter({
         filterName: "Categories",
@@ -84,43 +85,40 @@ export function Requests() {
       });
     }
 
-    setFiltersInitialized(true);
+    // Now that the filters are initialized, it's safe to apply any filters from query params
+    setCanApplyQuery(true);
+    }
   }, [suppliesDict, locationDict, aidRequestsGroupedByDate, addFilter]);
 
-  useEffect(() => {
-    if (filtersInitialized) {
-      setFiltersInitialized(false);
-
-      const filterNames = Object.keys(filters) as FilterName[];
-
-      filterNames.forEach((filterName: FilterName) => {
-        setFilterFromQuery(filterName);
-      });
-    }
-  }, [setFilterFromQuery, toggleFilterItem, filters, filtersInitialized, setFiltersInitialized]);
-
-  const activeFilterItems = getActiveFilterItems("Categories") as string[]; // typecasting necessary because type FilterItemId = string | number
+  const activeCategoryFilter = getActiveFilterItems("Categories") as string[]; // typecasting necessary because type FilterItemId = string | number
   const activeDateFilter = getActiveFilterItems("Dates")[0] as string; // typecasting necessary because type FilterItemId = string | number
   const activeCityFilter = getActiveFilterItems("Cities") as number[]; // typecasting necessary because type FilterItemId = string | number
 
   useEffect(() => {
-    if (activeCityFilter.length > 0) {
-      setQuery("city", activeCityFilter.join(","));
-    }
+    if (canApplyQuery) {
+      const filterNames = Object.keys(filters) as FilterName[];
 
-    if (activeFilterItems.length > 0) {
-      setQuery("category", activeFilterItems.join(","));
-    }
+      setFilterFromQuery(filterNames);
 
-    if (activeDateFilter) {
-      setQuery("date", activeDateFilter);
+      // Reset this, as we only want to apply the query when the filters are first initialized
+      setCanApplyQuery(false);
     }
-  }, [activeFilterItems, activeDateFilter, activeCityFilter, setQuery]);
+  }, [setFilterFromQuery, canApplyQuery, setCanApplyQuery]);
+
+  useEffect(() => {
+    setQuery(
+      {
+        category: activeCategoryFilter,
+        city: activeCityFilter,
+        date: activeDateFilter || ''
+      }
+    );
+  }, [activeCategoryFilter, activeDateFilter, activeCityFilter, setQuery]);
 
   // Filter aid requests by given date, category, and city
   const aidRequestsFiltered = useMemo(() => {
     if (!activeDateFilter || isEmpty(aidRequestsGroupedByDate)) return [];
-    const activeCategoryFilters = activeFilterItems.length ? activeFilterItems : FilterEnum.All;
+    const activeCategoryFilters = activeCategoryFilter.length ? activeCategoryFilter : FilterEnum.All;
     const activeCityFilters = activeCityFilter.length ? activeCityFilter : FilterEnum.All;
 
     const filteredByDate = aidRequestsGroupedByDate[activeDateFilter];
@@ -128,7 +126,7 @@ export function Requests() {
     const filteredByCities = filterByCityIds(filteredByCategories, activeCityFilters);
 
     return filteredByCities;
-  }, [aidRequestsGroupedByDate, activeDateFilter, activeFilterItems, activeCityFilter]);
+  }, [aidRequestsGroupedByDate, activeDateFilter, activeCategoryFilter, activeCityFilter]);
 
   // Group aid requests them according to tables' needs
   // TODO: consider moving this step to the table component
