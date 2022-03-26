@@ -229,7 +229,7 @@ export function Inventory() {
       }}
     />
   );
-  if (process.env.NODE_ENV === "production") {
+  if (!(window.location.hostname === "localhost" || window.location.hostname === "maps.ugtf.dev")){
     return (<></>);
   }
   return (
