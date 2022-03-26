@@ -8,7 +8,7 @@ import { groupBy, isEmpty, uniq, keys } from "lodash";
 import { useAidRequestQuery } from "../../others/contexts/api";
 import { useDictionaryContext } from "../../others/contexts/dictionary-context";
 import { useSidebarContext } from "../../others/contexts/sidebar-context";
-import { FilterItem, useFilter, FilterName } from "../../others/contexts/filter";
+import { FilterItem, useFilter, FilterName, FILTER_NAMES } from "../../others/contexts/filter";
 import { Layout } from "../../others/components/Layout";
 import { Map } from "../../others/components/map/Map";
 import { Header } from "../../others/components/Header";
@@ -39,7 +39,7 @@ export function Requests() {
   const { addFilter, getActiveFilterItems, toggleFilterItem, filters } = useFilter();
   const { search } = useLocation();
   const { setFilterFromQuery, setQuery } = useQuery(search, toggleFilterItem);
-  const [canApplyQuery, setCanApplyQuery] = useState<boolean>(false);
+  const [canApplyQuery, setCanApplyQuery] = useState(false);
 
   // First create a lookup table for all aid requests grouped by dates and memoise it
   const aidRequestsGroupedByDate = useMemo(() => {
@@ -53,51 +53,55 @@ export function Requests() {
   // TODO: consider simplifying filterContext API
   useEffect(() => {
     if (isAidRequestsLoaded && isSuppliesLoaded && isLocationsLoaded) {
-    if (suppliesDict) {
-      addFilter({
-        filterName: "Categories",
-        filterItems: Object.values(suppliesDict).map((category): FilterItem => ({ id: category.id, selected: false, text: category.name })),
-        active: false,
-        singleValueFilter: false,
-      });
-    }
+      if (suppliesDict) {
+        addFilter({
+          filterName: "Categories",
+          filterItems: Object.values(suppliesDict).map(
+            (category): FilterItem => ({ id: category.id, selected: false, text: category.name })
+          ),
+          active: false,
+          singleValueFilter: false,
+        });
+      }
 
-    if (locationDict) {
-      addFilter({
-        filterName: "Cities",
-        filterItems: Object.values(locationDict).map((location): FilterItem => ({ id: location.id, selected: false, text: location.name })),
-        active: false,
-        singleValueFilter: false,
-        hasSearch: true,
-      });
-    }
+      if (locationDict) {
+        addFilter({
+          filterName: "Cities",
+          filterItems: Object.values(locationDict).map(
+            (location): FilterItem => ({ id: location.id, selected: false, text: location.name })
+          ),
+          active: false,
+          singleValueFilter: false,
+          hasSearch: true,
+        });
+      }
 
-    if (!isEmpty(aidRequestsGroupedByDate)) {
-      const uniqueDatesSorted = uniq(keys(aidRequestsGroupedByDate)).sort(sortDates);
+      if (!isEmpty(aidRequestsGroupedByDate)) {
+        const uniqueDatesSorted = uniq(keys(aidRequestsGroupedByDate)).sort(sortDates);
 
-      addFilter({
-        filterName: "Dates",
-        filterItems: uniqueDatesSorted.map(
-          (date, i): FilterItem => ({ id: date, selected: i === uniqueDatesSorted.length - 1, text: date })
-        ),
-        active: false,
-        singleValueFilter: true,
-      });
-    }
+        addFilter({
+          filterName: "Dates",
+          filterItems: uniqueDatesSorted.map(
+            (date, i): FilterItem => ({ id: date, selected: i === uniqueDatesSorted.length - 1, text: date })
+          ),
+          active: false,
+          singleValueFilter: true,
+        });
+      }
 
-    // Now that the filters are initialized, it's safe to apply any filters from query params
-    setCanApplyQuery(true);
+      // Now that the filters are initialized, it's safe to apply any filters from query params
+      setCanApplyQuery(true);
     }
-  }, [suppliesDict, locationDict, aidRequestsGroupedByDate, addFilter]);
+  }, [suppliesDict, locationDict, aidRequestsGroupedByDate, addFilter, isAidRequestsLoaded, isSuppliesLoaded, isLocationsLoaded]);
 
   const activeCategoryFilter = getActiveFilterItems("Categories") as string[]; // typecasting necessary because type FilterItemId = string | number
   const activeDateFilter = getActiveFilterItems("Dates")[0] as string; // typecasting necessary because type FilterItemId = string | number
   const activeCityFilter = getActiveFilterItems("Cities") as number[]; // typecasting necessary because type FilterItemId = string | number
 
   useEffect(() => {
-    if (canApplyQuery) {
-      const filterNames = Object.keys(filters) as FilterName[];
-
+    const filterNames = Object.keys(filters) as FilterName[];
+    // Make sure all filters are loaded
+    if (canApplyQuery && filterNames.length === FILTER_NAMES.length) {
       setFilterFromQuery(filterNames);
 
       // Reset this, as we only want to apply the query when the filters are first initialized
@@ -106,14 +110,12 @@ export function Requests() {
   }, [setFilterFromQuery, canApplyQuery, setCanApplyQuery]);
 
   useEffect(() => {
-    setQuery(
-      {
-        category: activeCategoryFilter,
-        city: activeCityFilter,
-        date: activeDateFilter || ''
-      }
-    );
-  }, [activeCategoryFilter, activeDateFilter, activeCityFilter, setQuery]);
+    setQuery({
+      category: activeCategoryFilter,
+      city: activeCityFilter,
+      date: activeDateFilter || "",
+    });
+  }, [activeCategoryFilter, activeDateFilter, activeCityFilter, setQuery, filters]);
 
   // Filter aid requests by given date, category, and city
   const aidRequestsFiltered = useMemo(() => {

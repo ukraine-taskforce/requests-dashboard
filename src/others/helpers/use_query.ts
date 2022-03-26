@@ -16,14 +16,7 @@ export const useQuery = (
   toggleFilterItem: (filterName: FilterName, filterItemId: FilterItemId, value?: boolean) => void
 ) => {
   const query = useMemo(() => new URLSearchParams(search), [search]);
-  const [queryString, setQueryString] = useState('');
   const [shouldUpdateUrl, setShouldUpdateUrl] = useState(false);
-
-  useEffect(() => {
-    let url = new URL(window.location.href);
-    url.search = queryString;
-    window.history.pushState({}, "", url);
-  }, [queryString]);
 
   const setFilterFromQuery = (filterNames: FilterName[]) => {
     filterNames.forEach((filterName: FilterName) => {
@@ -41,22 +34,25 @@ export const useQuery = (
     setShouldUpdateUrl(true);
   };
 
-  const setQuery = (queryData: {
-    category: string[],
-    city: number[],
-    date: string,
-  }) => {
+  const setQuery = (queryData: { category: string[]; city: number[]; date: string }) => {
     if (shouldUpdateUrl) {
       const queryNames = Object.keys(queryData) as QueryName[];
 
-      queryNames.forEach(queryName => {
-        if (queryData[queryName]) {
-          // @ts-ignore
-          query.set(queryName, queryData[queryName]);
-        }
-      })
+      queryNames.forEach((queryName) => {
+        const queryDataAsString = Array.isArray(queryData[queryName])
+          ? (queryData[queryName] as string[] | number[]).join(",")
+          : queryData[queryName];
 
-      setQueryString(query.toString())
+        if (queryDataAsString) {
+          query.set(queryName, queryDataAsString as string);
+        } else {
+          query.delete(queryName);
+        }
+      });
+
+      let url = new URL(window.location.href);
+      url.search = query.toString();
+      window.history.pushState({}, "", url);
     }
   };
 

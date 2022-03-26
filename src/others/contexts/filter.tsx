@@ -1,6 +1,8 @@
 import React, { useCallback, useState } from "react";
 
-export type FilterName = 'Cities' | 'Dates' | 'Categories';
+export const FILTER_NAMES = ["Categories", "Cities", "Dates"] as const;
+
+export type FilterName = typeof FILTER_NAMES[number];
 
 export type FilterItemId = string | number;
 
