@@ -21,7 +21,7 @@ export const GetFakeWarehouses = (): { [id: number]: Warehouse } => {
     dict[i] = {
       id: i,
       name: `Warehouse ${i}`,
-      city_id: Math.floor(i / 10) + 1,
+      city_id: i % 45 + 1,
       contacts: `We are located ${i+1}km west of the city.\nPhone number is: (${i})-${i}-${i}.`,
     };
   }
@@ -34,15 +34,18 @@ export const GetFakeStock = (categories: Supply[], warehouseDict: { [id: number]
   const data: StockItem[] = [];
   const numWarehouses = Object.keys(warehouseDict).length;
   var rnd = 0;
+  var xxx = 0;
   for (const date of dates) {
+    xxx = xxx + 1;
     for (const category of categories) {
+      xxx = xxx + 1;
       for (var i = 0; i < numWarehouses; i = i + 1) {
         data.push({
           category_id: category.id,
           warehouse_id: i,
           city_id: warehouseDict[i].city_id,
           date: date,
-          amount: (rnd * 10007) % 103,
+          amount: (rnd * 10007) % 13 + Math.abs(warehouseDict[i].city_id - (xxx % 45)),
         });
         rnd = rnd + 1;
       }
