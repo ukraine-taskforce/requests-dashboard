@@ -16,40 +16,43 @@ import { queryClient } from "./others/contexts/api";
 import { Home } from "./pages/home";
 import { Login } from "./pages/login";
 import { Requests } from "./pages/requests";
+import { Inventory } from "./pages/inventory";
 import { NotFound } from "./pages/notFound";
 import { ResetPassword } from "./pages/resetPassword";
 import { AuthProvider } from "./others/contexts/auth";
 import { FilterContextProvider } from "./others/contexts/filter";
-import { FileDownloaderContextProvider } from "./others/contexts/file-downloader";
+
+const Providers: React.FunctionComponent = ({ children }) => (
+  <AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <MuiThemeProvider theme={muiTheme}>
+        <DictionaryContextProvider>
+          <SidebarContextProvider>
+            <FilterContextProvider>{children}</FilterContextProvider>
+          </SidebarContextProvider>
+        </DictionaryContextProvider>
+      </MuiThemeProvider>
+    </QueryClientProvider>
+  </AuthProvider>
+);
 
 ReactDOM.render(
   <React.StrictMode>
-    <AuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <MuiThemeProvider theme={muiTheme}>
-          <DictionaryContextProvider>
-            <SidebarContextProvider>
-              <FilterContextProvider>
-                <FileDownloaderContextProvider>
-                  <CssBaseline />
-                  <BrowserRouter>
-                    <Routes>
-                      <Route path="/login" element={<Login />} />
-                      <Route path="/reset-password" element={<ResetPassword />} />
-                      <Route element={<AuthWrapper />}>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/requests" element={<Requests />} />
-                      </Route>
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </BrowserRouter>
-                </FileDownloaderContextProvider>
-              </FilterContextProvider>
-            </SidebarContextProvider>
-          </DictionaryContextProvider>
-        </MuiThemeProvider>
-      </QueryClientProvider>
-    </AuthProvider>
+    <Providers>
+      <CssBaseline />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route element={<AuthWrapper />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/requests" element={<Requests />} />
+            <Route path="/inventory" element={<Inventory />} />
+          </Route>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </Providers>
   </React.StrictMode>,
   document.getElementById("root")
 );

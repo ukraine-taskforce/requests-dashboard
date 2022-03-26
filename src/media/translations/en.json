@@ -60,5 +60,6 @@
   "FILTER_Cities": "Cities",
   "requests": "requests",
   "no_results": "No matching search results",
-  "search_city_placeholder": "Search for city"
+  "search_city_placeholder": "Search for city",
+  "loading": "Loading"
 }

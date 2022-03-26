@@ -62,5 +62,6 @@
   "FILTER_Cities": "Міста",
   "requests": "запитів",
   "no_results": "Нічого не знайдено",
-  "search_city_placeholder": "Пошук міста"
+  "search_city_placeholder": "Пошук міста",
+  "loading": "Завантажується"
 }

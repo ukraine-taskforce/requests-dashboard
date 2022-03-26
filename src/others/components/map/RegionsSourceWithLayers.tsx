@@ -7,11 +7,12 @@ import { RequestMapDataPoint } from "../../helpers/map-utils";
 
 interface RegionsSourceWithLayersProperties {
   requestMapDataPoints: RequestMapDataPoint[];
+  invertColors: boolean;
 };
 
 export const MaxRegionVisibleZoomLevel = 8;
 
-export const RegionsSourceWithLayers = ({requestMapDataPoints}: RegionsSourceWithLayersProperties) => {
+export const RegionsSourceWithLayers = ({ requestMapDataPoints, invertColors }: RegionsSourceWithLayersProperties) => {
   const { translateLocation } = useDictionaryContext();
   const allRegionsWithMeta: Feature<Geometry, GeoJsonProperties>[]  = [];
   const regionToMetadata = mapRegionIdsToAidRequestMetadata(requestMapDataPoints, translateLocation);
@@ -32,7 +33,8 @@ export const RegionsSourceWithLayers = ({requestMapDataPoints}: RegionsSourceWit
     features: allRegionsWithMeta,
   };
 
-
+  const color1 = invertColors ? 'rgba(0, 200, 0, 0)' : 'rgba(200, 0, 0, 0)';
+  const color2 = invertColors ? 'rgb(0, 200, 0)' : 'rgb(200,0,0)';
   return (<><Source id="state" type="geojson" key="states_dynamic" data={regionsGeo}>
            <Layer id="state-fills" type="fill" layout={{}}
             paint={{
@@ -41,7 +43,7 @@ export const RegionsSourceWithLayers = ({requestMapDataPoints}: RegionsSourceWit
                     ["linear"], 
                     ["zoom"],
                     7,
-                    ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 'rgba(200, 0, 0, 0)', 1, 'rgb(200,0,0)'],
+                    ["interpolate", ["linear"], ["get", "normalized_amount"], 0, color1, 1, color2],
                     MaxRegionVisibleZoomLevel,
                     ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 'rgba(255,255,255,0)', 1, 'rgba(255,255,255,0)'],
                     ],                      
