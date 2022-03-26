@@ -47,7 +47,7 @@ ReactDOM.render(
           <Route element={<AuthWrapper />}>
             <Route path="/" element={<Home />} />
             <Route path="/requests" element={<Requests />} />
-	    <Route path="/inventory" element={<Inventory />} />
+            <Route path="/inventory" element={<Inventory />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
