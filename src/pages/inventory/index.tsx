@@ -4,7 +4,6 @@ import { Layer, Source, MapProvider } from "react-map-gl";
 import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import { groupBy, isEmpty, uniq, keys } from "lodash";
 
-import { useAidRequestQuery } from "../../others/contexts/api";
 import { useDictionaryContext } from "../../others/contexts/dictionary-context";
 import { useSidebarContext } from "../../others/contexts/sidebar-context";
 import { FilterItem, useFilter } from "../../others/contexts/filter";
@@ -15,36 +14,39 @@ import { Main } from "../../others/components/Main";
 import { Sidebar } from "../../others/components/Sidebar";
 import { MultiTab } from "../../others/components/MultiTab";
 import { CollapsibleTable } from "../../others/components/CollapsibleList";
-import { layerStyle } from "../../others/components/map/CircleLayerStyle";
-import { layerStyleWithRegions } from "../../others/components/map/CircleLayerStyleWithRegions";
+import { layerStyleWithRegions } from "../../others/components/map/CircleLayerStyleWithRegionsInventory";
 import { RegionsSourceWithLayers } from "../../others/components/map/RegionsSourceWithLayers";
-import { aggregateCategories, mapAidRequestsToFeatures } from "../../others/helpers/map-utils";
+import { mapAidRequestsToFeatures } from "../../others/helpers/map-utils";
 import {
+  aggregateCategories,
   sortDates,
   filterByCategoryIds,
   filterByCityIds,
   FilterEnum,
   groupByCityIdWithTotal,
+  groupByWarehouseIdWithTotal,
   groupByCategoryIdWithTotal,
   groupedByCitiesToTableData,
   groupedByCategoriesToTableData,
-} from "../../others/helpers/aid-request-helpers";
+  groupedByWarehouseToTableData,
+} from "../../others/helpers/stock-item-helpers";
+import { GetFakeStock, GetFakeWarehouses } from "../../others/fixtures/fakeInventory";
 
-export function Requests() {
+export function Inventory() {
   const { t } = useTranslation();
-  const { data: aidRequests } = useAidRequestQuery();
   const { locationDict, suppliesDict, translateLocation, translateSupply } = useDictionaryContext();
-
+  const warehousesDict = useMemo(() => GetFakeWarehouses(), []);
+  const stockItems = useMemo(() => GetFakeStock(suppliesDict ? Object.values(suppliesDict): [], warehousesDict), [suppliesDict, warehousesDict]);
   const filterContext = useFilter();
 
   const { addFilter, getActiveFilterItems } = filterContext;
 
   // First create a lookup table for all aid requests grouped by dates and memoise it
-  const aidRequestsGroupedByDate = useMemo(() => {
-    if (!aidRequests?.length) return {};
+  const stockItemsGroupedByDate = useMemo(() => {
+    if (!stockItems?.length) return {};
 
-    return groupBy(aidRequests, "date");
-  }, [aidRequests]);
+    return groupBy(stockItems, "date");
+  }, [stockItems]);
 
   // Initialize filter context with data coming from BE (supplies, dates, location)
   // TODO: consider moving this to a component higher up in the render tree
@@ -69,8 +71,8 @@ export function Requests() {
       });
     }
 
-    if (!isEmpty(aidRequestsGroupedByDate)) {
-      const uniqueDatesSorted = uniq(keys(aidRequestsGroupedByDate)).sort(sortDates);
+    if (!isEmpty(stockItemsGroupedByDate)) {
+      const uniqueDatesSorted = uniq(keys(stockItemsGroupedByDate)).sort(sortDates);
 
       addFilter({
         filterName: "Dates",
@@ -81,54 +83,59 @@ export function Requests() {
         singleValueFilter: true,
       });
     }
-  }, [suppliesDict, locationDict, aidRequestsGroupedByDate, addFilter]);
+  }, [suppliesDict, locationDict, stockItemsGroupedByDate, addFilter]);
 
   const activeFilterItems = getActiveFilterItems("Categories") as string[]; // typecasting necessary because type FilterItemId = string | number
   const activeDateFilter = getActiveFilterItems("Dates")[0] as string; // typecasting necessary because type FilterItemId = string | number
   const activeCityFilter = getActiveFilterItems("Cities") as number[]; // typecasting necessary because type FilterItemId = string | number
 
   // Filter aid requests by given date, category, and city
-  const aidRequestsFiltered = useMemo(() => {
-    if (!activeDateFilter || isEmpty(aidRequestsGroupedByDate)) return [];
+  const stockItemsFiltered = useMemo(() => {
+    if (!activeDateFilter || isEmpty(stockItemsGroupedByDate)) return [];
     const activeCategoryFilters = activeFilterItems.length ? activeFilterItems : FilterEnum.All;
     const activeCityFilters = activeCityFilter.length ? activeCityFilter : FilterEnum.All;
 
-    const filteredByDate = aidRequestsGroupedByDate[activeDateFilter];
+    const filteredByDate = stockItemsGroupedByDate[activeDateFilter];
     const filteredByCategories = filterByCategoryIds(filteredByDate, activeCategoryFilters);
     const filteredByCities = filterByCityIds(filteredByCategories, activeCityFilters);
 
     return filteredByCities;
-  }, [aidRequestsGroupedByDate, activeDateFilter, activeFilterItems, activeCityFilter]);
+  }, [stockItemsGroupedByDate, activeDateFilter, activeFilterItems, activeCityFilter]);
 
   // Group aid requests them according to tables' needs
   // TODO: consider moving this step to the table component
-  const { groupedByCitiesWithTotal, groupedByCategoriesWithTotal } = useMemo(() => {
-    if (!aidRequestsFiltered.length) {
+  const { groupedByWarehouseWithTotal, groupedByCitiesWithTotal, groupedByCategoriesWithTotal } = useMemo(() => {
+    if (!stockItemsFiltered.length) {
       return {
+        groupedByWarehouseWithTotal: [],
         groupedByCitiesWithTotal: [],
         groupedByCategoriesWithTotal: [],
       };
     }
 
-    const groupedByCitiesWithTotal = groupByCityIdWithTotal(aidRequestsFiltered);
-    const groupedByCategoriesWithTotal = groupByCategoryIdWithTotal(aidRequestsFiltered);
+    const groupedByWarehouseWithTotal = groupByWarehouseIdWithTotal(stockItemsFiltered);
+    const groupedByCitiesWithTotal = groupByCityIdWithTotal(stockItemsFiltered);
+    const groupedByCategoriesWithTotal = groupByCategoryIdWithTotal(stockItemsFiltered);
 
     return {
+      groupedByWarehouseWithTotal,
       groupedByCitiesWithTotal,
       groupedByCategoriesWithTotal,
     };
-  }, [aidRequestsFiltered]);
+  }, [stockItemsFiltered]);
 
   // Map filtered aid requests to data consumable by map component
   // TODO: consider refactoring map so that it consumes raw AidRequest[]
   // NOTE: adaptToMap has been added temporarily
   const isMapDataAvailable = locationDict && suppliesDict && groupedByCitiesWithTotal.length;
-  const mapData = isMapDataAvailable ? groupedByCitiesWithTotal.map((aidRequest) => aggregateCategories(aidRequest, translateSupply)) : [];
+  const mapData = isMapDataAvailable ? groupedByCitiesWithTotal.map((aidRequest) => aggregateCategories(aidRequest, translateSupply, warehousesDict)) : [];
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
     features: mapAidRequestsToFeatures(mapData, translateLocation),
   };
 
+
+  const tableDataByWarehouse = groupedByWarehouseWithTotal.map(groupedByWarehouseToTableData).sort((a, b) => Number(b.value) - Number(a.value));
   const tableDataByCities = groupedByCitiesWithTotal.map(groupedByCitiesToTableData).sort((a, b) => Number(b.value) - Number(a.value));
   const tableDataByCategories = groupedByCategoriesWithTotal
     .map(groupedByCategoriesToTableData)
@@ -142,10 +149,34 @@ export function Requests() {
   // }
 
   const loadingMessage = "";
-  const showByCities = selectedTabId === 0;
 
-  const searchParams = new URLSearchParams(window.location.search);
-  const showRegions = (searchParams.get("show_regions") || process.env.REACT_APP_SHOW_REGIONS) === "true";
+  const tableByWarehouse = (
+    <CollapsibleTable
+      rows={tableDataByWarehouse}
+      renderRowData={(row) => {
+        const warehouse = warehousesDict[Number(row.name)];
+	const location = translateLocation(warehouse.city_id);
+        return {
+          name: warehouse?.name || loadingMessage,
+          value: row.value,
+          coordinates: location
+            ? {
+                latitude: location.lat,
+                longitude: location.lon,
+              }
+            : undefined,
+          hidden: row.hidden
+            .map(({ name, value }) => ({
+              name: translateSupply(String(name))?.name || loadingMessage,
+              value: value,
+            }))
+            .sort((a, b) => Number(b.value) - Number(a.value)),
+        };
+      }}
+    />
+  );
+
+
 
   const tableByCities = (
     <CollapsibleTable
@@ -198,28 +229,28 @@ export function Requests() {
       }}
     />
   );
-
-  const table = showByCities ? tableByCities : tableByItems;
-
+  if (process.env.NODE_ENV === "production") {
+    return (<></>);
+  }
   return (
-    <Layout header={<Header aidRequests={aidRequestsFiltered} />}>
+    <Layout header={<Header aidRequests={[]} />}>
       <MapProvider>
         <Main
           aside={
             <Sidebar className="requests-sidebar">
-              <MultiTab selectedId={selectedTabId} onChange={setSelectedTabId} labels={[t("by_cities"), t("by_items")]} marginBottom={4} />
-              {table}
+              <MultiTab selectedId={selectedTabId} onChange={setSelectedTabId} labels={["Warehouses", t("by_cities"), t("by_items")]} marginBottom={4} />
+              {selectedTabId === 0 ? tableByWarehouse : (selectedTabId === 1 ? tableByCities : tableByItems) }
             </Sidebar>
           }
         >
           <Map
-            interactiveLayerIds={showRegions ? ["circles", "state-fills"] : ["circles"]}
+            interactiveLayerIds={["circles", "state-fills"]}
             sourceWithLayer={
               <>
                 <Source id="circles-source" type="geojson" data={geojson}>
-                  <Layer {...(showRegions ? layerStyleWithRegions : layerStyle)} />
+                  <Layer {...layerStyleWithRegions} />
                 </Source>
-                {showRegions && <RegionsSourceWithLayers requestMapDataPoints={mapData} invertColors={false} />}
+                <RegionsSourceWithLayers requestMapDataPoints={mapData} invertColors={true} />
               </>
             }
           />
