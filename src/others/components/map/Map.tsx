@@ -5,6 +5,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 
 import { Box, Typography } from "@mui/material";
 import { ReactNode, useCallback, useState, useRef } from "react";
+import { INITIAL_UKRAINE_CENTER_VIEW } from '../../constants';
 import { MaxRegionVisibleZoomLevel } from "./RegionsSourceWithLayers";
 
 interface MapProps {
@@ -22,12 +23,6 @@ interface PopupInfo {
     totalItems: number;
   };
 }
-
-const initialUkraineCenterView = {
-  latitude: 48.4501071,
-  longitude: 30.5240501,
-  zoom: 5,
-};
 
 const MAP_STYLE = process.env.REACT_APP_MAPLIBRE_MAP_STYLE || "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 
@@ -88,7 +83,7 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
       <MapComponent
         ref={mapRef}
         mapLib={maplibregl}
-        initialViewState={initialUkraineCenterView}
+        initialViewState={INITIAL_UKRAINE_CENTER_VIEW}
         mapStyle={MAP_STYLE}
         style={{ borderRadius: "24px" }}
         interactiveLayerIds={interactiveLayerIds}

@@ -8,6 +8,7 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import InfiniteScroll from "react-infinite-scroll-component";
 
+import { INITIAL_UKRAINE_CENTER_VIEW } from '../constants';
 import { CollapsibleListItem, ListItem } from "../components/CollapsibleListItem";
 export interface CollapsibleTableProps extends TableContainerProps {
   rows: ListItem[];
@@ -61,7 +62,8 @@ export const CollapsibleTable = ({ rows, renderRowData, ...tableProps }: Collaps
       map.default?.flyTo({ center: [longitude, latitude], duration: 2000, zoom: 10 });
     } else {
       // Reset to initial map view
-      map.default?.flyTo({ center: [30.5240501, 48.4501071], duration: 2000, zoom: 5 });
+      const { latitude: initialLatitude, longitude: initialLongitude, zoom: initialZoom } = INITIAL_UKRAINE_CENTER_VIEW;
+      map.default?.flyTo({ center: [initialLongitude, initialLatitude], duration: 2000, zoom: initialZoom });
     }
   }, [selectedCity, map]);
 
