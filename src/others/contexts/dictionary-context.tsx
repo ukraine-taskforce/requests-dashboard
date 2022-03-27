@@ -1,4 +1,4 @@
-import { ReactNode, useState, useContext, createContext, useEffect } from "react";
+import { ReactNode, useState, useContext, createContext, useEffect, useMemo } from "react";
 import { useLocationsQuery, useSuppliesQuery, Supply, Location } from "./api";
 
 interface DictionaryState {
@@ -39,24 +39,31 @@ const useDictionaryState = ({ supplies, locations }: { supplies: Supply[] | unde
   const [locationDict, setLocationsDict] = useState<LocationsDict | undefined>(undefined);
 
   useEffect(() => {
-    if (locations?.length) {
+    if (locations?.length && supplies?.length) {
       initLocationsDict(locations);
-    }
-
-    if (supplies?.length) {
       initSuppliesDict(supplies);
     }
   }, [supplies, locations]);
 
-  const initSuppliesDict = (supplies: Supply[]) => {
-    const suppliesDict = supplies.reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {});
-    setSuppliesDict(suppliesDict);
-  };
+  const initSuppliesDict = useMemo(
+    () => (supplies: Supply[]) => {
+      if (!suppliesDict) {
+        const suppliesDict = supplies.reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {});
+        setSuppliesDict(suppliesDict);
+      }
+    },
+    [supplies]
+  );
 
-  const initLocationsDict = (locations: Location[]) => {
-    const locationsDict = locations.reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {});
-    setLocationsDict(locationsDict);
-  };
+  const initLocationsDict = useMemo(
+    () => (locations: Location[]) => {
+      if (!locationDict) {
+        const locationDict = locations.reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {});
+        setLocationsDict(locationDict);
+      }
+    },
+    [locations]
+  );
 
   const translateLocation = (city_id: number): Location | undefined => {
     const location = locationDict ? locationDict[city_id] : undefined;

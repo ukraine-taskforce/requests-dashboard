@@ -228,3 +228,5 @@ export function Requests() {
     </Layout>
   );
 }
+
+Requests.whyDidYouRender = true;
