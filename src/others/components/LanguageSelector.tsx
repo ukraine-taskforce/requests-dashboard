@@ -63,7 +63,7 @@ export const LanguageSelector: FunctionComponent<LanguageSelectorProps> = () => 
       <div style={{
         cursor: "pointer",
         borderRadius: "20px",
-        width: "fit-content",
+        width: "90px",
         padding: "10px 15px",
         backgroundColor: "#fff",
         color: "#000"
@@ -75,7 +75,7 @@ export const LanguageSelector: FunctionComponent<LanguageSelectorProps> = () => 
         <div style={{
           cursor: "pointer",
           borderRadius: "20px",
-          width: "fit-content",
+          width: "90px",
           padding: "10px 15px",
           backgroundColor: "#fff",
           color: "#000",

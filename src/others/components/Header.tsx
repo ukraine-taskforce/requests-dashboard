@@ -7,7 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import OutputIcon from "@mui/icons-material/Output";
 import { FilterDropdownGroup } from "./FilterDropdown/FilterDropdownGroup";
-import { Box } from "@mui/material";
+import { Box, Tooltip } from "@mui/material";
 
 import { useFilter } from "../contexts/filter";
 import { useAuth } from "../contexts/auth";
@@ -53,10 +53,14 @@ export const Header = ({ aidRequests, children }: HeaderProps) => {
         </Box>
         {children}
         <LanguageSelector />
-        <Box sx={{ justifySelf: "flex-end" }}>
-          <FileDownloaderMenu aidRequests={aidRequests} />
-        </Box>
-        <OutputIcon onClick={logout} sx={{ width: 30, height: 30, marginLeft: "auto", cursor: "pointer" }} />
+        <Tooltip title={t("download_requests") as string} arrow>
+          <Box sx={{ justifySelf: "flex-end" }}>
+            <FileDownloaderMenu aidRequests={aidRequests} />
+          </Box>
+        </Tooltip>
+        <Tooltip title={t("logout") as string} arrow>
+          <OutputIcon onClick={logout} sx={{ width: 30, height: 30, marginLeft: "auto", cursor: "pointer" }} />
+        </Tooltip>
       </Toolbar>
     </AppBar>
   );
