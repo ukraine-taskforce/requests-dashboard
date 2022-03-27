@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { FilterItemId, FilterName } from "../contexts/filter";
 
 type QueryName = "category" | "city" | "date";

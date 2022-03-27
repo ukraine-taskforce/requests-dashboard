@@ -107,7 +107,7 @@ export function Requests() {
       // Reset this, as we only want to apply the query when the filters are first initialized
       setCanApplyQuery(false);
     }
-  }, [setFilterFromQuery, canApplyQuery, setCanApplyQuery]);
+  }, [setFilterFromQuery, canApplyQuery, setCanApplyQuery, filters]);
 
   useEffect(() => {
     setQuery({
