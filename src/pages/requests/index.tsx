@@ -1,13 +1,14 @@
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Layer, Source, MapProvider } from "react-map-gl";
+import { useLocation } from "react-router-dom";
 import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import { groupBy, isEmpty, uniq, keys } from "lodash";
 
 import { useAidRequestQuery } from "../../others/contexts/api";
 import { useDictionaryContext } from "../../others/contexts/dictionary-context";
 import { useSidebarContext } from "../../others/contexts/sidebar-context";
-import { FilterItem, useFilter } from "../../others/contexts/filter";
+import { FilterItem, useFilter, FilterName, FILTER_NAMES } from "../../others/contexts/filter";
 import { Layout } from "../../others/components/Layout";
 import { Map } from "../../others/components/map/Map";
 import { Header } from "../../others/components/Header";
@@ -29,15 +30,16 @@ import {
   groupedByCitiesToTableData,
   groupedByCategoriesToTableData,
 } from "../../others/helpers/aid-request-helpers";
+import { useQuery } from "../../others/helpers/use_query";
 
 export function Requests() {
   const { t } = useTranslation();
-  const { data: aidRequests } = useAidRequestQuery();
-  const { locationDict, suppliesDict, translateLocation, translateSupply } = useDictionaryContext();
-
-  const filterContext = useFilter();
-
-  const { addFilter, getActiveFilterItems } = filterContext;
+  const { data: aidRequests, isSuccess: isAidRequestsLoaded } = useAidRequestQuery();
+  const { locationDict, suppliesDict, translateLocation, translateSupply, isSuppliesLoaded, isLocationsLoaded } = useDictionaryContext();
+  const { addFilter, getActiveFilterItems, toggleFilterItem, filters } = useFilter();
+  const { search } = useLocation();
+  const { setFilterFromQuery, setQuery } = useQuery(search, toggleFilterItem);
+  const [canApplyQuery, setCanApplyQuery] = useState(false);
 
   // First create a lookup table for all aid requests grouped by dates and memoise it
   const aidRequestsGroupedByDate = useMemo(() => {
@@ -50,47 +52,75 @@ export function Requests() {
   // TODO: consider moving this to a component higher up in the render tree
   // TODO: consider simplifying filterContext API
   useEffect(() => {
-    if (suppliesDict) {
-      addFilter({
-        filterName: "Categories",
-        filterItems: Object.values(suppliesDict).map((category): FilterItem => ({ id: category.id, selected: false, text: category.name })),
-        active: false,
-        singleValueFilter: false,
-      });
+    if (isAidRequestsLoaded && isSuppliesLoaded && isLocationsLoaded) {
+      if (suppliesDict) {
+        addFilter({
+          filterName: "Categories",
+          filterItems: Object.values(suppliesDict).map(
+            (category): FilterItem => ({ id: category.id, selected: false, text: category.name })
+          ),
+          active: false,
+          singleValueFilter: false,
+        });
+      }
+
+      if (locationDict) {
+        addFilter({
+          filterName: "Cities",
+          filterItems: Object.values(locationDict).map(
+            (location): FilterItem => ({ id: location.id, selected: false, text: location.name })
+          ),
+          active: false,
+          singleValueFilter: false,
+          hasSearch: true,
+        });
+      }
+
+      if (!isEmpty(aidRequestsGroupedByDate)) {
+        const uniqueDatesSorted = uniq(keys(aidRequestsGroupedByDate)).sort(sortDates);
+
+        addFilter({
+          filterName: "Dates",
+          filterItems: uniqueDatesSorted.map(
+            (date, i): FilterItem => ({ id: date, selected: i === uniqueDatesSorted.length - 1, text: date })
+          ),
+          active: false,
+          singleValueFilter: true,
+        });
+      }
+
+      // Now that the filters are initialized, it's safe to apply any filters from query params
+      setCanApplyQuery(true);
     }
+  }, [suppliesDict, locationDict, aidRequestsGroupedByDate, addFilter, isAidRequestsLoaded, isSuppliesLoaded, isLocationsLoaded]);
 
-    if (locationDict) {
-      addFilter({
-        filterName: "Cities",
-        filterItems: Object.values(locationDict).map((location): FilterItem => ({ id: location.id, selected: false, text: location.name })),
-        active: false,
-        singleValueFilter: false,
-        hasSearch: true,
-      });
-    }
-
-    if (!isEmpty(aidRequestsGroupedByDate)) {
-      const uniqueDatesSorted = uniq(keys(aidRequestsGroupedByDate)).sort(sortDates);
-
-      addFilter({
-        filterName: "Dates",
-        filterItems: uniqueDatesSorted.map(
-          (date, i): FilterItem => ({ id: date, selected: i === uniqueDatesSorted.length - 1, text: date })
-        ),
-        active: false,
-        singleValueFilter: true,
-      });
-    }
-  }, [suppliesDict, locationDict, aidRequestsGroupedByDate, addFilter]);
-
-  const activeFilterItems = getActiveFilterItems("Categories") as string[]; // typecasting necessary because type FilterItemId = string | number
+  const activeCategoryFilter = getActiveFilterItems("Categories") as string[]; // typecasting necessary because type FilterItemId = string | number
   const activeDateFilter = getActiveFilterItems("Dates")[0] as string; // typecasting necessary because type FilterItemId = string | number
   const activeCityFilter = getActiveFilterItems("Cities") as number[]; // typecasting necessary because type FilterItemId = string | number
+
+  useEffect(() => {
+    const filterNames = Object.keys(filters) as FilterName[];
+    // Make sure all filters are loaded
+    if (canApplyQuery && filterNames.length === FILTER_NAMES.length) {
+      setFilterFromQuery(filterNames);
+
+      // Reset this, as we only want to apply the query when the filters are first initialized
+      setCanApplyQuery(false);
+    }
+  }, [setFilterFromQuery, canApplyQuery, setCanApplyQuery, filters]);
+
+  useEffect(() => {
+    setQuery({
+      category: activeCategoryFilter,
+      city: activeCityFilter,
+      date: activeDateFilter || "",
+    });
+  }, [activeCategoryFilter, activeDateFilter, activeCityFilter, setQuery, filters]);
 
   // Filter aid requests by given date, category, and city
   const aidRequestsFiltered = useMemo(() => {
     if (!activeDateFilter || isEmpty(aidRequestsGroupedByDate)) return [];
-    const activeCategoryFilters = activeFilterItems.length ? activeFilterItems : FilterEnum.All;
+    const activeCategoryFilters = activeCategoryFilter.length ? activeCategoryFilter : FilterEnum.All;
     const activeCityFilters = activeCityFilter.length ? activeCityFilter : FilterEnum.All;
 
     const filteredByDate = aidRequestsGroupedByDate[activeDateFilter];
@@ -98,7 +128,7 @@ export function Requests() {
     const filteredByCities = filterByCityIds(filteredByCategories, activeCityFilters);
 
     return filteredByCities;
-  }, [aidRequestsGroupedByDate, activeDateFilter, activeFilterItems, activeCityFilter]);
+  }, [aidRequestsGroupedByDate, activeDateFilter, activeCategoryFilter, activeCityFilter]);
 
   // Group aid requests them according to tables' needs
   // TODO: consider moving this step to the table component

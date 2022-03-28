@@ -14,18 +14,18 @@ import {
 import { useTranslation } from "react-i18next";
 import { FunctionComponent, useRef, useState, useMemo } from "react";
 import { KeyboardArrowDown as ArrowDown, KeyboardArrowUp as ArrowUp, CheckCircle, CircleOutlined } from "@mui/icons-material";
-import { FilterItem, FilterItemId } from "../../contexts/filter";
+import { FilterItem, FilterItemId, FilterName } from "../../contexts/filter";
 import { ListWithSearch } from "./ListWithSearch";
 
 type FilterDropdownProps = {
   hasSearch?: boolean;
-  filterName: string;
+  filterName: FilterName;
   filterItems: FilterItem[];
   /** If filter is a part of FilterDropdownGroup, this prop will be used to determine whether dropdown should be open, it will override internal state */
   filterActive?: boolean;
   singleValueFilter?: boolean;
   filterItemToggleHandler: (filterItemId: FilterItemId, overrideValue?: boolean) => void;
-  filterGroupOpenHandler?: (filterGroupName: string) => void;
+  filterGroupOpenHandler?: (filterGroupName: FilterName) => void;
 };
 
 export const FilterDropdown: FunctionComponent<FilterDropdownProps> = ({
