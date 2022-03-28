@@ -61,5 +61,7 @@
   "requests": "requests",
   "no_results": "No matching search results",
   "search_city_placeholder": "Search for city",
-  "loading": "Loading"
+  "loading": "Loading",
+  "logout": "Logout",
+  "download_requests": "Download requests"
 }

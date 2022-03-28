@@ -63,5 +63,7 @@
   "requests": "запитів",
   "no_results": "Нічого не знайдено",
   "search_city_placeholder": "Пошук міста",
-  "loading": "Завантажується"
+  "loading": "Завантажується",
+  "logout": "Вийти",
+  "download_requests": "Завантажити дані"
 }
