@@ -38,12 +38,15 @@ const useDictionaryState = ({ supplies, locations }: { supplies: Supply[] | unde
   const [suppliesDict, setSuppliesDict] = useState<SuppliesDict | undefined>(undefined);
   const [locationDict, setLocationsDict] = useState<LocationsDict | undefined>(undefined);
 
-  useEffect(() => {
-    if (locations?.length && supplies?.length) {
-      initLocationsDict(locations);
-      initSuppliesDict(supplies);
-    }
-  }, [supplies, locations]);
+  const initLocationsDict = useMemo(
+    () => (locations: Location[]) => {
+      if (!locationDict) {
+        const locationDict = locations.reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {});
+        setLocationsDict(locationDict);
+      }
+    },
+    [locations, locationDict]
+  );
 
   const initSuppliesDict = useMemo(
     () => (supplies: Supply[]) => {
@@ -52,18 +55,15 @@ const useDictionaryState = ({ supplies, locations }: { supplies: Supply[] | unde
         setSuppliesDict(suppliesDict);
       }
     },
-    [supplies]
+    [supplies, suppliesDict]
   );
 
-  const initLocationsDict = useMemo(
-    () => (locations: Location[]) => {
-      if (!locationDict) {
-        const locationDict = locations.reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {});
-        setLocationsDict(locationDict);
-      }
-    },
-    [locations]
-  );
+  useEffect(() => {
+    if (locations?.length && supplies?.length) {
+      initLocationsDict(locations);
+      initSuppliesDict(supplies);
+    }
+  }, [supplies, locations, initLocationsDict, initSuppliesDict]);
 
   const translateLocation = (city_id: number): Location | undefined => {
     const location = locationDict ? locationDict[city_id] : undefined;
