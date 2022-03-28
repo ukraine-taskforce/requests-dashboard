@@ -44,7 +44,7 @@ export function useFileDownloader(): FileDownloaderContextValue {
 export const FileDownloaderContextProvider: FunctionComponent = ({ children }) => {
   const { translateLocation, translateSupply } = useDictionaryContext();
 
-  const formatAidRequests = (aidRequests: AidRequest[]): [FormattedAidRequests, Set<string>] => {
+  const formatAidRequests = (aidRequests: AidRequest[]): [FormattedAidRequests, string[]] => {
     const uniqueCategories: Set<string> = new Set();
 
     const formattedAidRequests = aidRequests?.reduce((result: FormattedAidRequests, request) => {
@@ -74,7 +74,7 @@ export const FileDownloaderContextProvider: FunctionComponent = ({ children }) =
       }
       return result;
     }, {} as FormattedAidRequests);
-    return [ formattedAidRequests, uniqueCategories ];
+    return [ formattedAidRequests, Array.from(uniqueCategories) ];
   };
 
   const downloadAsJSON = (aidRequests: AidRequest[]) => {
@@ -88,7 +88,7 @@ export const FileDownloaderContextProvider: FunctionComponent = ({ children }) =
   const downloadAsCSV = (aidRequests: AidRequest[]) => {
     const [ formattedAidRequests, uniqueCategories ] = formatAidRequests(aidRequests);
     const csvRows = [];
-    const csvHeaders = ["City", "Date"].concat(Array.from(uniqueCategories));
+    const csvHeaders = ["City", "Date"].concat(uniqueCategories);
 
     csvRows.push(csvHeaders.join(","));
 
@@ -97,8 +97,16 @@ export const FileDownloaderContextProvider: FunctionComponent = ({ children }) =
 
       const csvRow = [requestDate];
 
+      const categoryToAmount: { [id: string]: number } = {};
       cityRequests.forEach((request) => {
-        csvRow.push(request.amount + "");
+        categoryToAmount[request.category] = request.amount;
+      });
+      uniqueCategories.forEach((category) => {
+        if (category in categoryToAmount) {
+          csvRow.push(categoryToAmount[category] + "");
+        } else {
+          csvRow.push("0");
+        }
       });
 
       // removing ',' from city names so that columns in CSV are correcly laid out
