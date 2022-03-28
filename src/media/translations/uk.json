@@ -64,6 +64,6 @@
   "no_results": "Нічого не знайдено",
   "search_city_placeholder": "Пошук міста",
   "loading": "Завантажується",
-  "logout": "",
-  "download_requests": ""
+  "logout": "Вийти",
+  "download_requests": "Завантажити дані"
 }
