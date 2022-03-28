@@ -45,7 +45,7 @@ const useDictionaryState = ({ supplies, locations }: { supplies: Supply[] | unde
         setLocationsDict(locationDict);
       }
     },
-    [locations, locationDict]
+    [locationDict]
   );
 
   const initSuppliesDict = useMemo(
@@ -55,7 +55,7 @@ const useDictionaryState = ({ supplies, locations }: { supplies: Supply[] | unde
         setSuppliesDict(suppliesDict);
       }
     },
-    [supplies, suppliesDict]
+    [suppliesDict]
   );
 
   useEffect(() => {
