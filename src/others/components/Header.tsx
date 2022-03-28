@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -28,6 +28,7 @@ export const Header = ({ aidRequests, children }: HeaderProps) => {
   const { toggle } = useSidebarContext();
   const { logout } = useAuth();
   const { filters, activateFilter, toggleFilterItem } = useFilter();
+  const [showDownloadTooltip, setShowDownloadTooltip] = useState(false);
 
   const { Dates: dateFilter, ...otherFilters } = filters;
 
@@ -53,9 +54,12 @@ export const Header = ({ aidRequests, children }: HeaderProps) => {
         </Box>
         {children}
         <LanguageSelector />
-        <Tooltip title={t("download_requests") as string} arrow>
+        <Tooltip title={t("download_requests") as string} arrow open={showDownloadTooltip}
+          disableHoverListener
+          onMouseEnter={() => setShowDownloadTooltip(true)}
+          onMouseLeave={() => setShowDownloadTooltip(false)}>
           <Box sx={{ justifySelf: "flex-end" }}>
-            <FileDownloaderMenu aidRequests={aidRequests} />
+            <FileDownloaderMenu aidRequests={aidRequests} hideTooltip={() => setShowDownloadTooltip(false)} />
           </Box>
         </Tooltip>
         <Tooltip title={t("logout") as string} arrow>
