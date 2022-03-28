@@ -7,15 +7,17 @@ import { AidRequest } from "../contexts/api";
 
 export interface FileDownloaderMenuProps {
   aidRequests: AidRequest[];
+  hideTooltip: () => void;
 }
 
-export const FileDownloaderMenu = ({ aidRequests }: FileDownloaderMenuProps) => {
+export const FileDownloaderMenu = ({ aidRequests, hideTooltip }: FileDownloaderMenuProps) => {
   const { downloadAsJSON, downloadAsCSV } = useFileDownloader();
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
+    hideTooltip();
   };
 
   const handleClose = () => {
