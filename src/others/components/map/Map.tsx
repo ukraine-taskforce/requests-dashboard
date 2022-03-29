@@ -81,20 +81,20 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
               totalItems: requestData.amount,
             },
           });
-	  if (isRegionPopup) {
-	    if (hoveredRegionId) {
+          if (isRegionPopup) {
+            if (hoveredRegionId) {
               mapRef.current.setFeatureState(
                 { source: 'state', id: hoveredRegionId },
                 { hover: false },
               );
-	    }
-	    const tmpHoveredRegionId = features[preferredLayerIndex].id;
-	    setHoveredRegionId(tmpHoveredRegionId);
+            }
+            const tmpHoveredRegionId = features[preferredLayerIndex].id;
+            setHoveredRegionId(tmpHoveredRegionId);
             mapRef.current.setFeatureState(
-	      { source: 'state', id: tmpHoveredRegionId },
-	      { hover: true },
-	    );
-	  }
+              { source: 'state', id: tmpHoveredRegionId },
+              { hover: true },
+            );
+          }
         }
       }
     },
