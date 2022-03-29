@@ -30,12 +30,12 @@ import {
   groupedByCitiesToTableData,
   groupedByCategoriesToTableData,
 } from "../../others/helpers/aid-request-helpers";
-import { useQuery } from "../../others/helpers/use_query";
+import { useQuery } from "../../others/helpers/use-query";
 
 export function Requests() {
   const { t } = useTranslation();
-  const { data: aidRequests, isSuccess: isAidRequestsLoaded } = useAidRequestQuery();
-  const { locationDict, suppliesDict, translateLocation, translateSupply, isSuppliesLoaded, isLocationsLoaded } = useDictionaryContext();
+  const { data: aidRequests } = useAidRequestQuery();
+  const { locationDict, suppliesDict, translateLocation, translateSupply } = useDictionaryContext();
   const { addFilter, getActiveFilterItems, toggleFilterItem, filters } = useFilter();
   const { search } = useLocation();
   const { setFilterFromQuery, setQuery } = useQuery(search, toggleFilterItem);
@@ -52,51 +52,49 @@ export function Requests() {
   // TODO: consider moving this to a component higher up in the render tree
   // TODO: consider simplifying filterContext API
   useEffect(() => {
-    if (isAidRequestsLoaded && isSuppliesLoaded && isLocationsLoaded) {
-      if (suppliesDict) {
-        addFilter({
-          filterName: "Categories",
-          filterItems: Object.values(suppliesDict).map(
-            (category): FilterItem => ({ id: category.id, selected: false, text: category.name })
-          ),
-          active: false,
-          singleValueFilter: false,
-        });
-      }
-
-      if (locationDict) {
-        addFilter({
-          filterName: "Cities",
-          filterItems: Object.values(locationDict).map(
-            (location): FilterItem => ({ id: location.id, selected: false, text: location.name })
-          ),
-          active: false,
-          singleValueFilter: false,
-          hasSearch: true,
-        });
-      }
-
-      if (!isEmpty(aidRequestsGroupedByDate)) {
-        const uniqueDatesSorted = uniq(keys(aidRequestsGroupedByDate)).sort(sortDates);
-
-        addFilter({
-          filterName: "Dates",
-          filterItems: uniqueDatesSorted.map(
-            (date, i): FilterItem => ({ id: date, selected: i === uniqueDatesSorted.length - 1, text: date })
-          ),
-          active: false,
-          singleValueFilter: true,
-        });
-      }
-
-      // Now that the filters are initialized, it's safe to apply any filters from query params
-      setCanApplyQuery(true);
+    if (suppliesDict) {
+      addFilter({
+        filterName: "Categories",
+        filterItems: Object.values(suppliesDict).map((category): FilterItem => ({ id: category.id, selected: false, text: category.name })),
+        active: false,
+        singleValueFilter: false,
+      });
     }
-  }, [suppliesDict, locationDict, aidRequestsGroupedByDate, addFilter, isAidRequestsLoaded, isSuppliesLoaded, isLocationsLoaded]);
+
+    if (locationDict) {
+      addFilter({
+        filterName: "Cities",
+        filterItems: Object.values(locationDict).map((location): FilterItem => ({ id: location.id, selected: false, text: location.name })),
+        active: false,
+        singleValueFilter: false,
+        hasSearch: true,
+      });
+    }
+
+    if (!isEmpty(aidRequestsGroupedByDate)) {
+      const uniqueDatesSorted = uniq(keys(aidRequestsGroupedByDate)).sort(sortDates);
+
+      addFilter({
+        filterName: "Dates",
+        filterItems: uniqueDatesSorted.map(
+          (date, i): FilterItem => ({ id: date, selected: i === uniqueDatesSorted.length - 1, text: date })
+        ),
+        active: false,
+        singleValueFilter: true,
+      });
+    }
+  }, [suppliesDict, locationDict, aidRequestsGroupedByDate, addFilter]);
 
   const activeCategoryFilter = getActiveFilterItems("Categories") as string[]; // typecasting necessary because type FilterItemId = string | number
   const activeDateFilter = getActiveFilterItems("Dates")[0] as string; // typecasting necessary because type FilterItemId = string | number
   const activeCityFilter = getActiveFilterItems("Cities") as number[]; // typecasting necessary because type FilterItemId = string | number
+
+  useEffect(() => {
+    if (suppliesDict && locationDict && !isEmpty(aidRequestsGroupedByDate)) {
+      // Now that data is fetched, it's safe to apply any filters from query params
+      setCanApplyQuery(true);
+    }
+  }, [suppliesDict, locationDict, aidRequestsGroupedByDate, setCanApplyQuery]);
 
   useEffect(() => {
     const filterNames = Object.keys(filters) as FilterName[];

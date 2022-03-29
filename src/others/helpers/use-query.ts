@@ -12,10 +12,10 @@ const queryNametoFilterMap: {
 };
 
 export const useQuery = (
-  search: string,
+  urlParamsString: string,
   toggleFilterItem: (filterName: FilterName, filterItemId: FilterItemId, value?: boolean) => void
 ) => {
-  const query = useMemo(() => new URLSearchParams(search), [search]);
+  const query = useMemo(() => new URLSearchParams(urlParamsString), [urlParamsString]);
   const [shouldUpdateUrl, setShouldUpdateUrl] = useState(false);
 
   const setFilterFromQuery = (filterNames: FilterName[]) => {
@@ -50,7 +50,7 @@ export const useQuery = (
         }
       });
 
-      let url = new URL(window.location.href);
+      const url = new URL(window.location.href);
       url.search = query.toString();
       window.history.pushState({}, "", url);
     }
