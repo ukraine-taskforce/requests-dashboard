@@ -98,15 +98,12 @@ export const FileDownloaderContextProvider: FunctionComponent = ({ children }) =
       const csvRow = [requestDate];
 
       const categoryToAmount: { [id: string]: number } = {};
+      uniqueCategories.forEach((category) => { categoryToAmount[category] = 0; });
       cityRequests.forEach((request) => {
         categoryToAmount[request.category] = request.amount;
       });
       uniqueCategories.forEach((category) => {
-        if (category in categoryToAmount) {
-          csvRow.push(categoryToAmount[category] + "");
-        } else {
-          csvRow.push("0");
-        }
+        csvRow.push(String(categoryToAmount[category]));
       });
 
       // removing ',' from city names so that columns in CSV are correcly laid out
