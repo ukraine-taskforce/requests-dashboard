@@ -27,7 +27,6 @@ export const RegionsSourceWithLayers = ({ requestMapDataPoints, invertColors }: 
       res.properties.description = regionMetadata.description;
       // .id is needed to make hover effect work.
       res.id = allRegionsWithMeta.length;
-      //res.hover = false;
       allRegionsWithMeta.push(res);
     }
   });
@@ -51,11 +50,11 @@ export const RegionsSourceWithLayers = ({ requestMapDataPoints, invertColors }: 
                     ["interpolate", ["linear"], ["get", "normalized_amount"], 0, 'rgba(255,255,255,0)', 1, 'rgba(255,255,255,0)'],
                     ],
               "fill-opacity": [
-	        "case",
-		["boolean", ["feature-state", "hover"], false],
-		0.5,
-		1,
-	      ],
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                0.5,
+                1,
+              ],
            }} />
           </Source>
           <Source id="state_constant" type="geojson" key="states_static" data={{type: "FeatureCollection", features: adminRegions}}>
