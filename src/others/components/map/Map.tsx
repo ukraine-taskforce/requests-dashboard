@@ -30,12 +30,21 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
   const { t } = useTranslation();
   const mapRef = useRef<MapRef>(null);
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
+  const [hoveredRegionId, setHoveredRegionId] = useState<number | string | undefined>(undefined);
   const [cursor, setCursor] = useState<"auto" | "pointer">("auto");
 
   const closePopup = useCallback(() => {
     setCursor("auto");
     setPopupInfo(null);
-  }, []);
+    if (mapRef?.current) {
+      if (hoveredRegionId) {
+        mapRef.current.setFeatureState(
+          { source: 'state', id: hoveredRegionId },
+          { hover: false },
+        );
+      }
+    }
+  }, [mapRef, hoveredRegionId]);
 
   const handleMouseMove = useCallback(
     (event: MapLayerMouseEvent) => {
@@ -72,10 +81,24 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
               totalItems: requestData.amount,
             },
           });
+	  if (isRegionPopup) {
+	    if (hoveredRegionId) {
+              mapRef.current.setFeatureState(
+                { source: 'state', id: hoveredRegionId },
+                { hover: false },
+              );
+	    }
+	    const tmpHoveredRegionId = features[preferredLayerIndex].id;
+	    setHoveredRegionId(tmpHoveredRegionId);
+            mapRef.current.setFeatureState(
+	      { source: 'state', id: tmpHoveredRegionId },
+	      { hover: true },
+	    );
+	  }
         }
       }
     },
-    [mapRef, popupInfo, interactiveLayerIds, closePopup]
+    [mapRef, popupInfo, interactiveLayerIds, closePopup, hoveredRegionId]
   );
 
   return (
