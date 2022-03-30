@@ -1,16 +1,21 @@
 import { useTranslation } from "react-i18next";
-import MapComponent, { Popup, MapRef, MapLayerMouseEvent } from "react-map-gl";
+import MapComponent, { Popup, MapRef, MapLayerMouseEvent, Layer, Source } from "react-map-gl";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 import { Box, Typography } from "@mui/material";
-import { ReactNode, useCallback, useState, useRef } from "react";
 import { INITIAL_UKRAINE_CENTER_VIEW } from '../../constants';
-import { MaxRegionVisibleZoomLevel } from "./RegionsSourceWithLayers";
+import { useCallback, useState, useRef, useMemo } from "react";
+import { MaxRegionVisibleZoomLevel, RegionsSourceWithLayers } from "./RegionsSourceWithLayers";
+import { layerStyle, layerStyleInvertedColors } from "./CircleLayerStyle";
+import { layerStyleWithRegions, layerStyleWithRegionsInvertedColors } from "./CircleLayerStyleWithRegions";
+import { RequestMapDataPoint, mapAidRequestsToFeatures } from "../../helpers/map-utils";
+import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
+import { useDictionaryContext } from "../../contexts/dictionary-context";
 
 interface MapProps {
-  sourceWithLayer?: ReactNode;
-  interactiveLayerIds: string[]
+  requestMapDataPoints: RequestMapDataPoint[];
+  invertColors: boolean;
 }
 
 interface PopupInfo {
@@ -26,11 +31,22 @@ interface PopupInfo {
 
 const MAP_STYLE = process.env.REACT_APP_MAPLIBRE_MAP_STYLE || "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 
-export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
+export const Map = ({ requestMapDataPoints, invertColors }: MapProps) => {
   const { t } = useTranslation();
   const mapRef = useRef<MapRef>(null);
+  const { translateLocation } = useDictionaryContext();
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
   const [cursor, setCursor] = useState<"auto" | "pointer">("auto");
+
+  const searchParams = new URLSearchParams(window.location.search);
+  const showRegions = (searchParams.get("show_regions") || process.env.REACT_APP_SHOW_REGIONS) === "true";
+  
+  const interactiveLayerIds = useMemo(() => {return showRegions ? ["circles", "state-fills"] : ["circles"];}, [showRegions]);
+
+  const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
+    type: "FeatureCollection",
+    features: mapAidRequestsToFeatures(requestMapDataPoints, translateLocation)
+  };
 
   const closePopup = useCallback(() => {
     setCursor("auto");
@@ -91,7 +107,10 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
         onMouseMove={handleMouseMove}
         onMouseLeave={closePopup}
       >
-        {sourceWithLayer}
+        <Source id="circles-source" type="geojson" data={geojson}>
+          <Layer {...(showRegions ? (invertColors ? layerStyleWithRegionsInvertedColors : layerStyleWithRegions) : (invertColors ? layerStyleInvertedColors : layerStyle))} />
+        </Source>
+        {showRegions && <RegionsSourceWithLayers requestMapDataPoints={requestMapDataPoints} invertColors={invertColors} />}
 
         {popupInfo && (
           <Popup

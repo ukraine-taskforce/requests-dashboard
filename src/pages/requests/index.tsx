@@ -1,8 +1,7 @@
 import { useMemo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Layer, Source, MapProvider } from "react-map-gl";
 import { useLocation } from "react-router-dom";
-import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
+import { MapProvider } from "react-map-gl";
 import { groupBy, isEmpty, uniq, keys } from "lodash";
 
 import { useAidRequestQuery } from "../../others/contexts/api";
@@ -16,10 +15,7 @@ import { Main } from "../../others/components/Main";
 import { Sidebar } from "../../others/components/Sidebar";
 import { MultiTab } from "../../others/components/MultiTab";
 import { CollapsibleTable } from "../../others/components/CollapsibleList";
-import { layerStyle } from "../../others/components/map/CircleLayerStyle";
-import { layerStyleWithRegions } from "../../others/components/map/CircleLayerStyleWithRegions";
-import { RegionsSourceWithLayers } from "../../others/components/map/RegionsSourceWithLayers";
-import { aggregateCategories, mapAidRequestsToFeatures } from "../../others/helpers/map-utils";
+import { aggregateCategories } from "../../others/helpers/map-utils";
 import {
   sortDates,
   filterByCategoryIds,
@@ -151,13 +147,8 @@ export function Requests() {
 
   // Map filtered aid requests to data consumable by map component
   // TODO: consider refactoring map so that it consumes raw AidRequest[]
-  // NOTE: adaptToMap has been added temporarily
   const isMapDataAvailable = locationDict && suppliesDict && groupedByCitiesWithTotal.length;
   const mapData = isMapDataAvailable ? groupedByCitiesWithTotal.map((aidRequest) => aggregateCategories(aidRequest, translateSupply)) : [];
-  const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
-    type: "FeatureCollection",
-    features: mapAidRequestsToFeatures(mapData, translateLocation),
-  };
 
   const tableDataByCities = groupedByCitiesWithTotal.map(groupedByCitiesToTableData).sort((a, b) => Number(b.value) - Number(a.value));
   const tableDataByCategories = groupedByCategoriesWithTotal
@@ -173,9 +164,6 @@ export function Requests() {
 
   const loadingMessage = "";
   const showByCities = selectedTabId === 0;
-
-  const searchParams = new URLSearchParams(window.location.search);
-  const showRegions = (searchParams.get("show_regions") || process.env.REACT_APP_SHOW_REGIONS) === "true";
 
   const tableByCities = (
     <CollapsibleTable
@@ -242,17 +230,7 @@ export function Requests() {
             </Sidebar>
           }
         >
-          <Map
-            interactiveLayerIds={showRegions ? ["circles", "state-fills"] : ["circles"]}
-            sourceWithLayer={
-              <>
-                <Source id="circles-source" type="geojson" data={geojson}>
-                  <Layer {...(showRegions ? layerStyleWithRegions : layerStyle)} />
-                </Source>
-                {showRegions && <RegionsSourceWithLayers requestMapDataPoints={mapData} invertColors={false} />}
-              </>
-            }
-          />
+          <Map requestMapDataPoints={mapData} invertColors={false} />
         </Main>
       </MapProvider>
     </Layout>

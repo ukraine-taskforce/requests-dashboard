@@ -1,7 +1,6 @@
 import { useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Layer, Source, MapProvider } from "react-map-gl";
-import { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
+import { MapProvider } from "react-map-gl";
 import { groupBy, isEmpty, uniq, keys } from "lodash";
 
 import { useDictionaryContext } from "../../others/contexts/dictionary-context";
@@ -14,9 +13,6 @@ import { Main } from "../../others/components/Main";
 import { Sidebar } from "../../others/components/Sidebar";
 import { MultiTab } from "../../others/components/MultiTab";
 import { CollapsibleTable } from "../../others/components/CollapsibleList";
-import { layerStyleWithRegions } from "../../others/components/map/CircleLayerStyleWithRegionsInventory";
-import { RegionsSourceWithLayers } from "../../others/components/map/RegionsSourceWithLayers";
-import { mapAidRequestsToFeatures } from "../../others/helpers/map-utils";
 import {
   aggregateCategories,
   sortDates,
@@ -129,11 +125,6 @@ export function Inventory() {
   // NOTE: adaptToMap has been added temporarily
   const isMapDataAvailable = locationDict && suppliesDict && groupedByCitiesWithTotal.length;
   const mapData = isMapDataAvailable ? groupedByCitiesWithTotal.map((aidRequest) => aggregateCategories(aidRequest, translateSupply, warehousesDict)) : [];
-  const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
-    type: "FeatureCollection",
-    features: mapAidRequestsToFeatures(mapData, translateLocation),
-  };
-
 
   const tableDataByWarehouse = groupedByWarehouseWithTotal.map(groupedByWarehouseToTableData).sort((a, b) => Number(b.value) - Number(a.value));
   const tableDataByCities = groupedByCitiesWithTotal.map(groupedByCitiesToTableData).sort((a, b) => Number(b.value) - Number(a.value));
@@ -243,17 +234,7 @@ export function Inventory() {
             </Sidebar>
           }
         >
-          <Map
-            interactiveLayerIds={["circles", "state-fills"]}
-            sourceWithLayer={
-              <>
-                <Source id="circles-source" type="geojson" data={geojson}>
-                  <Layer {...layerStyleWithRegions} />
-                </Source>
-                <RegionsSourceWithLayers requestMapDataPoints={mapData} invertColors={true} />
-              </>
-            }
-          />
+          <Map requestMapDataPoints={mapData} invertColors={true} />
         </Main>
       </MapProvider>
     </Layout>
