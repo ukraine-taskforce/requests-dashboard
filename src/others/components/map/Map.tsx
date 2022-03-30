@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import MapComponent, { Popup, MapRef, MapLayerMouseEvent } from "react-map-gl";
+import MapComponent, { useMap, Popup, MapRef, MapLayerMouseEvent } from "react-map-gl";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
@@ -32,24 +32,25 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
   const [hoveredRegionId, setHoveredRegionId] = useState<number | string | undefined>(undefined);
   const [cursor, setCursor] = useState<"auto" | "pointer">("auto");
+  const map = useMap();
 
   const closePopup = useCallback(() => {
     setCursor("auto");
     setPopupInfo(null);
-    if (mapRef?.current) {
+    if (true) {
       if (hoveredRegionId) {
-        mapRef.current.setFeatureState(
+        map.default?.setFeatureState(
           { source: 'state', id: hoveredRegionId },
           { hover: false },
         );
       }
     }
-  }, [mapRef, hoveredRegionId]);
+  }, [map, hoveredRegionId]);
 
   const handleMouseMove = useCallback(
     (event: MapLayerMouseEvent) => {
-      if (mapRef?.current) {
-        const features = mapRef.current.queryRenderedFeatures(event.point, {
+      if (map || true) {
+        const features = map.default?.queryRenderedFeatures(event.point, {
           layers: interactiveLayerIds,
         });
 
@@ -83,14 +84,14 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
           });
           if (isRegionPopup) {
             if (hoveredRegionId) {
-              mapRef.current.setFeatureState(
+              map.default?.setFeatureState(
                 { source: 'state', id: hoveredRegionId },
                 { hover: false },
               );
             }
             const tmpHoveredRegionId = features[preferredLayerIndex].id;
             setHoveredRegionId(tmpHoveredRegionId);
-            mapRef.current.setFeatureState(
+            map.default?.setFeatureState(
               { source: 'state', id: tmpHoveredRegionId },
               { hover: true },
             );
@@ -98,7 +99,7 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
         }
       }
     },
-    [mapRef, popupInfo, interactiveLayerIds, closePopup, hoveredRegionId]
+    [map, popupInfo, interactiveLayerIds, closePopup, hoveredRegionId]
   );
 
   return (
