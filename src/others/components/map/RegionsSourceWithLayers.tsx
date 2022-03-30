@@ -2,20 +2,19 @@ import { adminRegions } from "../../fixtures/regionsP3";
 import { Feature, FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import { Layer, Source } from "react-map-gl";
 import { useDictionaryContext } from "../../contexts/dictionary-context";
-import { mapRegionIdsToAidRequestMetadata } from "../../helpers/aid-request-helpers";
-import { RequestMapDataPoint } from "../../helpers/map-utils";
+import { MapDataPoint, mapRegionIdsToMetadata } from "../../helpers/map-utils";
 
 interface RegionsSourceWithLayersProperties {
-  requestMapDataPoints: RequestMapDataPoint[];
+  mapDataPoints: MapDataPoint[];
   invertColors: boolean;
 };
 
 export const MaxRegionVisibleZoomLevel = 8;
 
-export const RegionsSourceWithLayers = ({ requestMapDataPoints, invertColors }: RegionsSourceWithLayersProperties) => {
+export const RegionsSourceWithLayers = ({ mapDataPoints, invertColors }: RegionsSourceWithLayersProperties) => {
   const { translateLocation } = useDictionaryContext();
   const allRegionsWithMeta: Feature<Geometry, GeoJsonProperties>[]  = [];
-  const regionToMetadata = mapRegionIdsToAidRequestMetadata(requestMapDataPoints, translateLocation);
+  const regionToMetadata = mapRegionIdsToMetadata(mapDataPoints, translateLocation);
   const maxVal = Object.values(regionToMetadata).map((d) => d.amount).reduce((a, b) => a > b ? a : b, 0);
   adminRegions.forEach((region) => {
     if (region.properties && region.properties.shapeID in regionToMetadata) {

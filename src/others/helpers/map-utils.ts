@@ -1,37 +1,14 @@
-import { AidRequest, Supply, Location } from "../contexts/api";
+import { groupBy } from "lodash";
+import { Location } from "../contexts/api";
 import type { Feature, Geometry, GeoJsonProperties } from "geojson";
 
-type GroupedByCityId = {
-  city_id: number;
-  total: number;
-  aidRequests: AidRequest[];
-};
-
-export type RequestMapDataPoint = {
+export type MapDataPoint = {
   city_id: number;
   amount: number;
   description: string;
 };
 
-export const aggregateCategories = (
-  aidRequestsGroupedByCityId: GroupedByCityId,
-  supplyTranslator: (category_id: string) => Supply | undefined
-): RequestMapDataPoint => {
-  const sortedAidRequests = aidRequestsGroupedByCityId.aidRequests.sort((a, b) => b.requested_amount - a.requested_amount);
-  const description = sortedAidRequests.reduce((d, aidRequest) => {
-    const supply = supplyTranslator(aidRequest.category_id);
-    if (!supply) throw new Error(`Supply category: ${supply} is not defined`);
-    // TODO: Consider moving the formatting to the component that does the rendering.
-    return d + supply.name + ": " + aidRequest.requested_amount + "\n";
-  }, "");
-  return {
-    city_id: aidRequestsGroupedByCityId.city_id,
-    amount: aidRequestsGroupedByCityId.total,
-    description: description
-  };
-};
-
-export const mapAidRequestsToFeatures = (mapData: RequestMapDataPoint[], locationTranslator: (city_id: number) => Location | undefined): Feature<Geometry, GeoJsonProperties>[] => {
+export const mapToFeatures = (mapData: MapDataPoint[], locationTranslator: (city_id: number) => Location | undefined): Feature<Geometry, GeoJsonProperties>[] => {
   const maxAmount = mapData.reduce((max, dataPoint) => Math.max(max, dataPoint.amount), 0);
   return mapData.map((dataPoint) => {
     const location = locationTranslator(dataPoint.city_id);
@@ -48,5 +25,36 @@ export const mapAidRequestsToFeatures = (mapData: RequestMapDataPoint[], locatio
         geometry: { type: "Point", coordinates: [location.lon, location.lat] },
     };
   });
+};
+
+export type RegionMetadata = { [id: string]: {amount: number, description: string } };
+type RegionData = {
+  region_id: string;
+  city_name: string;
+  amount: number;
+};
+
+export const mapRegionIdsToMetadata = (mapDataPoints: MapDataPoint[], translateLocation: (city_id: number) => Location | undefined): RegionMetadata => {
+  const regionData: RegionData[] = mapDataPoints.map((req) => {
+    const city = translateLocation(req.city_id);
+    if (!city) throw new Error(`Loccation ${req.city_id} is not found`);
+    return {
+      region_id: city.region_id,
+      city_name: city.name,
+      amount: req.amount,
+    };
+  });
+  const groupedRegionData = Object.entries(groupBy(regionData, "region_id"));
+  const regionToMetadata: RegionMetadata = {};
+  groupedRegionData.forEach(([region_id, data]) => {
+    const totalAmount = data.reduce((sum, dataPoint) => sum + dataPoint.amount, 0);
+    const sortedData = data.sort((a, b) => b.amount - a.amount);
+    const description = sortedData.reduce((d, dataPoint) => d + dataPoint.city_name + ': ' + dataPoint.amount + '\n', '');
+    regionToMetadata[region_id] = {
+      amount: totalAmount,
+      description: description,
+    };
+  });
+  return regionToMetadata;
 };
 

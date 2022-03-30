@@ -1,13 +1,13 @@
 import { Location } from "../contexts/api";
 import {
+  aggregateCategories,
   groupByCityIdWithTotal,
   groupByCategoryIdWithTotal,
-  mapRegionIdsToAidRequestMetadata,
   filterByCategoryIds,
   filterByCityIds,
   FilterEnum,
 } from "./aid-request-helpers";
-import { RequestMapDataPoint } from "./map-utils";
+import { MapDataPoint } from "./map-utils";
 
 const exampleAggregatedRequests = [
   { date: "2022-03-11", city_id: 1226, category_id: "sanitary_pads", requested_amount: 10 },
@@ -181,37 +181,19 @@ test("groupByCategoryIdWithTotal with exampleAggregatedRequests", () => {
   });
 });
 
-test("mapRegionIdsToAidRequestMetadata with exampleAggregatedRequests", () => {
-  const mockTranslateLocation = (city_id: number): Location => {
-    return {id: city_id, name: `name#${city_id}`, lat: 1, lon: 2, region_id: 'region_' + (city_id % 2)};
-  }
-  const exampleMapDataPoints: RequestMapDataPoint[] = [
-    {
-      city_id: 1,
-      amount: 10,
-      description: "",
-    },
-    {
-      city_id: 2,
-      amount: 20,
-      description: "",
-    },
-    {
-      city_id: 3,
-      amount: 50,
-      description: "",
-    }     
+test("aggregateCategories", () => {
+  const requests = [
+    { date: "2022-03-10", city_id: 1, category_id: "personal_hygiene_kits", requested_amount: 14 },
+    { date: "2022-03-10", city_id: 1, category_id: "water", requested_amount: 20 },
+    { date: "2022-03-10", city_id: 1, category_id: "food", requested_amount: 14 },
   ];
-  const result = mapRegionIdsToAidRequestMetadata(exampleMapDataPoints, mockTranslateLocation);
+  function mockSupplyTranslator(category_id: string) {
+    return {id: category_id, name: `Name#${category_id}`};
+  }
 
-  expect(result).toEqual({
-    "region_0": {
-      amount: 20,
-      description: "name#2: 20\n",
-    },
-    "region_1": {
-      amount: 60,
-      description: "name#3: 50\nname#1: 10\n",
-    },
+  expect(aggregateCategories({city_id: 1, total: 17, aidRequests: requests}, mockSupplyTranslator)).toEqual({
+    amount: 17,
+    city_id: 1,
+    description: "Name#water: 20\nName#personal_hygiene_kits: 14\nName#food: 14\n",
   });
 });

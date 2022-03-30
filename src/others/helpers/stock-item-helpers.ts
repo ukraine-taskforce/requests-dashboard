@@ -1,9 +1,9 @@
 import { groupBy, map } from "lodash";
 
-import { Location, Supply } from "../contexts/api";
+import { Supply } from "../contexts/api";
 import { Warehouse, StockItem } from "../fixtures/fakeInventory";
 import { ListItem } from "../components/CollapsibleListItem";
-import { RequestMapDataPoint } from "./map-utils";
+import { MapDataPoint } from "./map-utils";
 
 export const sortDates = (a: string, b: string) => {
   return new Date(a).getTime() - new Date(b).getTime();
@@ -116,8 +116,8 @@ export const groupedByCategoriesToTableData = ({ category_id, total, stockItems 
 };
 
 const totalCalculator = (stockItems: StockItem[]): number =>
-  stockItems.reduce((sum, aidRequest) => sum + aidRequest.amount, 0);
-
+  stockItems.reduce((sum, stockItem) => sum + stockItem.amount, 0);
+/*
 export type AidRequestMetadataForRegion = { [id: string]: {amount: number, description: string } };
 type RegionRequestData = {
   region_id: string;
@@ -125,7 +125,7 @@ type RegionRequestData = {
   requested_amount: number;
 };
 
-export const mapRegionIdsToAidRequestMetadata = (requestMapDataPoints: RequestMapDataPoint[], translateLocation: (city_id: number) => Location | undefined): AidRequestMetadataForRegion => {
+export const mapRegionIdsToAidRequestMetadata = (requestMapDataPoints: MapDataPoint[], translateLocation: (city_id: number) => Location | undefined): AidRequestMetadataForRegion => {
   const regionAidRequests: RegionRequestData[] = requestMapDataPoints.map((req) => {
     const city = translateLocation(req.city_id);
     if (!city) throw new Error(`Loccation ${req.city_id} is not found`);
@@ -148,7 +148,7 @@ export const mapRegionIdsToAidRequestMetadata = (requestMapDataPoints: RequestMa
   });
   return regionToMetadata;
 };
-
+*/
 type GroupedByCityId = {
   city_id: number;
   total: number;
@@ -159,7 +159,7 @@ export const aggregateCategories = (
   aidRequestsGroupedByCityId: GroupedByCityId,
   supplyTranslator: (category_id: string) => Supply | undefined,
   warehousesDict: { [id:string]: Warehouse },
-): RequestMapDataPoint => {
+): MapDataPoint => {
   const grouped = groupBy(aidRequestsGroupedByCityId.stockItems, "warehouse_id");
   const groupedAndMapped = map(grouped, (reqs, warehouse_id) => {
     /*const reqSorted = reqs.sort((a, b) => b.amount - a.amount);

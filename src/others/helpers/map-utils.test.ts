@@ -1,24 +1,8 @@
-import { mapAidRequestsToFeatures, aggregateCategories } from "./map-utils";
+import { Location } from "../contexts/api";
+import { MapDataPoint, mapRegionIdsToMetadata, mapToFeatures } from "./map-utils";
 import type { Feature, Geometry, GeoJsonProperties } from "geojson";
 
-test("aggregateCategories", () => {
-  const requests = [
-    { date: "2022-03-10", city_id: 1, category_id: "personal_hygiene_kits", requested_amount: 14 },
-    { date: "2022-03-10", city_id: 1, category_id: "water", requested_amount: 20 },
-    { date: "2022-03-10", city_id: 1, category_id: "food", requested_amount: 14 },
-  ];
-  function mockSupplyTranslator(category_id: string) {
-    return {id: category_id, name: `Name#${category_id}`};
-  }
-
-  expect(aggregateCategories({city_id: 1, total: 17, aidRequests: requests}, mockSupplyTranslator)).toEqual({
-    amount: 17,
-    city_id: 1,
-    description: "Name#water: 20\nName#personal_hygiene_kits: 14\nName#food: 14\n",
-  });
-});
-
-test("mapAidRequestsToFeatures", () => {
+test("mapToFeatures", () => {
   const mapData = [
     {
       city_id: 1,
@@ -34,7 +18,7 @@ test("mapAidRequestsToFeatures", () => {
   function mockLocationTranslator(city_id: number) {
     return {id: city_id, name: `name#${city_id}`, lat: city_id, lon: city_id, region_id: `region:${city_id}`};
   }
-  expect(mapAidRequestsToFeatures(mapData, mockLocationTranslator)).toEqual([
+  expect(mapToFeatures(mapData, mockLocationTranslator)).toEqual([
     {
       type: "Feature",
       properties: {
@@ -57,3 +41,39 @@ test("mapAidRequestsToFeatures", () => {
     },
   ]);
 });
+
+test("mapRegionIdsToMetadata", () => {
+  const mockTranslateLocation = (city_id: number): Location => {
+    return {id: city_id, name: `name#${city_id}`, lat: 1, lon: 2, region_id: 'region_' + (city_id % 2)};
+  }
+  const exampleMapDataPoints: MapDataPoint[] = [
+    {
+      city_id: 1,
+      amount: 10,
+      description: "",
+    },
+    {
+      city_id: 2,
+      amount: 20,
+      description: "",
+    },
+    {
+      city_id: 3,
+      amount: 50,
+      description: "",
+    }     
+  ];
+  const result = mapRegionIdsToMetadata(exampleMapDataPoints, mockTranslateLocation);
+
+  expect(result).toEqual({
+    "region_0": {
+      amount: 20,
+      description: "name#2: 20\n",
+    },
+    "region_1": {
+      amount: 60,
+      description: "name#3: 50\nname#1: 10\n",
+    },
+  });
+});
+
