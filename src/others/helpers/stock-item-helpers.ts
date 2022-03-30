@@ -117,38 +117,7 @@ export const groupedByCategoriesToTableData = ({ category_id, total, stockItems 
 
 const totalCalculator = (stockItems: StockItem[]): number =>
   stockItems.reduce((sum, stockItem) => sum + stockItem.amount, 0);
-/*
-export type AidRequestMetadataForRegion = { [id: string]: {amount: number, description: string } };
-type RegionRequestData = {
-  region_id: string;
-  city_name: string;
-  requested_amount: number;
-};
 
-export const mapRegionIdsToAidRequestMetadata = (requestMapDataPoints: MapDataPoint[], translateLocation: (city_id: number) => Location | undefined): AidRequestMetadataForRegion => {
-  const regionAidRequests: RegionRequestData[] = requestMapDataPoints.map((req) => {
-    const city = translateLocation(req.city_id);
-    if (!city) throw new Error(`Loccation ${req.city_id} is not found`);
-    return {
-      region_id: city.region_id,
-      city_name: city.name,
-      requested_amount: req.amount,
-    };
-  });
-  const groupedRegionAidRequests = Object.entries(groupBy(regionAidRequests, "region_id"));
-  const regionToMetadata: AidRequestMetadataForRegion = {};
-  groupedRegionAidRequests.forEach(([region_id, requests]) => {
-    const totalAmount = requests.reduce((sum, request) => sum + request.requested_amount, 0);
-    const sortedRequests = requests.sort((a, b) => b.requested_amount - a.requested_amount);
-    const description = sortedRequests.reduce((d, request) => d + request.city_name + ': ' + request.requested_amount + '\n', '');
-    regionToMetadata[region_id] = {
-      amount: totalAmount,
-      description: description,
-    };
-  });
-  return regionToMetadata;
-};
-*/
 type GroupedByCityId = {
   city_id: number;
   total: number;
