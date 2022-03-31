@@ -6,8 +6,6 @@ interface DictionaryState {
   locationDict: LocationsDict | undefined; // TODO: it's used only in map - doesn't have to be exposed once map is using the declarative API (translate...)
   translateLocation: (city_id: number) => Location | undefined;
   translateSupply: (category_id: string) => Supply | undefined;
-  isSuppliesLoaded: boolean;
-  isLocationsLoaded: boolean;
 }
 
 type LocationsDict = { [k: number]: Location };
@@ -28,15 +26,15 @@ interface DictionaryContextProviderProps {
 }
 
 export const DictionaryContextProvider = ({ children }: DictionaryContextProviderProps) => {
-  const { data: locations, isSuccess: isLocationsLoaded } = useLocationsQuery();
-  const { data: supplies, isSuccess: isSuppliesLoaded } = useSuppliesQuery();
+  const { data: locations } = useLocationsQuery();
+  const { data: supplies } = useSuppliesQuery();
 
-  const dictionaryState = useDictionaryState({ supplies, locations, isLocationsLoaded, isSuppliesLoaded });
+  const dictionaryState = useDictionaryState({ supplies, locations });
 
   return <DictionaryContext.Provider value={dictionaryState}>{children}</DictionaryContext.Provider>;
 };
 
-const useDictionaryState = ({ supplies, locations, isLocationsLoaded, isSuppliesLoaded}: { supplies: Supply[] | undefined; locations: Location[] | undefined, isLocationsLoaded: boolean, isSuppliesLoaded: boolean }) => {
+const useDictionaryState = ({ supplies, locations }: { supplies: Supply[] | undefined; locations: Location[] | undefined }) => {
   const [suppliesDict, setSuppliesDict] = useState<SuppliesDict | undefined>(undefined);
   const [locationDict, setLocationsDict] = useState<LocationsDict | undefined>(undefined);
 
@@ -77,7 +75,5 @@ const useDictionaryState = ({ supplies, locations, isLocationsLoaded, isSupplies
     locationDict,
     translateLocation,
     translateSupply,
-    isLocationsLoaded,
-    isSuppliesLoaded
   };
 };
