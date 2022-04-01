@@ -1,5 +1,5 @@
 import { Location } from "../contexts/api";
-import { MapDataPoint, mapRegionIdsToMetadata, mapToFeatures } from "./map-utils";
+import { MapDataPoint, groupByRegions, mapToFeatures } from "./map-utils";
 import type { Feature, Geometry, GeoJsonProperties } from "geojson";
 
 test("mapToFeatures", () => {
@@ -42,7 +42,7 @@ test("mapToFeatures", () => {
   ]);
 });
 
-test("mapRegionIdsToMetadata", () => {
+test("groupByRegions", () => {
   const mockTranslateLocation = (city_id: number): Location => {
     return {id: city_id, name: `name#${city_id}`, lat: 1, lon: 2, region_id: 'region_' + (city_id % 2)};
   }
@@ -63,7 +63,7 @@ test("mapRegionIdsToMetadata", () => {
       description: "",
     }     
   ];
-  const result = mapRegionIdsToMetadata(exampleMapDataPoints, mockTranslateLocation);
+  const result = groupByRegions(exampleMapDataPoints, mockTranslateLocation);
 
   expect(result).toEqual({
     "region_0": {

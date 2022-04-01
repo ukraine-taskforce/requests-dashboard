@@ -2,7 +2,7 @@ import { adminRegions } from "../../fixtures/regionsP3";
 import { Feature, FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import { Layer, Source } from "react-map-gl";
 import { useDictionaryContext } from "../../contexts/dictionary-context";
-import { MapDataPoint, mapRegionIdsToMetadata } from "../../helpers/map-utils";
+import { MapDataPoint, groupByRegions } from "../../helpers/map-utils";
 
 interface RegionsSourceWithLayersProperties {
   mapDataPoints: MapDataPoint[];
@@ -14,7 +14,7 @@ export const MaxRegionVisibleZoomLevel = 8;
 export const RegionsSourceWithLayers = ({ mapDataPoints, invertColors }: RegionsSourceWithLayersProperties) => {
   const { translateLocation } = useDictionaryContext();
   const allRegionsWithMeta: Feature<Geometry, GeoJsonProperties>[]  = [];
-  const regionToMetadata = mapRegionIdsToMetadata(mapDataPoints, translateLocation);
+  const regionToMetadata = groupByRegions(mapDataPoints, translateLocation);
   const maxVal = Object.values(regionToMetadata).map((d) => d.amount).reduce((a, b) => a > b ? a : b, 0);
   adminRegions.forEach((region) => {
     if (region.properties && region.properties.shapeID in regionToMetadata) {

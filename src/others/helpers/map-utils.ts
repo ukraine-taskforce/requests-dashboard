@@ -34,7 +34,7 @@ type RegionData = {
   amount: number;
 };
 
-export const mapRegionIdsToMetadata = (mapDataPoints: MapDataPoint[], translateLocation: (city_id: number) => Location | undefined): RegionMetadata => {
+export const groupByRegions = (mapDataPoints: MapDataPoint[], translateLocation: (city_id: number) => Location | undefined): RegionMetadata => {
   const regionData: RegionData[] = mapDataPoints.map((req) => {
     const city = translateLocation(req.city_id);
     if (!city) throw new Error(`Loccation ${req.city_id} is not found`);
