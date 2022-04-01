@@ -45,16 +45,14 @@ export const mapRegionIdsToMetadata = (mapDataPoints: MapDataPoint[], translateL
     };
   });
   const groupedRegionData = Object.entries(groupBy(regionData, "region_id"));
-  const regionToMetadata: RegionMetadata = {};
-  groupedRegionData.forEach(([region_id, data]) => {
-    const totalAmount = data.reduce((sum, dataPoint) => sum + dataPoint.amount, 0);
-    const sortedData = data.sort((a, b) => b.amount - a.amount);
-    const description = sortedData.reduce((d, dataPoint) => d + dataPoint.city_name + ': ' + dataPoint.amount + '\n', '');
-    regionToMetadata[region_id] = {
-      amount: totalAmount,
-      description: description,
-    };
-  });
+  const regionToMetadata: RegionMetadata = Object.assign({}, ...groupedRegionData.map(
+    ([region_id, data]) => {
+      const totalAmount = data.reduce((sum, dataPoint) => sum + dataPoint.amount, 0);
+      const sortedData = data.sort((a, b) => b.amount - a.amount);
+      const description = sortedData.reduce((d, dataPoint) => d + dataPoint.city_name + ': ' + dataPoint.amount + '\n', '');
+      return { [region_id]: { amount: totalAmount, description: description } };
+    }
+  ));
   return regionToMetadata;
 };
 
