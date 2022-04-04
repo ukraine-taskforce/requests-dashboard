@@ -16,7 +16,7 @@ import { MultiTab } from "../../others/components/MultiTab";
 import { CollapsibleTable } from "../../others/components/CollapsibleList";
 import { layerStyleWithRegions } from "../../others/components/map/CircleLayerStyleWithRegionsInventory";
 import { RegionsSourceWithLayers } from "../../others/components/map/RegionsSourceWithLayers";
-import { mapAidRequestsToFeatures } from "../../others/helpers/map-utils";
+import { mapToFeatures } from "../../others/helpers/map-utils";
 import {
   aggregateCategories,
   sortDates,
@@ -41,7 +41,7 @@ export function Inventory() {
 
   const { addFilter, getActiveFilterItems } = filterContext;
 
-  // First create a lookup table for all aid requests grouped by dates and memoise it
+  // First create a lookup table for all stock items grouped by dates and memoise it
   const stockItemsGroupedByDate = useMemo(() => {
     if (!stockItems?.length) return {};
 
@@ -89,7 +89,7 @@ export function Inventory() {
   const activeDateFilter = getActiveFilterItems("Dates")[0] as string; // typecasting necessary because type FilterItemId = string | number
   const activeCityFilter = getActiveFilterItems("Cities") as number[]; // typecasting necessary because type FilterItemId = string | number
 
-  // Filter aid requests by given date, category, and city
+  // Filter stock items by given date, category, and city
   const stockItemsFiltered = useMemo(() => {
     if (!activeDateFilter || isEmpty(stockItemsGroupedByDate)) return [];
     const activeCategoryFilters = activeFilterItems.length ? activeFilterItems : FilterEnum.All;
@@ -102,7 +102,7 @@ export function Inventory() {
     return filteredByCities;
   }, [stockItemsGroupedByDate, activeDateFilter, activeFilterItems, activeCityFilter]);
 
-  // Group aid requests them according to tables' needs
+  // Group stock items them according to tables' needs
   // TODO: consider moving this step to the table component
   const { groupedByWarehouseWithTotal, groupedByCitiesWithTotal, groupedByCategoriesWithTotal } = useMemo(() => {
     if (!stockItemsFiltered.length) {
@@ -124,14 +124,12 @@ export function Inventory() {
     };
   }, [stockItemsFiltered]);
 
-  // Map filtered aid requests to data consumable by map component
-  // TODO: consider refactoring map so that it consumes raw AidRequest[]
-  // NOTE: adaptToMap has been added temporarily
+  // Map filtered stock items to data consumable by map component
   const isMapDataAvailable = locationDict && suppliesDict && groupedByCitiesWithTotal.length;
-  const mapData = isMapDataAvailable ? groupedByCitiesWithTotal.map((aidRequest) => aggregateCategories(aidRequest, translateSupply, warehousesDict)) : [];
+  const mapData = isMapDataAvailable ? groupedByCitiesWithTotal.map((stockItems) => aggregateCategories(stockItems, translateSupply, warehousesDict)) : [];
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
-    features: mapAidRequestsToFeatures(mapData, translateLocation),
+    features: mapToFeatures(mapData, translateLocation),
   };
 
 
@@ -250,7 +248,7 @@ export function Inventory() {
                 <Source id="circles-source" type="geojson" data={geojson}>
                   <Layer {...layerStyleWithRegions} />
                 </Source>
-                <RegionsSourceWithLayers requestMapDataPoints={mapData} invertColors={true} />
+                <RegionsSourceWithLayers mapDataPoints={mapData} invertColors={true} />
               </>
             }
           />

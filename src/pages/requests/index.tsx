@@ -19,8 +19,9 @@ import { CollapsibleTable } from "../../others/components/CollapsibleList";
 import { layerStyle } from "../../others/components/map/CircleLayerStyle";
 import { layerStyleWithRegions } from "../../others/components/map/CircleLayerStyleWithRegions";
 import { RegionsSourceWithLayers } from "../../others/components/map/RegionsSourceWithLayers";
-import { aggregateCategories, mapAidRequestsToFeatures } from "../../others/helpers/map-utils";
+import { mapToFeatures } from "../../others/helpers/map-utils";
 import {
+  aggregateCategories,
   sortDates,
   filterByCategoryIds,
   filterByCityIds,
@@ -154,7 +155,7 @@ export function Requests() {
   const mapData = isMapDataAvailable ? groupedByCitiesWithTotal.map((aidRequest) => aggregateCategories(aidRequest, translateSupply)) : [];
   const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
-    features: mapAidRequestsToFeatures(mapData, translateLocation),
+    features: mapToFeatures(mapData, translateLocation),
   };
 
   const tableDataByCities = groupedByCitiesWithTotal.map(groupedByCitiesToTableData).sort((a, b) => Number(b.value) - Number(a.value));
@@ -247,7 +248,7 @@ export function Requests() {
                 <Source id="circles-source" type="geojson" data={geojson}>
                   <Layer {...(showRegions ? layerStyleWithRegions : layerStyle)} />
                 </Source>
-                {showRegions && <RegionsSourceWithLayers requestMapDataPoints={mapData} invertColors={false} />}
+                {showRegions && <RegionsSourceWithLayers mapDataPoints={mapData} invertColors={false} />}
               </>
             }
           />
