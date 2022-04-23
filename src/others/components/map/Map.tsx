@@ -108,7 +108,7 @@ export const Map = ({ sourceWithLayer, interactiveLayerIds }: MapProps) => {
               {popupInfo.data ? (
                 <>
                   <Typography variant="h6" component="div">
-                    {popupInfo.data.city}: {popupInfo.data.totalItems} {t("requests")}
+                    {popupInfo.data.city}: {popupInfo.data.totalItems} {popupInfo.data.totalItems && t("requests")}
                   </Typography>
                   <Typography variant="body1" style={{ whiteSpace: "pre-line" }}>
                     {popupInfo.data.description}
