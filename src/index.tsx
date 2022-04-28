@@ -18,6 +18,7 @@ import { Login } from "./pages/login";
 import { Requests } from "./pages/requests";
 import { Inventory } from "./pages/inventory";
 import { McKinsey } from "./pages/mckinsey";
+import { Donations } from "./pages/donations";
 import { NotFound } from "./pages/notFound";
 import { ResetPassword } from "./pages/resetPassword";
 import { AuthProvider } from "./others/contexts/auth";
@@ -50,6 +51,7 @@ ReactDOM.render(
             <Route path="/requests" element={<Requests />} />
             <Route path="/inventory" element={<Inventory />} />
             <Route path="/mckinsey" element={<McKinsey />} />
+            <Route path="/donations" element={<Donations />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
