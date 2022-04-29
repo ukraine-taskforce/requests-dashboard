@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import MapComponent, { Popup, MapProvider, Marker } from "react-map-gl";
 
 import { Layout } from "../../others/components/Layout";
-import { Header } from "../../others/components/mckinsey/Header";
+import { Header } from "../../others/components/donations/Header";
 import { Main } from "../../others/components/Main";
 import { Sidebar } from "../../others/components/Sidebar";
 import { CollapsibleTable } from "../../others/components/CollapsibleListSimple";
