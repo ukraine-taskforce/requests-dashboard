@@ -15,12 +15,18 @@ import { ImgBrand } from "../../../media/images/UGT_Asset_Brand";
 import { ImgShare } from "../../../media/images/UGT_Asset_UI_Share";
 import { isShareSupported, useShare } from "../../helpers/share";
 import { useTranslation } from "react-i18next";
+import { LanguageSelector } from "../LanguageSelector";
+import { Box } from "@mui/material";
+import { useFilter } from "../../contexts/filter";
+import { FilterDropdownGroup } from "../FilterDropdown/FilterDropdownGroup";
 
 export const Header = () => {
   const { toggle } = useSidebarContext();
   const [displayModal, setDisplayModal] = useState(false);
   const { share } = useShare();
   const { t } = useTranslation();
+  const { filters, activateFilter, toggleFilterItem } = useFilter();
+  const { ...otherFilters } = filters;
 
   return (
     <AppBar position="static" sx={{ paddingRight: 1, paddingLeft: 1, backgroundImage: null }}>
@@ -30,12 +36,21 @@ export const Header = () => {
         </IconButton>
 
         <Typography variant="h6" component="div" mr={8}>
-          Dashboard
+          McKinsey
         </Typography>
 
         <div className={styles.infoIcon} onClick={() => setDisplayModal(true)}>
           <ImgInfo alt="" color="white" />
         </div>
+
+        <Box sx={{ display: "flex", flexGrow: "1", alignItems: "center", marginLeft: "50px" }}>
+          <FilterDropdownGroup
+            filters={Object.values(otherFilters)}
+            filterGroupOpenHandler={activateFilter}
+            filterGroupUpdateHandler={toggleFilterItem}
+          />
+        </Box>
+        <LanguageSelector />
       </Toolbar>
       {/* About modal */}
       <Modal show={displayModal} handleClose={() => setDisplayModal(false)}>
