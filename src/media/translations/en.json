@@ -63,5 +63,8 @@
   "search_city_placeholder": "Search for city",
   "loading": "Loading",
   "logout": "Logout",
-  "download_requests": "Download requests"
+  "download_requests": "Download requests",
+  "contact_us_at": "Contact us at",
+  "about_dialog_head": "About Ukraine Global Taskforce",
+  "about_dialog_detailed": "The goal of Ukraine Global Taskforce is to come together and work on various projects to altogether minimize the impact of the war and most importantly, equip/help/support our extended family of ukrainians."
 }
